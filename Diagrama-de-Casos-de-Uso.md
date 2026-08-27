@@ -1,6 +1,6 @@
 # Diagrama de Casos de Uso
 
-*Sistema de Gerenciamento Familiar — 05 de julho de 2030, Criciúma - SC*
+*Sistema de Gerenciamento Familiar*
 
 ## Atores
 
@@ -40,5 +40,3 @@
                                    ──▶ Criar listas de compras
                                    ──▶ Cadastrar usuário
 ```
-
-*(A imagem original do diagrama UML pode ser inserida aqui a partir do PDF da apresentação.)*
