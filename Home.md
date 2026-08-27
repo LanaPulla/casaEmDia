@@ -1,8 +1,6 @@
 # Casa em Dia
 
 **Sistema de Gerenciamento Familiar**
-
-Trabalho de Conclusão de Curso — Administração
 Autoras: Maria, Lana, Amanda e Camila
 
 ---
