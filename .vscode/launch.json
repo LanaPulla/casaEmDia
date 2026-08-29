@@ -1,0 +1,24 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot - CasaEmDiaAPI",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/CasaEmDiaAPI",
+      "mainClass": "com.br.lab.casaEmDiaAPI.Application",
+      "projectName": "casaEmDiaAPI",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-Application<casaEmDia>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.br.lab.casaEmDiaAPI.Application",
+      "projectName": "casaEmDia",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}
