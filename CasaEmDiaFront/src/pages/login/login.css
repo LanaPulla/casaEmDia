@@ -1,6 +1,4 @@
-@use "../../variables.scss" as *;
-$background: "/login/fundo-tela-login.png";
-$logo: "/login/logo.png";
+@import "../../variables.css";
 
 .background {
   width: 100%;
@@ -8,7 +6,7 @@ $logo: "/login/logo.png";
   overflow: hidden;
   opacity: 0.9;
 
-  background-image: url(#{$background});
+  background-image: url("/login/fundo-tela-login.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -19,51 +17,52 @@ $logo: "/login/logo.png";
 }
 
 .background label {
-  color: $preto;
+  color: var(--preto);
 }
 
-.background button{
-    background: linear-gradient(to right, $azul-select, $verde-escurinho );
-    color:$branco;
-    border: none;
-    border-radius: 7px;
-    padding: 0.4rem;
+.background button {
+  background: linear-gradient(to right,
+      var(--azul-select),
+      var(--verde-escurinho));
+
+  color: var(--branco);
+  border: none;
+  border-radius: 7px;
+  padding: 0.4rem;
 }
 
 .background input {
   border-radius: 7px;
-  border: $cinza-claro 1px solid;
-  background-color: $branco;
+  border: var(--cinza-claro) 1px solid;
+  background-color: var(--branco);
 }
 
 .area-responsavel,
 .area-professor {
-  background-color: rgba($branco, 0.7);
+  background-color: rgba(255, 255, 255, 0.7);
   -webkit-backdrop-filter: blur(8px);
   border-radius: 7px;
   transform: scale(1.1);
-
   min-width: 24rem;
   max-width: 24rem;
 }
 
 .area-responsavel h4 {
-  color: $azul-escuro;
+  color: var(--azul-escuro);
   min-width: 15rem;
 }
 
-.logo h4{
-  color: $verde-oliva;
+.logo h4 {
+  color: var(--verde-oliva);
   font-weight: 400;
   min-width: 16rem;
 }
 
 .logo h1 {
-  color: $azul-escuro;
+  color: var(--azul-escuro);
   font-weight: bold;
 }
 
-
-.area-professor h4{
-  color:$azul-escuro;
+.area-professor h4 {
+  color: var(--azul-escuro);
 }

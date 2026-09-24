@@ -9,6 +9,7 @@ function App() {
         {/* Rotas Públicas (Sem layout) */}
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/menu" element={<Login />} />
         
         {/* Futuramente, você fará o mesmo para os outros perfis:
           <Route path="/admin" element={<AdminLayout />}> ... </Route>

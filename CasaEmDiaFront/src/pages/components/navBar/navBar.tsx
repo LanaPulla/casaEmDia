@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './navBarProf.scss';
+import './navBarProf.css';
 import { useNavigate } from 'react-router-dom';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';

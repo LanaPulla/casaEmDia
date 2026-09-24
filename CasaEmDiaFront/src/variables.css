@@ -1,0 +1,43 @@
+:root {
+  --text: #6b6375;
+
+  --cinza: #888888;
+
+  --cinza-claro: #cecbcb;
+
+  --preto: #08060d;
+
+  --branco: #fff;
+
+  --shadow:
+    rgba(0, 0, 0, 0.1) 0 10px 15px -3px,
+    rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+
+  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+
+  --mono: ui-monospace, Consolas, monospace;
+
+  --azul-clarissimo: #e9f3fc;
+
+  --azul-claro: #88caed;
+
+  --azul-medio-1: #6b8ab9;
+
+  --azul-medio-2: #709ccb;
+
+  --azul-select: #2474a4;
+
+  --azul-escuro: #092033;
+
+  --verde-claro: #aadf87;
+
+  --verde-escurinho: #23b861;
+
+  --verde-oliva: #2ca134;
+
+  --azul-claro-nav-bar: #e6f1fc;
+
+  --azul-clarissimo-nav-bar: #f6f7f8;
+}

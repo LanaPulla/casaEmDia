@@ -2,7 +2,7 @@ import { useState } from 'react';
 import "./login.css";
 // import { api } from '../../services/api'; // Importando o serviço
 
-export function Login() {
+export function Menu() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
