@@ -140,7 +140,7 @@ O `.jar` executável será gerado em `backend/target/`.
 ## Estrutura do Projeto
  
 ```
-sistema-gerenciamento-familiar/
+casaEmDia/
 ├── backend/                  # API REST em Spring Boot
 │   ├── src/
 │   │   ├── main/
@@ -190,13 +190,13 @@ O sistema segue uma arquitetura **cliente-servidor** desacoplada:
  
 ## Funcionalidades
  
-- [x] Cadastro e login de usuários
-- [x] Criação e gerenciamento de famílias
-- [x] Controle de receitas e despesas
-- [x] Histórico financeiro
-- [x] Cadastro e gerenciamento de tarefas domésticas (com status: Pendente / Em andamento / Concluída)
-- [x] Lista de compras com marcação de itens
-- [x] Agenda de compromissos familiares
+- [] Cadastro e login de usuários
+- [] Criação e gerenciamento de famílias
+- [] Controle de receitas e despesas
+- [] Histórico financeiro
+- [] Cadastro e gerenciamento de tarefas domésticas (com status: Pendente / Em andamento / Concluída)
+- [] Lista de compras com marcação de itens
+- [] Agenda de compromissos familiares
 ---
  
 ## Equipe
