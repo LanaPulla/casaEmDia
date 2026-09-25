@@ -4,6 +4,7 @@
  
 O **Sistema Casa Em Dia** tem como objetivo auxiliar famílias na organização das atividades do dia a dia por meio de uma plataforma integrada. O sistema permite o gerenciamento de finanças domésticas, tarefas, listas de compras e compromissos importantes, facilitando a comunicação e a divisão de responsabilidades entre os membros da família.
 
+### [Jira](https://lanarpulla.atlassian.net/jira/software/projects/KAN/boards/1/backlog?atlOrigin=eyJpIjoiMzE3MDk3ZDBlZjY5NDJlYjljMmJiZmNhNDkxZDRhZDUiLCJwIjoiaiJ9)
 ---
  
 ## Tecnologias
