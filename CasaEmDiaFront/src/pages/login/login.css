@@ -6,7 +6,7 @@
   overflow: hidden;
   opacity: 0.9;
 
-  background-image: url("/login/fundo-tela-login.png");
+  background-color: var(--backgroundSistema);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

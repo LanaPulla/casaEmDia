@@ -1,0 +1,97 @@
+.header-container {
+    width: 100%;
+    border-bottom: 1px solid var(--cinza-claro);
+    box-shadow: var(--shadow);
+    background-color: var(--branco);
+
+    /* Garante que o Header fique acima de qualquer menu lateral flutuante */
+    position: relative;
+    z-index: 1010;
+}
+
+.icone-casa {
+    width: 40px;
+    height: 40px;
+    background-color: var(--verde-escurinho);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--branco);
+}
+
+.titulo-header {
+    color: var(--verde-escurinho);
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+
+.header-nav .nav-link {
+    color: var(--text);
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    padding-bottom: 0.3rem;
+    transition: color 0.2s ease-in-out;
+}
+
+.header-nav .nav-link:hover {
+    color: var(--verde-escurinho);
+}
+
+/* Sublinhado verde para a rota ativa (como na imagem) */
+.header-nav .nav-link.ativo {
+    color: var(--verde-escurinho);
+    font-weight: 600;
+    border-bottom: 3px solid var(--verde-escurinho);
+}
+
+.header-actions .icone-acao {
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-actions .icone-acao:hover {
+    color: var(--verde-escurinho);
+}
+
+/* Bolinha laranja da notificação */
+.ponto-notificacao {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 8px;
+    height: 8px;
+    background-color: #f27420;
+    /* Cor laranja de destaque */
+    border-radius: 50%;
+}
+
+.avatar-usuario img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--verde-escurinho);
+}
+
+/* Botão Verde "+ Nova Tarefa" */
+.btn-nova-tarefa {
+    background-color: var(--verde-escurinho);
+    color: var(--branco);
+    border: none;
+    border-radius: 20px;
+    padding: 0.5rem 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-nova-tarefa:hover {
+    background-color: #155a30;
+    /* Um tom ligeiramente mais escuro do seu verde */
+}
