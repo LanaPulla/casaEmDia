@@ -1,57 +1,30 @@
-@import "../../../variables.css";
-
-.img-nav-bar-escondida {
-  width: 4rem;
-  height: 4rem;
-  background-color: var(--azul-clarissimo-nav-bar);
-  background-size: cover;
-}
-
-.img-nav-bar-escondida img {
-  width: 3rem;
-  height: 3rem;
-}
-
 .nav-bar-prof {
-  background-color: var(--azul-claro-nav-bar);
+  background-color: var(--navBarSistema);
   justify-content: left;
   align-items: left;
   width: 12.7rem;
-  height: 100vh;
+  height: 100%;
   transition: 0.3s;
-  box-shadow: 0 8px 24px var(--text);
-}
+  box-shadow: 4px 0 16px rgba(0, 0, 0, 0.15);
 
-.logo-nav-bar {
-  width: 12.7rem;
-  height: 4rem;
-  overflow: hidden;
-  background-color: var(--azul-clarissimo-nav-bar);
-  background-size: cover;
-  transition: 0.3s;
-}
-
-.logo-nav-bar img {
-  width: 3rem;
-  height: 3rem;
-}
-
-.logo-nav-bar p {
-  font-weight: bold;
-  font-size: 1.25rem;
-}
-
-.nav-bar-rotas p {
-  font-weight: 400;
-  font-size: 1.2rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
 }
 
 .nav-bar-prof-escondida {
-  background-color: var(--azul-claro-nav-bar);
+  background-color: var(--navBarSistema);
   width: 4rem;
-  height: 100vh;
+  height: 100%;
   transition: 0.3s;
-  box-shadow: 0 8px 24px var(--text);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+
+  /* Posição absoluta mantida */
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
 }
 
 .nav-bar-prof-escondida .menu-item {
@@ -70,6 +43,22 @@
 }
 
 .menu-item:hover {
-  background-color: rgba(136, 202, 237, 0.7);
+  background-color: var(--verde-escurinho);
   -webkit-backdrop-filter: blur(8px);
+  color: white;
+}
+
+.icone-casa {
+  width: 40px;
+  height: 40px;
+  background-color: var(--verde-escurinho);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.titulo {
+  color: var(--verde-escurinho);
 }
