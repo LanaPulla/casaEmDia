@@ -1,18 +1,14 @@
 import { useState } from 'react';
-import './navBarProf.css';
+import './navBar.css';
 import { useNavigate } from 'react-router-dom';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
-import Groups2OutlinedIcon from '@mui/icons-material/Groups2Outlined';
-import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
-import DatasetOutlinedIcon from '@mui/icons-material/DatasetOutlined';
-import ChromeReaderModeOutlinedIcon from '@mui/icons-material/ChromeReaderModeOutlined';
 import CalendarViewDayOutlinedIcon from '@mui/icons-material/CalendarViewDayOutlined';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
+import LogoutIcon from '@mui/icons-material/Logout';
 
-export function NavBarProf() {
-
-    const [navBarEscondida, setNavBarEscondida] = useState(false);
-
+export function NavBar() {
+    const [navBarEscondida, setNavBarEscondida] = useState(true);
     const navigate = useNavigate();
 
     function abreFechaNavbar() {
@@ -20,89 +16,58 @@ export function NavBarProf() {
     }
 
     return (
-
         <>
             {navBarEscondida ? (
-                <div className='nav-bar-prof-escondida d-flex flex-column align-items-center pb-4'>
-                    
-                    <div className='img-nav-bar-escondida d-flex justify-content-center align-items-center mb-4'>
-                       {/* <img src='/login/logo-removebg-sem-nome.PNG' alt='EduConnect' />                    */}
-                    </div>
-
-                    <div className='d-flex flex-column justify-content-center align-items-center gap-3 w-100'> 
-                        <div onClick={() => navigate('prof/painel')} className='d-flex justify-content-center menu-item align-items-center'> 
-                            <DatasetOutlinedIcon />
-                        </div>
-                        <div onClick={() => navigate('/prof/turmas')} className='d-flex justify-content-center menu-item align-items-center'> 
-                            <Groups2OutlinedIcon />
-                        </div>
-                        <div onClick={() => navigate('/prof')} className='d-flex justify-content-center menu-item align-items-center'> 
-                            <ArticleOutlinedIcon />
-                        </div>
-                        <div onClick={() => navigate('/prof')} className='d-flex justify-content-center menu-item align-items-center'>
-                            <CalendarMonthIcon />
-                        </div>
-                        <div onClick={() => navigate('/prof')} className='d-flex justify-content-center menu-item align-items-center'>
-                            <ChromeReaderModeOutlinedIcon />
-                        </div>
-                        <div onClick={() => navigate('/prof')} className='d-flex justify-content-center menu-item align-items-center'>
+                <div className='nav-bar-prof-escondida d-flex flex-column align-items-center py-3 px-2'>
+                    <div className='d-flex flex-column justify-content-center align-items-center gap-3 w-100'>
+                        <div onClick={() => navigate('/home')} className='d-flex justify-content-center menu-item align-items-center'>
                             <FamilyRestroomIcon />
                         </div>
+                        <div onClick={() => navigate('/painel-tarefas')} className='d-flex justify-content-center menu-item align-items-center'> 
+                            <FactCheckIcon />
+                        </div>
+                        <div onClick={() => navigate('/painel-agenda')} className='d-flex justify-content-center menu-item align-items-center'> 
+                            <CalendarMonthIcon />
+                        </div>
                     </div>
 
-                    <div className='d-flex flex-wrap align-items-center justify-content-center mt-auto w-100'>
-                        
-                        <div className='gap-3 d-flex align-items-center justify-content-center menu-item ' onClick={abreFechaNavbar}>
-                        <CalendarViewDayOutlinedIcon />
+                    <div className='d-flex flex-column align-items-center justify-content-center mt-auto w-100 gap-2'>
+                        <div className='d-flex justify-content-center menu-item align-items-center btn-sair-icon' onClick={() => navigate('/login')}>
+                            <LogoutIcon />
                         </div>
-                        
+                        <div className='d-flex justify-content-center menu-item align-items-center' onClick={abreFechaNavbar}>
+                            <CalendarViewDayOutlinedIcon />
+                        </div>
                     </div>
-                    
                 </div>
             ) : (
-                <div className='nav-bar-prof d-flex flex-column pb-4'>
-                    <div className='logo-nav-bar d-flex flex-wrap justify-content-center align-items-center gap-2'>
-                        {/* <img src='/login/logo-removebg-sem-nome.PNG' alt='EduConnect' /> */}
-                        <p className='m-0'>EduConnect</p>
-                    </div>
-
-                    <div className='nav-bar-rotas m-3 gap-3 d-flex flex-column'>
-                        <div onClick={() => navigate('/prof/painel')} className='gap-1 d-flex flex-wrap align-items-center menu-item'>
-                            <DatasetOutlinedIcon />
-                            <p className='m-0'>Painel</p>
-                        </div>
-                        <div className='gap-1 d-flex flex-wrap align-items-center menu-item'>
-                            <Groups2OutlinedIcon />
-                            <p className='m-0' onClick={() => navigate('/prof')}>Turmas</p>
-                        </div>
-                        <div className='gap-1 d-flex flex-wrap align-items-center menu-item'>
-                            <ArticleOutlinedIcon />
-                            <p className='m-0' onClick={() => navigate('/prof')}>Avisos</p>
-                        </div>
-                        <div className='gap-1 d-flex flex-wrap align-items-center menu-item'>
-                            <CalendarMonthIcon />
-                            <p className='m-0' onClick={() => navigate('/prof')}>Calendário</p>
-                        </div>
-                        <div className='gap-1 d-flex flex-wrap align-items-center menu-item '>
-                            <ChromeReaderModeOutlinedIcon />
-                            <p className='m-0' onClick={() => navigate('/prof')}>Notas</p>
-                        </div>
-                        <div className='gap-1 d-flex flex-wrap align-items-center menu-item'>
+                <div className='nav-bar-prof d-flex flex-column py-3 px-3'>
+                    <div className='gap-3 d-flex flex-column w-100'>
+                        <div className='gap-2 d-flex align-items-center menu-item' onClick={() => navigate('/home')}>
                             <FamilyRestroomIcon />
-                            <p className='m-0' onClick={() => navigate('/prof')}>Mensagens</p>
+                            <p className='m-0'>Home</p>
+                        </div>
+                        <div className='gap-2 d-flex align-items-center menu-item' onClick={() => navigate('/painel-tarefas')}>
+                            <FactCheckIcon />
+                            <p className='m-0'>Tarefas</p>
+                        </div>
+                        <div className='gap-2 d-flex align-items-center menu-item' onClick={() => navigate('/painel-agenda')}>
+                            <CalendarMonthIcon />
+                            <p className='m-0'>Agenda</p>
                         </div>
                     </div>
 
-                    <div className='ml-3 mr-3 gap-1 d-flex flex-wrap align-items-center mt-auto'>
-
-                        <div className='menu-item d-flex gap-1 flex-wrap' onClick={abreFechaNavbar}>
+                    <div className='gap-2 flex-column d-flex mt-auto w-100'>
+                        <div className='gap-2 d-flex align-items-center menu-item btn-sair-texto' onClick={() => navigate('/login')}>
+                            <LogoutIcon />
+                            <p className='m-0'>Sair</p>
+                        </div>
+                        <div className='gap-2 d-flex align-items-center menu-item' onClick={abreFechaNavbar}>
                             <CalendarViewDayOutlinedIcon />
                             <p className='m-0'>Fechar</p>
                         </div>
                     </div>
-                    
                 </div>
-
             )}
         </>
     );

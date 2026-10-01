@@ -1,4 +1,9 @@
 :root {
+
+  --backgroundSistema: #F1F3FF; 
+  --navBarSistema: #DDE2F3;
+  --verde-escurinho: #196c3c;
+
   --text: #6b6375;
 
   --cinza: #888888;
@@ -33,9 +38,7 @@
 
   --verde-claro: #aadf87;
 
-  --verde-escurinho: #23b861;
-
-  --verde-oliva: #2ca134;
+  --verde-escurinho: #239954;
 
   --azul-claro-nav-bar: #e6f1fc;
 
