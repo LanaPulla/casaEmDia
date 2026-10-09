@@ -1,32 +1,52 @@
--- 1. INSERIR AS PERMISSÕES (Baseado nos Casos de Uso do PDF)
-INSERT INTO permissoes (id, nome, descricao) VALUES
-(1, 'GERENCIAR_FAMILIA', 'Permite criar a família, adicionar e remover membros'),
-(2, 'CRIAR_TAREFA', 'Permite gerenciar e criar novas tarefas domésticas'),
-(3, 'ATUALIZAR_STATUS_TAREFA', 'Permite atualizar o andamento das atividades'),
-(6, 'CRIAR_COMPROMISSO', 'Permite cadastrar compromissos na agenda familiar'),
-(7, 'VER_AGENDA', 'Permite visualizar a agenda e compromissos'),
+-- 1. Inserir as permissoes. Os nomes sao unicos para permitir reexecutar este script.
+INSERT INTO permissoes (nome, descricao) VALUES
+('GERENCIAR_FAMILIA', 'Permite criar a familia, adicionar e remover membros'),
+('CRIAR_TAREFA', 'Permite gerenciar e criar novas tarefas domesticas'),
+('ATUALIZAR_STATUS_TAREFA', 'Permite atualizar o andamento das atividades'),
+('DELETAR_TAREFA', 'Permite remover tarefas domesticas'),
+('CRIAR_COMPROMISSO', 'Permite cadastrar compromissos na agenda familiar'),
+('VER_AGENDA', 'Permite visualizar a agenda e compromissos')
+ON CONFLICT (nome) DO NOTHING;
 
--- 2. INSERIR OS PERFIS (Roles)
-INSERT INTO perfis (id, nome) VALUES
-(1, 'DEV'),
-(2, 'ADMINISTRADOR_CASA'),
-(3, 'MEMBRO_CASA');
+-- 2. Inserir os perfis (roles).
+INSERT INTO perfis (nome) VALUES
+('DEV'),
+('ADMINISTRADOR_CASA'),
+('MEMBRO_CASA')
+ON CONFLICT (nome) DO NOTHING;
 
--- 3. ASSOCIAR PERMISSÕES AOS PERFIS (Tabela de ligação ManyToMany)
+-- 3. Associar permissoes aos perfis (tabela de ligacao ManyToMany).
 
--- PERFIL: DEV (ID 1) -> Tem acesso a absolutamente tudo (IDs 1 a 9)
-INSERT INTO perfil_permissoes (perfil_id, permissao_id) VALUES
-(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9);
+-- DEV tem acesso a todas as permissoes cadastradas neste script.
+INSERT INTO perfil_permissoes (perfil_id, permissao_id)
+SELECT perfil.id, permissao.id
+FROM perfis perfil
+CROSS JOIN permissoes permissao
+WHERE perfil.nome = 'DEV'
+ON CONFLICT DO NOTHING;
 
--- PERFIL: ADMINISTRADOR_CASA (ID 2) -> Faz a gestão completa da casa
-INSERT INTO perfil_permissoes (perfil_id, permissao_id) VALUES
-(2, 1), -- GERENCIAR_FAMILIA
-(2, 2), -- CRIAR_TAREFA
-(2, 3), -- ATUALIZAR_STATUS_TAREFA
-(2, 6), -- CRIAR_COMPROMISSO
-(2, 7), -- VER_AGENDA
+-- ADMINISTRADOR_CASA faz a gestao completa da casa.
+INSERT INTO perfil_permissoes (perfil_id, permissao_id)
+SELECT perfil.id, permissao.id
+FROM perfis perfil
+JOIN permissoes permissao ON permissao.nome IN (
+    'GERENCIAR_FAMILIA',
+    'CRIAR_TAREFA',
+    'ATUALIZAR_STATUS_TAREFA',
+    'DELETAR_TAREFA',
+    'CRIAR_COMPROMISSO',
+    'VER_AGENDA'
+)
+WHERE perfil.nome = 'ADMINISTRADOR_CASA'
+ON CONFLICT DO NOTHING;
 
--- PERFIL: MEMBRO_CASA (ID 3) -> Foco em atualizar tarefas, ver agenda e marcar compras
-INSERT INTO perfil_permissoes (perfil_id, permissao_id) VALUES
-(3, 3), -- ATUALIZAR_STATUS_TAREFA (Apenas atualiza, não cria tarefa)
-(3, 2), -- CRIAR_TAREFA
+-- MEMBRO_CASA pode criar tarefas e atualizar o andamento delas.
+INSERT INTO perfil_permissoes (perfil_id, permissao_id)
+SELECT perfil.id, permissao.id
+FROM perfis perfil
+JOIN permissoes permissao ON permissao.nome IN (
+    'ATUALIZAR_STATUS_TAREFA',
+    'CRIAR_TAREFA'
+)
+WHERE perfil.nome = 'MEMBRO_CASA'
+ON CONFLICT DO NOTHING;
