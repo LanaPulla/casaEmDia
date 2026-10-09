@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,22 +20,23 @@ public class TarefaController {
     public final TarefaService tarefaService;
 
     @GetMapping
-    public ResponseEntity<List<Tarefa>> listarTodas(){
-        return  ResponseEntity.ok(tarefaService.listarTodas());
+    public ResponseEntity<List<Tarefa>> listarTodas() {
+        return ResponseEntity.ok(tarefaService.listarTodas());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Tarefa> buscarPorId(@PathVariable Long id){
+    public ResponseEntity<Tarefa> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(tarefaService.buscarPorId(id));
     }
 
     @PutMapping
-    public ResponseEntity<Tarefa> atualizar(@PathVariable Long id, @Valid @RequestBody Tarefa tarefa){
+    public ResponseEntity<Tarefa> atualizar(@PathVariable Long id, @Valid @RequestBody Tarefa tarefa) {
         return ResponseEntity.ok(tarefaService.atualizar(id, tarefa));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Tarefa> deletar(@PathVariable Long id){
+    @PreAuthorize("hasAuthority('DELETAR_TAREFA')")
+    public ResponseEntity<Tarefa> deletar(@PathVariable Long id) {
         tarefaService.deletar(id);
         return ResponseEntity.noContent().build();
     }

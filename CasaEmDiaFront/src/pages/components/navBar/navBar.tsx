@@ -23,10 +23,10 @@ export function NavBar() {
                         <div onClick={() => navigate('/home')} className='d-flex justify-content-center menu-item align-items-center'>
                             <FamilyRestroomIcon />
                         </div>
-                        <div onClick={() => navigate('/painel-tarefas')} className='d-flex justify-content-center menu-item align-items-center'> 
+                        <div onClick={() => navigate('/tarefas')} className='d-flex justify-content-center menu-item align-items-center'> 
                             <FactCheckIcon />
                         </div>
-                        <div onClick={() => navigate('/painel-agenda')} className='d-flex justify-content-center menu-item align-items-center'> 
+                        <div onClick={() => navigate('/agenda')} className='d-flex justify-content-center menu-item align-items-center'> 
                             <CalendarMonthIcon />
                         </div>
                     </div>
