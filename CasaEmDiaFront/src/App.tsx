@@ -10,18 +10,11 @@ function App() {
       <Routes>
         {/* Rota Pública */}
         <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/menu" element={<Login />} />
-        <Route path="/tarefas" element={<Tarefas />} />
-        {/* Futuramente, você fará o mesmo para os outros perfis:
-          <Route path="/admin" element={<AdminLayout />}> ... </Route>
-          <Route path="/responsavel" element={<ResponsavelLayout />}> ... </Route>
-        */}
-        
+        <Route path="/login" element={<Login />} />        
         {/* Rotas Privadas (Com o Header/Layout) */}
         <Route element={<LayoutNavHeader />}>
           <Route path="/home" element={<Home />} />
-          <Route path="/painel-tarefas" element={<div>Página de Tarefas</div>} />
+          <Route path="/tarefas" element={<Tarefas />} />
           <Route path="/painel-agenda" element={<div>Página de Agenda</div>} />
         </Route>
 

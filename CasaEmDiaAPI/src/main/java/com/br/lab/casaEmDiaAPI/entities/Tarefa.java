@@ -31,16 +31,16 @@ public class Tarefa {
 
     @NotBlank
     @Column(nullable = false, length = 100)
-    private String responsavel;
+    private Long  responsavel;
 
     @Enumerated(EnumType.STRING)
-    private Prioridade prioridade;
+    private PrioridadeEnum prioridade;
 
     @Enumerated(EnumType.STRING)
-    private Recorrencia recorrencia;
+    private RecorrenciaEnum recorrencia;
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private StatusEnum status;
 
     @Column(length = 500)
     private String observacao;

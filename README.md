@@ -23,7 +23,7 @@ Antes de começar, certifique-se de ter instalado:
  
 - **JDK 17** — descompactado em `C:\` e configurado como variável de ambiente:
 ```
-  JAVA_HOME = C:\Program Files\Java\jdk-17
+  JAVA_HOME = C:\Program Files\java\jdk-17
 ```
   Adicione também ao `PATH`:
 ```

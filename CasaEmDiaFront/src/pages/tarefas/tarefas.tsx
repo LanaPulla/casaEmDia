@@ -4,6 +4,7 @@ import { useState } from "react";
 import CardTarefa from "../components/tarefas/cardTarefas";
 import CalendarioTarefa from "../components/tarefas/calendario";
 import CardResumo from "../components/tarefas/cardResumos";
+// import { NovaTarefaButton } from "../components/tarefas/novaTarefaButton";
 
 export default function Tarefas() {
     const [dataSelecionada, setDataSelecionada] = useState(new Date());
@@ -20,6 +21,10 @@ export default function Tarefas() {
         setDataSelecionada(novaData);
     }
 
+    function abrirModal() {
+
+    }
+
     return (
         <main>
             <div className="d-grid" style={{ gridTemplateColumns: "14rem 1fr", minHeight: "100vh" }}>
@@ -34,6 +39,8 @@ export default function Tarefas() {
                             <h1>Tarefas</h1>
                             <h2>Gerencie as tarefas da familia!</h2>
                         </div>
+
+                        {/* <NovaTarefaButton onClick={abrirModal}> + Nova Tarefa</NovaTarefaButton> */}
 
                         <div
                             className="d-flex flex-column gap-4 align-items-center p-4 rounded-4"

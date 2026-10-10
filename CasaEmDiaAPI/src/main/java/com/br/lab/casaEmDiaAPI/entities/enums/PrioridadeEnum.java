@@ -1,5 +1,5 @@
 package com.br.lab.casaEmDiaAPI.entities.enums;
 
-public enum Prioridade {
+public enum PrioridadeEnum {
     BAIXA, MEDIA, ALTA
 }
