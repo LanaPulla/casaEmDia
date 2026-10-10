@@ -3,66 +3,175 @@
 .background {
   width: 100%;
   min-height: 100vh;
-  overflow: hidden;
-  opacity: 0.9;
-
   background-color: var(--backgroundSistema);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 2rem;
+  font-family: var(--sans);
 }
 
-.background label {
-  color: var(--preto);
-}
-
-.background button {
-  background: linear-gradient(to right,
-      var(--azul-select),
-      var(--verde-escurinho));
-
-  color: var(--branco);
-  border: none;
-  border-radius: 7px;
-  padding: 0.4rem;
-}
-
-.background input {
-  border-radius: 7px;
-  border: var(--cinza-claro) 1px solid;
+.login-container {
+  display: flex;
   background-color: var(--branco);
+  width: 100%;
+  max-width: 950px;
+  min-height: 600px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
 }
 
-.area-responsavel,
-.area-professor {
-  background-color: rgba(255, 255, 255, 0.7);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 7px;
-  transform: scale(1.1);
-  min-width: 24rem;
-  max-width: 24rem;
+.login-left {
+  flex: 1;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
 }
 
-.area-responsavel h4 {
-  color: var(--azul-escuro);
-  min-width: 15rem;
+.main-title {
+  color: var(--verde-escurinho);
 }
 
-.logo h4 {
-  color: var(--verde-oliva);
-  font-weight: 400;
-  min-width: 16rem;
+.titulo-casaEmDia {
+  color: var(--verde-escurinho);
+  font-weight: 700;
+  font-size: 1.3rem;
+  align-self: flex-start;
+  margin-bottom: auto;
 }
 
-.logo h1 {
-  color: var(--azul-escuro);
+.login-left .main-title {
+  align-self: flex-start;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--preto);
+  margin-bottom: auto;
+}
+
+.icon-wrapper {
+  display: flex;
+  padding: 30px;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: auto;
+  background-color: var(--verde-escurinho);
+  border-radius: 50%;
+  color: var(--branco);
+}
+
+.icon-wrapper h3 {
+  margin-top: 1rem;
   font-weight: bold;
 }
 
-.area-professor h4 {
-  color: var(--azul-escuro);
+.divider {
+  width: 1px;
+  background-color: var(--cinza-claro);
+  margin: 3rem 0;
+}
+
+/* Coluna da Direita */
+.login-right {
+  flex: 1;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.step-indicator {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--preto);
+  margin-bottom: 0.5rem;
+}
+
+.login-right h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--preto);
+  margin: 0 0 0.5rem 0;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  color: var(--preto);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.input-group label {
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: var(--preto);
+}
+
+.input-group input {
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--cinza-claro);
+  background-color: var(--azul-clarissimo-nav-bar);
+  outline: none;
+  font-size: 1rem;
+  width: 100%;
+}
+
+.input-group input:focus {
+  border-color: var(--verde-escurinho);
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-icon input {
+  padding-left: 2.5rem;
+}
+
+.input-with-icon .icon {
+  position: absolute;
+  left: 0.8rem;
+  color: var(--cinza);
+}
+
+.btn-proximo {
+  background-color: var(--verde-escurinho);
+  color: var(--branco);
+  border: none;
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.btn-proximo:hover {
+  opacity: 0.9;
+}
+
+.link-entrar {
+  color: var(--preto);
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.link-entrar:hover {
+  text-decoration: underline;
 }
