@@ -1,24 +1,23 @@
 package com.br.lab.casaEmDiaAPI.entities;
 
 import com.br.lab.casaEmDiaAPI.entities.enums.PrioridadeEnum;
-import com.br.lab.casaEmDiaAPI.entities.enums.RecorrenciaEnum;
-import com.br.lab.casaEmDiaAPI.entities.enums.StatusEnum;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.Getter;
 import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDate;
-import java.util.UUID;
-
 
 @Entity
 @Table(name = "tb_tarefa")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Builder
 public class Tarefa {
 
@@ -44,5 +43,9 @@ public class Tarefa {
     private String observacao;
 
     private LocalDate dataTarefa;
+
+
+
+
 
 }
