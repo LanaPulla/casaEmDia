@@ -16,7 +16,7 @@
 //     ALTA = 'Alta'
 // }
 
-export type Recorrencia = 'Diária' | 'Semanal' | 'Mensal';
+export type Recorrencia = 'Nenhuma' | 'Diária' | 'Semanal' | 'Mensal';
 export type Status = 'Concluída' | 'Em Andamento' | 'Pendente';
 export type Prioridade = 'Baixa' | 'Média' | 'Alta';
 
