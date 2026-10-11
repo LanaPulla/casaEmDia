@@ -1,5 +1,7 @@
 package com.br.lab.casaEmDiaAPI.service;
 
+import com.br.lab.casaEmDiaAPI.dto.TarefaRequest;
+import com.br.lab.casaEmDiaAPI.dto.TarefaResponse;
 import com.br.lab.casaEmDiaAPI.entities.Tarefa;
 
 import java.util.List;
@@ -13,4 +15,6 @@ public interface TarefaService {
     Tarefa atualizar(Long id, Tarefa tarefaAtualizar);
 
     void deletar(Long id);
+
+    List<TarefaResponse> criarTarefa(TarefaRequest request);
 }

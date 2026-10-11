@@ -1,5 +1,7 @@
 package com.br.lab.casaEmDiaAPI.controller;
-
+import org.springframework.http.HttpStatus;
+import com.br.lab.casaEmDiaAPI.dto.TarefaRequest;
+import com.br.lab.casaEmDiaAPI.dto.TarefaResponse;
 import com.br.lab.casaEmDiaAPI.entities.Tarefa;
 import com.br.lab.casaEmDiaAPI.service.TarefaService;
 import jakarta.validation.Valid;
@@ -38,4 +40,21 @@ public class TarefaController {
         tarefaService.deletar(id);
         return ResponseEntity.noContent().build();
     }
+
+    // @PostMapping
+    // public ResponseEntity<Tarefa> cadastrarTarefa(@RequestBody Tarefa tarefa) {
+    //     return ResponseEntity.ok(tarefaService.criarTarefa(tarefa));
+    // }
+
+
+    @PostMapping
+    public ResponseEntity<List<TarefaResponse>> cadastrarTarefa(
+            @Valid @RequestBody TarefaRequest request) {
+
+        List<TarefaResponse> tarefasCriadas =
+                tarefaService.criarTarefa(request);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(tarefasCriadas);
+    }    
 }
