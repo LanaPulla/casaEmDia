@@ -49,9 +49,6 @@ public class UsuarioService {
         return UsuarioResponse.response(repository.save(usuario));
     }
 
-    @Transactional
-    public Usuario findUsuariosPorFamilia()
-
     private String normalizar(String email) {
         return email.trim().toLowerCase();
     }
