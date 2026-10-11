@@ -24,32 +24,49 @@ public class TarefaServiceImpl implements TarefaService {
     private final TarefaRepository tarefaRepository;
     private final UsuarioRepository usuarioRepository;
 
-    @Override
-    public List<Tarefa> listarTodas() {
-        return tarefaRepository.findAll();
+        @Override
+    @Transactional(readOnly = true)
+    public List<TarefaResponse> listarTodas() {
+        return tarefaRepository.findAll().stream()
+                .map(TarefaResponse::de)
+                .toList();
     }
 
     @Override
-    public Tarefa buscarPorId(Long id) {
-        return tarefaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
+    @Transactional(readOnly = true)
+    public TarefaResponse buscarPorId(Long id) {
+        return TarefaResponse.de(buscarEntidade(id));
     }
 
     @Override
-    public Tarefa atualizar(Long id, Tarefa tarefaAtualizar) {
-        Tarefa tarefa = buscarPorId(id);
-        tarefa.setTitulo(tarefaAtualizar.getTitulo());
-        tarefa.setResponsavel(tarefaAtualizar.getResponsavel());
-        tarefa.setPrioridade(tarefaAtualizar.getPrioridade());
-        tarefa.setRecorrencia(tarefaAtualizar.getRecorrencia());
-        tarefa.setStatus(tarefaAtualizar.getStatus());
-        tarefa.setObservacao(tarefaAtualizar.getObservacao());
-        tarefa.setDataTarefa(tarefaAtualizar.getDataTarefa());
-        return tarefaRepository.save(tarefa);
+    @Transactional
+    public TarefaResponse atualizar(Long id, TarefaRequest req) {
+        Tarefa tarefa = buscarEntidade(id);
+        Usuario responsavel = buscarResponsavel(req.responsavelId());
+
+        tarefa.setTitulo(req.titulo());
+        tarefa.setResponsavel(responsavel);
+        tarefa.setPrioridade(req.prioridade());
+        tarefa.setRecorrencia(req.recorrencia() != null
+                ? req.recorrencia()
+                : RecorrenciaEnum.NENHUMA);
+        if (req.status() != null) {
+            tarefa.setStatus(req.status());
+        }
+        tarefa.setObservacao(req.observacao());
+        if (req.dataTarefa() != null) {
+            tarefa.setDataTarefa(req.dataTarefa());
+        }
+
+        return TarefaResponse.de(tarefaRepository.save(tarefa));
     }
 
     @Override
+    @Transactional
     public void deletar(Long id) {
+        if (!tarefaRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarefa não encontrada");
+        }
         tarefaRepository.deleteById(id);
     }
 
@@ -81,4 +98,16 @@ public class TarefaServiceImpl implements TarefaService {
                 .map(TarefaResponse::de)
                 .toList();
     }   
+
+    private Tarefa buscarEntidade(Long id) {
+        return tarefaRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Tarefa não encontrada"));
+    }
+
+    private Usuario buscarResponsavel(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "Responsável não encontrado"));
+    }
 }
