@@ -1,0 +1,131 @@
+.calendario {
+  background-color: var(--branco);
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+  padding: 1.25rem;
+  width: 25rem;
+  max-width: 100%;
+  font-size: 1rem;
+}
+
+
+.cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  color: var(--verde-escurinho);
+}
+
+.botaoNav {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background-color: var(--azul-clarissimo-nav-bar);
+  color: var(--verde-escurinho);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.botaoNav:hover {
+  background-color: var(--azul-claro-nav-bar);
+}
+
+.botaoNav:active {
+  transform: scale(0.92);
+}
+
+
+.semana,
+.grade {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.semana {
+  margin-bottom: 0.5rem;
+}
+
+.diaSemana {
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6c757d;
+}
+
+
+.grade {
+  gap: 0.25rem;
+  justify-items: center;
+}
+
+.dia {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-radius: 50%;
+  background-color: transparent;
+  color: #343a40;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dia:hover {
+  background-color: var(--azul-claro-nav-bar);
+}
+
+
+.hoje {
+  box-shadow: inset 0 0 0 2px var(--verde-escurinho);
+  color: var(--verde-escurinho);
+  font-weight: 700;
+}
+
+.selecionado,
+.selecionado:hover {
+  background-color: var(--verde-escurinho);
+  color: var(--branco);
+  font-weight: 700;
+}
+
+.selecionado:hover {
+  filter: brightness(0.92);
+}
+
+
+.rodape {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--azul-claro-nav-bar);
+}
+
+.botaoHoje {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.4rem 1.25rem;
+  background-color: var(--azul-claro-nav-bar);
+  color: var(--verde-escurinho);
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+
+.botaoHoje:hover {
+  filter: brightness(0.96);
+}

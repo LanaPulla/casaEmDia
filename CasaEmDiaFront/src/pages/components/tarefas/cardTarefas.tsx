@@ -1,8 +1,18 @@
-"use client"
+"use client";
+import { useState } from "react";
+
+import "./cardTarefas.css";
 import { TAREFAS_MOCK } from "../../../data/tarefasMock";
+import type { TarefaProps } from "../../../types/tarefas";
+
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import { DeleteOutlined, PersonOutlined } from "@mui/icons-material";
+import RepeatIcon from "@mui/icons-material/Repeat";
 
 interface CardTarefaProps {
-  dataSelecionada: Date;
+    dataSelecionada: Date;
+    onDetalhes?: (tarefa: TarefaProps) => void;
+    onExcluir?: (tarefa: TarefaProps) => void;
 }
 
 function formatarData(data: Date) {
@@ -12,75 +22,101 @@ function formatarData(data: Date) {
     return `${ano}-${mes}-${dia}`;
 }
 
-const corBorda = {
+const corPrioridade: Record<string, string> = {
     Alta: "#dc3545",
-    Média: "#ffc107",
-    Baixa: "#198754",
+    Média: "#e0a800",
+    Baixa: "#239954",
 };
 
-export default function CardTarefa({ dataSelecionada }: CardTarefaProps) {
+export default function CardTarefa({
+    dataSelecionada,
+    onDetalhes,
+    onExcluir,
+}: CardTarefaProps) {
+    const [concluidas, setConcluidas] = useState<number[]>(() =>
+        TAREFAS_MOCK.filter((t) => t.status === "Concluída").map((t) => t.id)
+    );
+
+    function alternarConclusao(id: number) {
+        setConcluidas((lista) =>
+            lista.includes(id) ? lista.filter((x) => x !== id) : [...lista, id]
+        );
+    }
+
     const dataFiltro = formatarData(dataSelecionada);
+    // resto igual
 
-    const tarefaDoDia = TAREFAS_MOCK.filter((tarefa) =>
-        tarefa.data == dataFiltro
-    )
+    const tarefasDoDia = TAREFAS_MOCK.filter(
+        (tarefa) => tarefa.data === dataFiltro
+    );
 
-    if (tarefaDoDia.length == 0) {
-        return (
-            <div>
-                <h2 className="fs-4 fw-bold">Nenhuma tarefa para esse dia!</h2>
-            </div>
-        )
+    if (tarefasDoDia.length === 0) {
+        return <p className="tarefa-vazio">Nenhuma tarefa para esse dia!</p>;
     }
 
     return (
-        <ul className="list-unstyled d-flex flex-column gap-4 w-100 align-items-center">
-            {tarefaDoDia.map((tarefa) => {
-                const corPrioridade =
-                    corBorda[tarefa.prioridade as keyof typeof corBorda];
+        <ul className="tarefa-lista">
+            {tarefasDoDia.map((tarefa) => {
+                const cor = corPrioridade[tarefa.prioridade];
+                const concluida = concluidas.includes(tarefa.id);
 
                 return (
-                    <li key={tarefa.id} className="col w-100" style={{ maxWidth: "64rem" }}>
+                    <li key={tarefa.id}>
                         <article
-                            className="d-flex align-items-center justify-content-between rounded-4 px-5 py-3 shadow-sm task-card"
-                            style={{
-                                backgroundColor: "#faf9f6",
-                                borderLeft: corPrioridade
-                                    ? `8px solid ${corPrioridade}`
-                                    : undefined,
-                            }}
+                            className={`tarefa-card ${concluida ? "tarefa-card-concluida" : ""}`}
+                            style={cor ? ({ "--tarefa-cor": cor } as React.CSSProperties) : undefined}
                         >
-                            <div className="d-grid gap-4 w-100">
-                                <div className="d-flex justify-content-between">
-                                    <span className="fs-5 fw-bold">
-                                        {tarefa.titulo}
+                            <div className="tarefa-conteudo">
+                                <span className="tarefa-titulo">{tarefa.titulo}</span>
+
+                                <div className="tarefa-info">
+                                    <span className="tarefa-selo">{tarefa.prioridade}</span>
+
+                                    <span className="tarefa-info-item">
+                                        <PersonOutlined />
+                                        {tarefa.responsavel.nome}
                                     </span>
 
-                                    <div className="d-flex align-items-center gap-4">
-                                        <input
-                                            type="checkbox"
-                                            id={`tarefa-concluida-${tarefa.id}`}
-                                            value="concluida"
-                                            className="form-check-input"
-                                            style={{
-                                                width: "1.5rem",
-                                                height: "1.5rem",
-                                                accentColor: "#3F5B4B",
-                                            }}
-                                        />
-                                    </div>
+                                    <span className="tarefa-info-item">
+                                        <RepeatIcon />
+                                        {tarefa.recorrencia}
+                                    </span>
                                 </div>
 
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <div className="d-flex align-items-center gap-4">
-                                        <span>
-            
-                                        </span>
-                                        <span>
-                                           
-                                        </span>
-                                    </div>
-                                </div>
+                                {tarefa.observacao && (
+                                    <p className="tarefa-observacao">{tarefa.observacao}</p>
+                                )}
+                            </div>
+
+                            <div className="tarefa-acoes">
+                                <input
+                                    type="checkbox"
+                                    id={`tarefa-concluida-${tarefa.id}`}
+                                    className="tarefa-checkbox"
+                                    checked={concluida}
+                                    onChange={() => alternarConclusao(tarefa.id)}
+                                    aria-label={`Marcar "${tarefa.titulo}" como concluída`}
+                                />
+
+                                <button
+                                    type="button"
+                                    className="tarefa-botao"
+                                    onClick={() => onDetalhes?.(tarefa)}
+                                    aria-label={`Ver detalhes de "${tarefa.titulo}"`}
+                                    title="Detalhes / editar"
+                                >
+                                    <EditOutlinedIcon fontSize="small" />
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className="tarefa-botao tarefa-botao-excluir"
+                                    onClick={() => onExcluir?.(tarefa)}
+                                    aria-label={`Excluir "${tarefa.titulo}"`}
+                                    title="Excluir"
+                                >
+                                    <DeleteOutlined fontSize="small" />
+                                </button>
                             </div>
                         </article>
                     </li>

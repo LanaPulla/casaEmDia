@@ -7,3 +7,83 @@
     justify-content: center;
     z-index: 1050;
 }
+
+.tarefas-principal {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding:2rem;
+  background-color: var(--branco);
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+}
+
+.tarefas-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.tarefas-titulo {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.tarefas-subtitulo {
+  margin: 0.25rem 0 0;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #6c757d;
+}
+
+.tarefas-painel {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5rem;
+}
+
+.tarefas-dia-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.tarefas-dia-titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  text-align: center;
+  color: var(--verde-escurinho);
+}
+
+.tarefas-botao-dia {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background-color: var(--azul-clarissimo-nav-bar);
+  color: var(--verde-escurinho);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.tarefas-botao-dia:hover {
+  background-color: var(--azul-claro-nav-bar);
+}
+
+.tarefas-lista-area {
+  width: 100%;
+  max-width: 64rem;
+  margin: 0 auto;
+}

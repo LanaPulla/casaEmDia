@@ -56,7 +56,7 @@ export default function NovaTarefaButton({usuarios}: Props) {
     return (
         <div>
             <button 
-                className="btn btn-success botao-modal-tarefa" 
+                className="btn btn-lg btn-success" 
                 onClick={() => setModal(!modal)}>
                     + Nova Tarefa
                 

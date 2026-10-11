@@ -1,30 +1,32 @@
+"use client";
+
+import "./cardResumos.css"
+
+interface ItemResumo {
+  valor: number;
+  rotulo: string;
+}
+
+const itens: ItemResumo[] = [
+  { valor: 4, rotulo: "Tarefas de hoje" },
+  { valor: 2, rotulo: "Compromissos" },
+  { valor: 3, rotulo: "Concluídas" },
+  { valor: 1, rotulo: "Pendentes" },
+];
+
 export default function CardResumo() {
-    return (
-        <div className=" rounded-4 px-4 py-2 shadow-sm task-card"
-            style={{
-                backgroundColor: "rgb(250, 249, 246)",
-            }}>
-            <div className="container">
-            
-                <div className="row mb-3">
-                    <div className="col-6">
-                        <div className="card"><div className="card-body">Card 1</div></div>
-                    </div>
-                    <div className="col-6">
-                        <div className="card"><div className="card-body">Card 2</div></div>
-                    </div>
-                </div>
+  return (
+    <div className="resumo">
+      <h3 className="resumo-titulo">Resumo do dia</h3>
 
-                <div className="row">
-                    <div className="col-6">
-                        <div className="card"><div className="card-body">Card 3</div></div>
-                    </div>
-                    <div className="col-6">
-                        <div className="card"><div className="card-body">Card 4</div></div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    )
+      <div className="resumo-grade">
+        {itens.map((item) => (
+          <div key={item.rotulo} className="resumo-card">
+            <span className="resumo-valor">{item.valor}</span>
+            <span className="resumo-rotulo">{item.rotulo}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
