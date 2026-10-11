@@ -1,12 +1,24 @@
 package com.br.lab.casaEmDiaAPI.entities;
 
 import com.br.lab.casaEmDiaAPI.entities.enums.PrioridadeEnum;
+import com.br.lab.casaEmDiaAPI.entities.enums.RecorrenciaEnum;
+import com.br.lab.casaEmDiaAPI.entities.enums.StatusEnum;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.Getter;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDate;
@@ -16,8 +28,6 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
 @Builder
 public class Tarefa {
 
@@ -39,13 +49,12 @@ public class Tarefa {
     @Enumerated(EnumType.STRING)
     private StatusEnum status;
 
+    @Enumerated(EnumType.STRING)
+    private RecorrenciaEnum recorrencia;
+
     @Column(length = 500)
     private String observacao;
 
     private LocalDate dataTarefa;
-
-
-
-
 
 }

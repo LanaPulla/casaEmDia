@@ -1,5 +1,7 @@
 package com.br.lab.casaEmDiaAPI.entities.enums;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum PrioridadeEnum {
     BAIXA("Baixa"), MEDIA("Média"), ALTA("Alta");
 

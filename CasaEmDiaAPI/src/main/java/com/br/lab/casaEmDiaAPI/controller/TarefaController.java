@@ -41,12 +41,6 @@ public class TarefaController {
         return ResponseEntity.noContent().build();
     }
 
-    // @PostMapping
-    // public ResponseEntity<Tarefa> cadastrarTarefa(@RequestBody Tarefa tarefa) {
-    //     return ResponseEntity.ok(tarefaService.criarTarefa(tarefa));
-    // }
-
-
     @PostMapping
     public ResponseEntity<List<TarefaResponse>> cadastrarTarefa(
             @Valid @RequestBody TarefaRequest request) {

@@ -1,5 +1,12 @@
 package com.br.lab.casaEmDiaAPI.entities.enums;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.stream.IntStream;
+
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum RecorrenciaEnum {
     NENHUMA("Nenhuma", 1, ChronoUnit.DAYS),
     DIARIA("Diária", 30, ChronoUnit.DAYS),
