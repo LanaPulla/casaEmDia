@@ -4,10 +4,13 @@ import { useState } from "react";
 import CardTarefa from "../components/tarefas/cardTarefas";
 import CalendarioTarefa from "../components/tarefas/calendario";
 import CardResumo from "../components/tarefas/cardResumos";
+import { USUARIOS_MOCK } from "../../data/usuariosMock";
+import NovaTarefaButton from "../components/tarefas/novaTarefaButton";
 // import { NovaTarefaButton } from "../components/tarefas/novaTarefaButton";
 
 export default function Tarefas() {
     const [dataSelecionada, setDataSelecionada] = useState(new Date());
+    const [listaUsuarios, setListaUsuarios] = useState();
 
     function diaAnterior() {
         const novaData = new Date(dataSelecionada);
@@ -21,8 +24,8 @@ export default function Tarefas() {
         setDataSelecionada(novaData);
     }
 
-    function abrirModal() {
-
+    function getUsuarios() {
+        
     }
 
     return (
@@ -39,8 +42,9 @@ export default function Tarefas() {
                             <h1>Tarefas</h1>
                             <h2>Gerencie as tarefas da familia!</h2>
                         </div>
-
-                        {/* <NovaTarefaButton onClick={abrirModal}> + Nova Tarefa</NovaTarefaButton> */}
+                        <div className="d-flex justify-content-end px-4">
+                            <NovaTarefaButton usuarios={USUARIOS_MOCK}/>
+                        </div>
 
                         <div
                             className="d-flex flex-column gap-4 align-items-center p-4 rounded-4"

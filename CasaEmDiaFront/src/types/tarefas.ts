@@ -23,7 +23,7 @@ export type Prioridade = 'Baixa' | 'Média' | 'Alta';
 export interface TarefaProps {
     id: number;
     titulo: string;
-    responsavel: string;
+    responsavel: UsuarioProps;
     prioridade: Prioridade;
     recorrencia: Recorrencia;
     status: Status;
@@ -31,9 +31,9 @@ export interface TarefaProps {
     data: string;
 }
 
-export interface PerfilUsuario {
+export interface UsuarioProps {
     id: number;
     nome: string;
-    idade: number;
-    
+    email: string;
+    criado_em: string;
 }
