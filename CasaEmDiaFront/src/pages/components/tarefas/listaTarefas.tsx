@@ -1,7 +1,5 @@
-
-"use client";
-
 import { useCallback, useEffect, useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 
 import CardTarefa from "./cardTarefas";
 import EditarTarefaButton from "./editarTarefaButton";
@@ -20,13 +18,16 @@ import {
 interface ListaTarefasProps {
   dataSelecionada: Date;
   usuarios: UsuarioProps[];
+  tarefas: TarefaProps[];
+  setTarefas: Dispatch<SetStateAction<TarefaProps[]>>;
 }
 
 export default function ListaTarefas({
   dataSelecionada,
   usuarios,
+  tarefas,
+  setTarefas,
 }: ListaTarefasProps) {
-  const [tarefas, setTarefas] = useState<TarefaProps[]>([]);
   const [tarefaEditando, setTarefaEditando] =
     useState<TarefaProps | null>(null);
   const [carregando, setCarregando] = useState(true);
@@ -45,25 +46,39 @@ export default function ListaTarefas({
     } finally {
       setCarregando(false);
     }
-  }, []);
+  }, [setTarefas]);
 
   useEffect(() => {
     void carregarTarefas();
   }, [carregarTarefas]);
 
   async function salvarEdicao(tarefaAtualizada: TarefaProps) {
-    await atualizarTarefa(tarefaAtualizada);
+    const salva = await atualizarTarefa(tarefaAtualizada);
 
     setTarefas((lista) =>
-      lista.map((tarefa) =>
-        tarefa.id === tarefaAtualizada.id
-          ? tarefaAtualizada
-          : tarefa
-      )
+      lista.map((tarefa) => (tarefa.id === salva.id ? salva : tarefa))
     );
 
     setTarefaEditando(null);
     setErro("");
+  }
+
+  async function alternarConclusao(tarefa: TarefaProps) {
+    setErro("");
+
+    try {
+      const salva = await atualizarTarefa({
+        ...tarefa,
+        status: tarefa.status === "Concluída" ? "Pendente" : "Concluída",
+      });
+
+      setTarefas((lista) =>
+        lista.map((item) => (item.id === salva.id ? salva : item))
+      );
+    } catch (error) {
+      console.error(error);
+      setErro("Não foi possível atualizar o status.");
+    }
   }
 
   async function removerTarefa(tarefa: TarefaProps) {
@@ -108,6 +123,7 @@ export default function ListaTarefas({
         tarefas={tarefas}
         onDetalhes={(tarefa) => setTarefaEditando(tarefa)}
         onExcluir={removerTarefa}
+        onAlternarConclusao={alternarConclusao}
       />
 
       {tarefaEditando && (

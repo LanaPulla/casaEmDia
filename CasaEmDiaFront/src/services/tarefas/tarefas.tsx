@@ -2,26 +2,47 @@ import type { TarefaProps, Prioridade, Recorrencia, Status } from "../../types/t
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8080";
 
-// "Média" -> "MEDIA", "Em Andamento" -> "EM_ANDAMENTO"
-function paraEnum(valor: string): string {
-  return valor
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim()
-    .toUpperCase()
-    .replace(/\s+/g, "_");
-}
-
-// "MEDIA" -> "Média" (procura entre os rótulos do front)
-function paraRotulo<T extends string>(valor: unknown, opcoes: readonly T[], padrao: T): T {
-  if (typeof valor !== "string") return padrao;
-  const v = paraEnum(valor);
-  return opcoes.find((o) => paraEnum(o) === v) ?? padrao;
-}
-
 const PRIORIDADES: Prioridade[] = ["Baixa", "Média", "Alta"];
 const RECORRENCIAS: Recorrencia[] = ["Nenhuma", "Diária", "Semanal", "Mensal"];
 const STATUS: Status[] = ["Concluída", "Em Andamento", "Pendente"];
+
+// Como cada enum do back espera receber o valor (todos confirmados pelo log).
+// Prioridade e Recorrência: rótulo com acento.
+// Status: MAIÚSCULO_COM_UNDERSCORE.
+const PRIORIDADE_API: Record<Prioridade, string> = {
+  Baixa: "Baixa",
+  Média: "Média",
+  Alta: "Alta",
+};
+
+const RECORRENCIA_API: Record<Recorrencia, string> = {
+  Nenhuma: "Nenhuma",
+  Diária: "Diária",
+  Semanal: "Semanal",
+  Mensal: "Mensal",
+};
+
+const STATUS_API: Record<Status, string> = {
+  Concluída: "CONCLUIDA",
+  "Em Andamento": "EM_ANDAMENTO",
+  Pendente: "PENDENTE",
+};
+
+// Remove acentos, espaços e underscores e põe em maiúsculas, só para comparar.
+function chave(valor: string): string {
+  return valor
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[\s_]+/g, "")
+    .toUpperCase();
+}
+
+// Aceita qualquer formato vindo da API e devolve o rótulo do front.
+function paraRotulo<T extends string>(valor: unknown, opcoes: readonly T[], padrao: T): T {
+  if (typeof valor !== "string") return padrao;
+  const v = chave(valor);
+  return opcoes.find((o) => chave(o) === v) ?? padrao;
+}
 
 function normalizarData(d: unknown): string {
   if (Array.isArray(d)) {
@@ -62,9 +83,9 @@ function paraApi(d: NovaTarefaDados) {
   return {
     titulo: d.titulo.trim(),
     responsavelId: d.responsavelId,
-    prioridade: paraEnum(d.prioridade),
-    recorrencia: paraEnum(d.recorrencia),
-    status: paraEnum(d.status),
+    prioridade: PRIORIDADE_API[d.prioridade],
+    recorrencia: RECORRENCIA_API[d.recorrencia],
+    status: STATUS_API[d.status],
     observacao: d.observacao,
     dataTarefa: d.data,
   };

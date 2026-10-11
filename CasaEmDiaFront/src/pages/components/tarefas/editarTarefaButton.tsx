@@ -1,6 +1,3 @@
-
-"use client";
-
 import { useEffect, useState, type FormEvent } from "react";
 
 import type {
@@ -12,7 +9,7 @@ import type {
 } from "../../../types/tarefas";
 
 const OPCOES_RECORRENCIA: Recorrencia[] = [
- "Nenhuma",
+  "Nenhuma",
   "Diária",
   "Semanal",
   "Mensal",
@@ -162,7 +159,7 @@ export default function EditarTarefaButton({
               value={titulo}
               onChange={(event) => setTitulo(event.target.value)}
               required
-              maxLength={200}
+              maxLength={100}
             />
           </label>
 
@@ -271,6 +268,7 @@ export default function EditarTarefaButton({
               value={observacao}
               onChange={(event) => setObservacao(event.target.value)}
               rows={3}
+              maxLength={500}
             />
           </label>
 

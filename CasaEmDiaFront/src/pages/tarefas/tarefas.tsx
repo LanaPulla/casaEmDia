@@ -1,16 +1,16 @@
-"use client";
-
 import "./tarefas.css";
 import { useState } from "react";
-import CardTarefa from "../components/tarefas/cardTarefas";
 import CalendarioTarefa from "../components/tarefas/calendario";
 import CardResumo from "../components/tarefas/cardResumos";
 import NovaTarefaButton from "../components/tarefas/novaTarefaButton";
 import { USUARIOS_MOCK } from "../../data/usuariosMock";
 import ListaTarefas from "../components/tarefas/listaTarefas";
+import type { TarefaProps } from "../../types/tarefas";
 
 export default function Tarefas() {
     const [dataSelecionada, setDataSelecionada] = useState(new Date());
+    const [tarefas, setTarefas] = useState<TarefaProps[]>([]);
+    const [versao, setVersao] = useState(0);
 
     function mudarDia(delta: number) {
         const novaData = new Date(dataSelecionada);
@@ -26,7 +26,10 @@ export default function Tarefas() {
                         <h1 className="tarefas-titulo">Tarefas</h1>
                         <h2 className="tarefas-subtitulo">Gerencie as tarefas da família!</h2>
                     </div>
-                    <NovaTarefaButton usuarios={USUARIOS_MOCK} />
+                    <NovaTarefaButton
+                        usuarios={USUARIOS_MOCK}
+                        onCriada={() => setVersao((v) => v + 1)}
+                    />
                 </div>
 
                 <div className="tarefas-painel">
@@ -34,7 +37,10 @@ export default function Tarefas() {
                         dataSelecionada={dataSelecionada}
                         setDataSelecionada={setDataSelecionada}
                     />
-                    <CardResumo />
+                    <CardResumo
+                        dataSelecionada={dataSelecionada}
+                        tarefas={tarefas}
+                    />
                 </div>
 
                 <div className="tarefas-lista-area">
@@ -68,8 +74,11 @@ export default function Tarefas() {
                     </div>
 
                     <ListaTarefas
+                        key={versao}
                         dataSelecionada={dataSelecionada}
                         usuarios={USUARIOS_MOCK}
+                        tarefas={tarefas}
+                        setTarefas={setTarefas}
                     />
                 </div>
             </section>

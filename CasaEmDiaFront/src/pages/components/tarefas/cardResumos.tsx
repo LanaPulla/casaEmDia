@@ -1,20 +1,41 @@
-"use client";
 
-import "./cardResumos.css"
+import "./cardResumos.css";
 
-interface ItemResumo {
-  valor: number;
-  rotulo: string;
+import type { TarefaProps } from "../../../types/tarefas";
+
+interface CardResumoProps {
+  dataSelecionada: Date;
+  tarefas: TarefaProps[];
 }
 
-const itens: ItemResumo[] = [
-  { valor: 4, rotulo: "Tarefas de hoje" },
-  { valor: 2, rotulo: "Compromissos" },
-  { valor: 3, rotulo: "Concluídas" },
-  { valor: 1, rotulo: "Pendentes" },
-];
+function formatarData(data: Date) {
+  const ano = data.getFullYear();
+  const mes = String(data.getMonth() + 1).padStart(2, "0");
+  const dia = String(data.getDate()).padStart(2, "0");
 
-export default function CardResumo() {
+  return `${ano}-${mes}-${dia}`;
+}
+
+export default function CardResumo({ dataSelecionada, tarefas }: CardResumoProps) {
+  const dataFiltro = formatarData(dataSelecionada);
+  const tarefasDoDia = tarefas.filter((t) => t.data === dataFiltro);
+
+  const itens = [
+    { valor: tarefasDoDia.length, rotulo: "Tarefas do dia" },
+    {
+      valor: tarefasDoDia.filter((t) => t.status === "Em Andamento").length,
+      rotulo: "Em andamento",
+    },
+    {
+      valor: tarefasDoDia.filter((t) => t.status === "Concluída").length,
+      rotulo: "Concluídas",
+    },
+    {
+      valor: tarefasDoDia.filter((t) => t.status === "Pendente").length,
+      rotulo: "Pendentes",
+    },
+  ];
+
   return (
     <div className="resumo">
       <h3 className="resumo-titulo">Resumo do dia</h3>

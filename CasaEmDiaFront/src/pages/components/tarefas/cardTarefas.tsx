@@ -1,7 +1,4 @@
-
-"use client";
-
-import { useState, type CSSProperties } from "react";
+import type { CSSProperties } from "react";
 
 import "./cardTarefas.css";
 
@@ -16,6 +13,7 @@ interface CardTarefaProps {
   tarefas: TarefaProps[];
   onDetalhes?: (tarefa: TarefaProps) => void;
   onExcluir?: (tarefa: TarefaProps) => void;
+  onAlternarConclusao?: (tarefa: TarefaProps) => void;
 }
 
 function formatarData(data: Date) {
@@ -37,21 +35,8 @@ export default function CardTarefa({
   tarefas,
   onDetalhes,
   onExcluir,
+  onAlternarConclusao,
 }: CardTarefaProps) {
-  const [concluidas, setConcluidas] = useState<number[]>(() =>
-    tarefas
-      .filter((tarefa) => tarefa.status === "Concluída")
-      .map((tarefa) => tarefa.id)
-  );
-
-  function alternarConclusao(id: number) {
-    setConcluidas((lista) =>
-      lista.includes(id)
-        ? lista.filter((x) => x !== id)
-        : [...lista, id]
-    );
-  }
-
   const dataFiltro = formatarData(dataSelecionada);
 
   const tarefasDoDia = tarefas.filter(
@@ -66,9 +51,7 @@ export default function CardTarefa({
     <ul className="tarefa-lista">
       {tarefasDoDia.map((tarefa) => {
         const cor = corPrioridade[tarefa.prioridade];
-        const concluida =
-          tarefa.status === "Concluída" ||
-          concluidas.includes(tarefa.id);
+        const concluida = tarefa.status === "Concluída";
 
         return (
           <li key={tarefa.id}>
@@ -114,7 +97,7 @@ export default function CardTarefa({
                   id={`tarefa-concluida-${tarefa.id}`}
                   className="tarefa-checkbox"
                   checked={concluida}
-                  onChange={() => alternarConclusao(tarefa.id)}
+                  onChange={() => onAlternarConclusao?.(tarefa)}
                   aria-label={`Marcar "${tarefa.titulo}" como concluída`}
                 />
 
