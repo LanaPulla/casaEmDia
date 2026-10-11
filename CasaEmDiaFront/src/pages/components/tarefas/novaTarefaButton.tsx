@@ -199,8 +199,8 @@ export default function NovaTarefaButton({usuarios}: Props) {
                                         <button 
                                             className="btn btn-success" 
                                             type="submit" 
-                                            disabled = {enviando}>
-                                            {enviando ? 'Aguarde...' : 'Criar'}
+                                            >
+                                            Criar
                                         </button>
                                     </div>
                                 </form>
