@@ -52,4 +52,6 @@ public class UsuarioService {
     private String normalizar(String email) {
         return email.trim().toLowerCase();
     }
+
+    
 }

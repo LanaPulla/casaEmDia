@@ -1,30 +1,53 @@
-export default function CardResumo() {
-    return (
-        <div className=" rounded-4 px-4 py-2 shadow-sm task-card"
-            style={{
-                backgroundColor: "rgb(250, 249, 246)",
-            }}>
-            <div className="container">
-            
-                <div className="row mb-3">
-                    <div className="col-6">
-                        <div className="card"><div className="card-body">Card 1</div></div>
-                    </div>
-                    <div className="col-6">
-                        <div className="card"><div className="card-body">Card 2</div></div>
-                    </div>
-                </div>
 
-                <div className="row">
-                    <div className="col-6">
-                        <div className="card"><div className="card-body">Card 3</div></div>
-                    </div>
-                    <div className="col-6">
-                        <div className="card"><div className="card-body">Card 4</div></div>
-                    </div>
-                </div>
-            </div>
+import "./cardResumos.css";
 
-        </div>
-    )
+import type { TarefaProps } from "../../../types/tarefas";
+
+interface CardResumoProps {
+  dataSelecionada: Date;
+  tarefas: TarefaProps[];
+}
+
+function formatarData(data: Date) {
+  const ano = data.getFullYear();
+  const mes = String(data.getMonth() + 1).padStart(2, "0");
+  const dia = String(data.getDate()).padStart(2, "0");
+
+  return `${ano}-${mes}-${dia}`;
+}
+
+export default function CardResumo({ dataSelecionada, tarefas }: CardResumoProps) {
+  const dataFiltro = formatarData(dataSelecionada);
+  const tarefasDoDia = tarefas.filter((t) => t.data === dataFiltro);
+
+  const itens = [
+    { valor: tarefasDoDia.length, rotulo: "Tarefas do dia" },
+    {
+      valor: tarefasDoDia.filter((t) => t.status === "Em Andamento").length,
+      rotulo: "Em andamento",
+    },
+    {
+      valor: tarefasDoDia.filter((t) => t.status === "Concluída").length,
+      rotulo: "Concluídas",
+    },
+    {
+      valor: tarefasDoDia.filter((t) => t.status === "Pendente").length,
+      rotulo: "Pendentes",
+    },
+  ];
+
+  return (
+    <div className="resumo">
+      <h3 className="resumo-titulo">Resumo do dia</h3>
+
+      <div className="resumo-grade">
+        {itens.map((item) => (
+          <div key={item.rotulo} className="resumo-card">
+            <span className="resumo-valor">{item.valor}</span>
+            <span className="resumo-rotulo">{item.rotulo}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
