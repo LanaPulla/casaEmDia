@@ -3,6 +3,7 @@ import { Login } from './pages/login/login';
 import Tarefas  from './pages/tarefas/tarefas';
 import { Home } from './pages/home/home';
 import { LayoutNavHeader } from './pages/components/layoutNavHeader/layoutNavHeader';
+import { RotaProtegida } from './auth/RotaProtegida';
 
 function App() {
   return (
@@ -10,12 +11,15 @@ function App() {
       <Routes>
         {/* Rota Pública */}
         <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />        
         {/* Rotas Privadas (Com o Header/Layout) */}
-        <Route element={<LayoutNavHeader />}>
+        <Route element={<RotaProtegida />}>
+          <Route element={<LayoutNavHeader />}>
           <Route path="/home" element={<Home />} />
           <Route path="/tarefas" element={<Tarefas />} />
           <Route path="/painel-agenda" element={<div>Página de Agenda</div>} />
+          </Route>
         </Route>
 
       </Routes>

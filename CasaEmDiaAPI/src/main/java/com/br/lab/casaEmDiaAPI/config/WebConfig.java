@@ -23,4 +23,11 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*") // Permite todos os headers
                 .allowCredentials(true); // Permite envio de cookies
     }
+
+    @Override
+    public void addInterceptors(
+            org.springframework.web.servlet.config.annotation.InterceptorRegistry registry) {
+        registry.addInterceptor(new AutenticacaoInterceptor())
+                .addPathPatterns("/tarefas/**");
+    }
 }

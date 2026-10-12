@@ -6,10 +6,17 @@ import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
 import CalendarViewDayOutlinedIcon from '@mui/icons-material/CalendarViewDayOutlined';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { useAuth } from '../../../auth/AuthContext';
 
 export function NavBar() {
     const [navBarEscondida, setNavBarEscondida] = useState(true);
     const navigate = useNavigate();
+    const { sair } = useAuth();
+
+    async function handleSair() {
+        await sair();
+        navigate('/login', { replace: true });
+    }
 
     function abreFechaNavbar() {
         setNavBarEscondida(!navBarEscondida);
@@ -32,7 +39,7 @@ export function NavBar() {
                     </div>
 
                     <div className='d-flex flex-column align-items-center justify-content-center mt-auto w-100 gap-2'>
-                        <div className='d-flex justify-content-center menu-item align-items-center btn-sair-icon' onClick={() => navigate('/login')}>
+                        <div className='d-flex justify-content-center menu-item align-items-center btn-sair-icon' onClick={handleSair}>
                             <LogoutIcon />
                         </div>
                         <div className='d-flex justify-content-center menu-item align-items-center' onClick={abreFechaNavbar}>
@@ -47,7 +54,7 @@ export function NavBar() {
                             <FamilyRestroomIcon />
                             <p className='m-0'>Home</p>
                         </div>
-                        <div className='gap-2 d-flex align-items-center menu-item' onClick={() => navigate('/painel-tarefas')}>
+                        <div className='gap-2 d-flex align-items-center menu-item' onClick={() => navigate('/tarefas')}>
                             <FactCheckIcon />
                             <p className='m-0'>Tarefas</p>
                         </div>
@@ -58,7 +65,7 @@ export function NavBar() {
                     </div>
 
                     <div className='gap-2 flex-column d-flex mt-auto w-100'>
-                        <div className='gap-2 d-flex align-items-center menu-item btn-sair-texto' onClick={() => navigate('/login')}>
+                        <div className='gap-2 d-flex align-items-center menu-item btn-sair-texto' onClick={handleSair}>
                             <LogoutIcon />
                             <p className='m-0'>Sair</p>
                         </div>

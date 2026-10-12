@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import "./login.css";
 import CottageIcon from '@mui/icons-material/Cottage';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { useAuth, type Usuario } from '../../auth/AuthContext';
 
 type FormMode = 'login' | 'cadastro';
 
@@ -10,6 +11,7 @@ const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
 
 export function Login() {
   const navigate = useNavigate();
+  const { definirUsuario } = useAuth();
   
   // Estados integrados do segundo código
   const [mode, setMode] = useState<FormMode>('login');
@@ -35,6 +37,7 @@ export function Login() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
+        credentials: 'include',
       });
 
       if (response.status === 401) {
@@ -57,7 +60,9 @@ export function Login() {
         return;
       }
 
-      navigate('/home');
+      const usuario: Usuario = await response.json();
+      definirUsuario(usuario);
+      navigate('/home', { replace: true });
     } catch (error) {
       setErro(error instanceof Error ? error.message : 'Ocorreu um erro inesperado.');
     } finally {

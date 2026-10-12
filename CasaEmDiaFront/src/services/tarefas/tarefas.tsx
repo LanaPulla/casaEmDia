@@ -92,7 +92,7 @@ function paraApi(d: NovaTarefaDados) {
 }
 
 export async function listarTarefas(): Promise<TarefaProps[]> {
-  const response = await fetch(`${API_URL}/tarefas`);
+  const response = await fetch(`${API_URL}/tarefas`, { credentials: "include" });
   if (!response.ok) throw new Error("Erro ao carregar tarefas.");
   const dados = await response.json();
   return dados.map(paraFront);
@@ -103,6 +103,7 @@ export async function criarTarefa(dados: NovaTarefaDados): Promise<void> {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(paraApi(dados)),
+    credentials: "include",
   });
   if (!response.ok) throw new Error("Não foi possível criar a tarefa.");
 }
@@ -122,12 +123,13 @@ export async function atualizarTarefa(tarefa: TarefaProps): Promise<TarefaProps>
         data: tarefa.data,
       })
     ),
+    credentials: "include",
   });
   if (!response.ok) throw new Error("Erro ao atualizar a tarefa.");
   return paraFront(await response.json());
 }
 
 export async function excluirTarefa(id: number): Promise<void> {
-  const response = await fetch(`${API_URL}/tarefas/${id}`, { method: "DELETE" });
+  const response = await fetch(`${API_URL}/tarefas/${id}`, { method: "DELETE", credentials: "include" });
   if (!response.ok) throw new Error("Erro ao excluir a tarefa.");
 }

@@ -33,6 +33,13 @@ public class UsuarioService {
         return UsuarioResponse.response(usuario);
     }
 
+    @Transactional(readOnly = true)
+    public UsuarioResponse buscarPorId(Long id) {
+        return repository.findById(id)
+                .map(UsuarioResponse::response)
+                .orElseThrow(CredenciaisInvalidasException::new);
+    }
+
     @Transactional
     public UsuarioResponse cadastrar(CadastroRequest req) {
         String email = normalizar(req.email());
