@@ -18,6 +18,9 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "familia_id", nullable = false, updatable = false)
+    private Long familiaId;
+
     @Column(nullable = false)
     private String nome;
 
@@ -27,26 +30,52 @@ public class Usuario {
     @Column(name = "senha_hash", nullable = false)
     private String senhaHash;
 
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean ativo = true;
+
+    @Column(name = "senha_provisoria", nullable = false)
+    private boolean senhaProvisoria;
+
     @Column(name = "criado_em", nullable = false, updatable = false)
     private LocalDateTime criadoEm;
 
     protected Usuario() {
     }
 
-    public Usuario(String nome, String email, String senhaHash) {
+    public Usuario(Long familiaId, String nome, String email, String senhaHash, boolean senhaProvisoria) {
+        this.familiaId = familiaId;
         this.nome = nome;
         this.email = email;
         this.senhaHash = senhaHash;
+        this.senhaProvisoria = senhaProvisoria;
     }
+
 
     @PrePersist
     void aoCriar() {
         this.criadoEm = LocalDateTime.now();
     }
 
+    public void atualizar(String nome) {
+        this.nome = nome;
+        // adicionar perfil
+    }
+
+    public void desativar() {
+        this.ativo = false;
+    }
+
+    public void definirSenha(String novoHash, boolean provisoria) {
+        this.senhaHash = novoHash;
+        this.senhaProvisoria = provisoria;
+    }
+
     public Long getId() { return id; }
+    public Long getFamiliaId() { return familiaId; }
     public String getNome() { return nome; }
     public String getEmail() { return email; }
     public String getSenhaHash() { return senhaHash; }
+    public boolean isAtivo() { return ativo; }
+    public boolean isSenhaProvisoria() { return senhaProvisoria; }
     public LocalDateTime getCriadoEm() { return criadoEm; }
 }
