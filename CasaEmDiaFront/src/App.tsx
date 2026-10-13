@@ -3,6 +3,7 @@ import { Login } from './pages/login/login';
 import Tarefas  from './pages/tarefas/tarefas';
 import { Home } from './pages/home/home';
 import { LayoutNavHeader } from './pages/components/layoutNavHeader/layoutNavHeader';
+import { Membros } from './pages/membros/membros';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route element={<LayoutNavHeader />}>
           <Route path="/home" element={<Home />} />
           <Route path="/tarefas" element={<Tarefas />} />
+          <Route path="/membros" element={<Membros />} />
           <Route path="/painel-agenda" element={<div>Página de Agenda</div>} />
         </Route>
 
