@@ -27,6 +27,22 @@
   z-index: 1000;
 }
 
+.nav-logout-error {
+  position: absolute;
+  bottom: 1rem;
+  left: 100%;
+  z-index: 1001;
+  width: 16rem;
+  padding: 0.75rem;
+  margin: 0 0 0 0.5rem;
+  border: 1px solid #f1b8b5;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--shadow);
+  color: #b42318;
+  font-size: 0.82rem;
+}
+
 .nav-bar-prof-escondida .menu-item {
   width: 2.5rem;
   height: 2.5rem;
