@@ -1,87 +1,87 @@
-"use client";
-
+import "./tarefas.css";
 import { useState } from "react";
-import CardTarefa from "../components/tarefas/cardTarefas";
 import CalendarioTarefa from "../components/tarefas/calendario";
 import CardResumo from "../components/tarefas/cardResumos";
+import NovaTarefaButton from "../components/tarefas/novaTarefaButton";
+import { USUARIOS_MOCK } from "../../data/usuariosMock";
+import ListaTarefas from "../components/tarefas/listaTarefas";
+import type { TarefaProps } from "../../types/tarefas";
 
 export default function Tarefas() {
     const [dataSelecionada, setDataSelecionada] = useState(new Date());
+    const [tarefas, setTarefas] = useState<TarefaProps[]>([]);
+    const [versao, setVersao] = useState(0);
 
-    function diaAnterior() {
+    function mudarDia(delta: number) {
         const novaData = new Date(dataSelecionada);
-        novaData.setDate(novaData.getDate() - 1);
-        setDataSelecionada(novaData);
-    }
-
-    function proximoDia() {
-        const novaData = new Date(dataSelecionada);
-        novaData.setDate(novaData.getDate() + 1);
+        novaData.setDate(novaData.getDate() + delta);
         setDataSelecionada(novaData);
     }
 
     return (
         <main>
-            <div className="d-grid" style={{ gridTemplateColumns: "14rem 1fr", minHeight: "100vh" }}>
-                <div>
-                    {/* menu lateral aqui */}
-                </div>
-                <div>
+            <section className="tarefas-principal">
+                <div className="tarefas-topo">
                     <div>
-                        <div
-                            className="d-flex flex-column justify-content-between align-items-start p-4 rounded-4"
-                        >
-                            <h1>Tarefas</h1>
-                            <h2>Gerencie as tarefas da familia!</h2>
-                        </div>
-
-                        <div
-                            className="d-flex flex-column gap-4 align-items-center p-4 rounded-4"
-                        >
-                            <div className="d-flex justify-content-between">
-                                <CalendarioTarefa
-                                    dataSelecionada={dataSelecionada}
-                                    setDataSelecionada={setDataSelecionada}
-                                />
-                                <div>
-                                    <CardResumo />
-                                </div>
-                            </div>
-                            <div>
-                                <div className="d-flex align-items-start justify-content-between p-4 gap-3">
-                                    <button
-                                        type="button"
-                                        onClick={diaAnterior}
-                                        className="btn btn-sm rounded-circle border-0 fs-4 lh-1"
-                                        aria-label="Dia anterior"
-                                    >
-                                        ‹
-                                    </button>
-
-                                    <h2 className="fs-4 fw-bold m-0 text-capitalize text-center">
-                                        {dataSelecionada.toLocaleDateString("pt-BR", {
-                                            weekday: "long",
-                                            day: "numeric",
-                                            month: "long",
-                                            year: "numeric",
-                                        })}
-                                    </h2>
-
-                                    <button
-                                        type="button"
-                                        onClick={proximoDia}
-                                        className="btn btn-sm rounded-circle border-0 fs-4 lh-1"
-                                        aria-label="Próximo dia"
-                                    >
-                                        ›
-                                    </button>
-                                </div>
-                                <CardTarefa dataSelecionada={dataSelecionada} />
-                            </div>
-                        </div>
+                        <h1 className="tarefas-titulo">Tarefas</h1>
+                        <h2 className="tarefas-subtitulo">Gerencie as tarefas da família!</h2>
                     </div>
+                    <NovaTarefaButton
+                        usuarios={USUARIOS_MOCK}
+                        onCriada={() => setVersao((v) => v + 1)}
+                    />
                 </div>
-            </div>
+
+                <div className="tarefas-painel">
+                    <CalendarioTarefa
+                        dataSelecionada={dataSelecionada}
+                        setDataSelecionada={setDataSelecionada}
+                    />
+                    <CardResumo
+                        dataSelecionada={dataSelecionada}
+                        tarefas={tarefas}
+                    />
+                </div>
+
+                <div className="tarefas-lista-area">
+                    <div className="tarefas-dia-nav">
+                        <button
+                            type="button"
+                            onClick={() => mudarDia(-1)}
+                            className="tarefas-botao-dia"
+                            aria-label="Dia anterior"
+                        >
+                            ‹
+                        </button>
+
+                        <h2 className="tarefas-dia-titulo">
+                            {dataSelecionada.toLocaleDateString("pt-BR", {
+                                weekday: "long",
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                            })}
+                        </h2>
+
+                        <button
+                            type="button"
+                            onClick={() => mudarDia(1)}
+                            className="tarefas-botao-dia"
+                            aria-label="Próximo dia"
+                        >
+                            ›
+                        </button>
+                    </div>
+
+                    <ListaTarefas
+                        key={versao}
+                        dataSelecionada={dataSelecionada}
+                        usuarios={USUARIOS_MOCK}
+                        tarefas={tarefas}
+                        setTarefas={setTarefas}
+                    />
+                </div>
+            </section>
         </main>
     );
 }

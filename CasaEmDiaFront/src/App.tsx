@@ -11,8 +11,7 @@ function App() {
       <Routes>
         {/* Rota Pública */}
         <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="/login" element={<Login />} />
-        
+        <Route path="/login" element={<Login />} />        
         {/* Rotas Privadas (Com o Header/Layout) */}
         <Route element={<LayoutNavHeader />}>
           <Route path="/home" element={<Home />} />
