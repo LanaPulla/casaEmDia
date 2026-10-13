@@ -53,12 +53,20 @@ export function Login() {
         throw new Error('Não foi possível acessar a API. Tente novamente.');
       }
 
+         // --- NOVO CÓDIGO AQUI ---
+      // Captura a resposta da API (UsuarioResponse)
+      const userData = await response.json(); 
+
       if (mode === 'cadastro') {
         setMode('login');
         setSenha('');
         setSucesso('Conta criada. Entre com seu e-mail e senha.');
         return;
       }
+
+      // Salva o nome do usuário no localStorage do navegador para usar na tela do home como bem-vindo
+      localStorage.setItem('nomeUsuario', userData.nome);
+      // ------------------------
 
       const usuario: Usuario = await response.json();
       definirUsuario(usuario);
