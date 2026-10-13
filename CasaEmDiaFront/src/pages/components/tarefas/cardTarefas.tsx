@@ -1,91 +1,130 @@
-"use client"
-import { TAREFAS_MOCK } from "../../../data/tarefasMock";
+import type { CSSProperties } from "react";
+
+import "./cardTarefas.css";
+
+import type { TarefaProps } from "../../../types/tarefas";
+
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import { DeleteOutlined, PersonOutlined } from "@mui/icons-material";
+import RepeatIcon from "@mui/icons-material/Repeat";
 
 interface CardTarefaProps {
   dataSelecionada: Date;
+  tarefas: TarefaProps[];
+  onDetalhes?: (tarefa: TarefaProps) => void;
+  onExcluir?: (tarefa: TarefaProps) => void;
+  onAlternarConclusao?: (tarefa: TarefaProps) => void;
 }
 
 function formatarData(data: Date) {
-    const ano = data.getFullYear();
-    const mes = String(data.getMonth() + 1).padStart(2, "0");
-    const dia = String(data.getDate()).padStart(2, "0");
-    return `${ano}-${mes}-${dia}`;
+  const ano = data.getFullYear();
+  const mes = String(data.getMonth() + 1).padStart(2, "0");
+  const dia = String(data.getDate()).padStart(2, "0");
+
+  return `${ano}-${mes}-${dia}`;
 }
 
-const corBorda = {
-    Alta: "#dc3545",
-    Média: "#ffc107",
-    Baixa: "#198754",
+const corPrioridade: Record<string, string> = {
+  Alta: "#dc3545",
+  Média: "#e0a800",
+  Baixa: "#239954",
 };
 
-export default function CardTarefa({ dataSelecionada }: CardTarefaProps) {
-    const dataFiltro = formatarData(dataSelecionada);
+export default function CardTarefa({
+  dataSelecionada,
+  tarefas,
+  onDetalhes,
+  onExcluir,
+  onAlternarConclusao,
+}: CardTarefaProps) {
+  const dataFiltro = formatarData(dataSelecionada);
 
-    const tarefaDoDia = TAREFAS_MOCK.filter((tarefa) =>
-        tarefa.data == dataFiltro
-    )
+  const tarefasDoDia = tarefas.filter(
+    (tarefa) => tarefa.data === dataFiltro
+  );
 
-    if (tarefaDoDia.length == 0) {
+  if (tarefasDoDia.length === 0) {
+    return <p className="tarefa-vazio">Nenhuma tarefa para esse dia!</p>;
+  }
+
+  return (
+    <ul className="tarefa-lista">
+      {tarefasDoDia.map((tarefa) => {
+        const cor = corPrioridade[tarefa.prioridade];
+        const concluida = tarefa.status === "Concluída";
+
         return (
-            <div>
-                <h2 className="fs-4 fw-bold">Nenhuma tarefa para esse dia!</h2>
-            </div>
-        )
-    }
+          <li key={tarefa.id}>
+            <article
+              className={`tarefa-card ${
+                concluida ? "tarefa-card-concluida" : ""
+              }`}
+              style={
+                cor
+                  ? ({ "--tarefa-cor": cor } as CSSProperties)
+                  : undefined
+              }
+            >
+              <div className="tarefa-conteudo">
+                <span className="tarefa-titulo">{tarefa.titulo}</span>
 
-    return (
-        <ul className="list-unstyled d-flex flex-column gap-4 w-100 align-items-center">
-            {tarefaDoDia.map((tarefa) => {
-                const corPrioridade =
-                    corBorda[tarefa.prioridade as keyof typeof corBorda];
+                <div className="tarefa-info">
+                  <span className="tarefa-selo">
+                    {tarefa.prioridade}
+                  </span>
 
-                return (
-                    <li key={tarefa.id} className="col w-100" style={{ maxWidth: "64rem" }}>
-                        <article
-                            className="d-flex align-items-center justify-content-between rounded-4 px-5 py-3 shadow-sm task-card"
-                            style={{
-                                backgroundColor: "#faf9f6",
-                                borderLeft: corPrioridade
-                                    ? `8px solid ${corPrioridade}`
-                                    : undefined,
-                            }}
-                        >
-                            <div className="d-grid gap-4 w-100">
-                                <div className="d-flex justify-content-between">
-                                    <span className="fs-5 fw-bold">
-                                        {tarefa.titulo}
-                                    </span>
+                  <span className="tarefa-info-item">
+                    <PersonOutlined />
+                    {tarefa.responsavel.nome}
+                  </span>
 
-                                    <div className="d-flex align-items-center gap-4">
-                                        <input
-                                            type="checkbox"
-                                            id={`tarefa-concluida-${tarefa.id}`}
-                                            value="concluida"
-                                            className="form-check-input"
-                                            style={{
-                                                width: "1.5rem",
-                                                height: "1.5rem",
-                                                accentColor: "#3F5B4B",
-                                            }}
-                                        />
-                                    </div>
-                                </div>
+                  <span className="tarefa-info-item">
+                    <RepeatIcon />
+                    {tarefa.recorrencia}
+                  </span>
+                </div>
 
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <div className="d-flex align-items-center gap-4">
-                                        <span>
-            
-                                        </span>
-                                        <span>
-                                           
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </article>
-                    </li>
-                );
-            })}
-        </ul>
-    );
+                {tarefa.observacao && (
+                  <p className="tarefa-observacao">
+                    {tarefa.observacao}
+                  </p>
+                )}
+              </div>
+
+              <div className="tarefa-acoes">
+                <input
+                  type="checkbox"
+                  id={`tarefa-concluida-${tarefa.id}`}
+                  className="tarefa-checkbox"
+                  checked={concluida}
+                  onChange={() => onAlternarConclusao?.(tarefa)}
+                  aria-label={`Marcar "${tarefa.titulo}" como concluída`}
+                />
+
+                <button
+                  type="button"
+                  className="tarefa-botao"
+                  onClick={() => onDetalhes?.(tarefa)}
+                  aria-label={`Editar "${tarefa.titulo}"`}
+                  title="Editar tarefa"
+                >
+                  <EditOutlinedIcon fontSize="small" />
+                </button>
+
+                <button
+                  type="button"
+                  className="tarefa-botao tarefa-botao-excluir"
+                  onClick={() => onExcluir?.(tarefa)}
+                  aria-label={`Excluir "${tarefa.titulo}"`}
+                  title="Excluir"
+                >
+                  <DeleteOutlined fontSize="small" />
+                </button>
+              </div>
+            </article>
+          </li>
+        );
+      })}
+    </ul>
+  );
 }

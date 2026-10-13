@@ -1,5 +1,8 @@
 package com.br.lab.casaEmDiaAPI.controller;
 
+import org.springframework.http.HttpStatus;
+import com.br.lab.casaEmDiaAPI.dto.TarefaRequest;
+import com.br.lab.casaEmDiaAPI.dto.TarefaResponse;
 import com.br.lab.casaEmDiaAPI.entities.Tarefa;
 import com.br.lab.casaEmDiaAPI.service.TarefaService;
 import jakarta.validation.Valid;
@@ -20,24 +23,35 @@ public class TarefaController {
     public final TarefaService tarefaService;
 
     @GetMapping
-    public ResponseEntity<List<Tarefa>> listarTodas() {
+    public ResponseEntity<List<TarefaResponse>> listarTodas() {
         return ResponseEntity.ok(tarefaService.listarTodas());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Tarefa> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<TarefaResponse> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(tarefaService.buscarPorId(id));
     }
 
-    @PutMapping
-    public ResponseEntity<Tarefa> atualizar(@PathVariable Long id, @Valid @RequestBody Tarefa tarefa) {
-        return ResponseEntity.ok(tarefaService.atualizar(id, tarefa));
+    @PutMapping("/{id}")
+    public ResponseEntity<TarefaResponse> atualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody TarefaRequest request) {
+        return ResponseEntity.ok(tarefaService.atualizar(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('DELETAR_TAREFA')")
-    public ResponseEntity<Tarefa> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
         tarefaService.deletar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping
+    public ResponseEntity<List<TarefaResponse>> cadastrarTarefa(
+            @Valid @RequestBody TarefaRequest request) {
+
+        List<TarefaResponse> tarefasCriadas = tarefaService.criarTarefa(request);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(tarefasCriadas);
     }
 }

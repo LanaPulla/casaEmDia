@@ -13,26 +13,28 @@ export function Login() {
   
   // Estados integrados do segundo código
   const [mode, setMode] = useState<FormMode>('login');
+  const [nomeFamilia, setNomeFamilia] = useState('');
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
-  const [sucesso, setSucesso] = useState('');
   const [enviando, setEnviando] = useState(false);
 
   // Função de envio do segundo código
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setErro('');
-    setSucesso('');
     setEnviando(true);
 
     try {
-      const endpoint = mode === 'cadastro' ? 'cadastro' : 'login';
-      const body = mode === 'cadastro' ? { nome, email, senha } : { email, senha };
+      const endpoint = mode === 'cadastro' ? '/api/familia' : '/api/usuario/login';
+      const body = mode === 'cadastro'
+        ? { nomeFamilia, nomeResponsavel: nome, email, senha, membros: [] }
+        : { email, senha };
       
-      const response = await fetch(`${API_URL}/api/usuario/${endpoint}`, {
+      const response = await fetch(`${API_URL}${endpoint}`, {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
@@ -47,19 +49,17 @@ export function Login() {
         throw new Error('Confira os dados. A senha deve ter entre 8 e 72 caracteres.');
       }
       if (!response.ok) {
-        throw new Error('Não foi possível acessar a API. Tente novamente.');
-      }
-
-      if (mode === 'cadastro') {
-        setMode('login');
-        setSenha('');
-        setSucesso('Conta criada. Entre com seu e-mail e senha.');
-        return;
+        if (response.status >= 500) {
+          throw new Error(`O servidor encontrou um erro (HTTP ${response.status}). Tente novamente mais tarde.`);
+        }
+        throw new Error(`A solicitação não foi aceita (HTTP ${response.status}). Confira os dados e tente novamente.`);
       }
 
       navigate('/home');
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Ocorreu um erro inesperado.');
+      setErro(error instanceof TypeError
+        ? 'Não foi possível conectar à API. Verifique se o servidor está ativo e tente novamente.'
+        : error instanceof Error ? error.message : 'Ocorreu um erro inesperado.');
     } finally {
       setEnviando(false);
     }
@@ -70,7 +70,6 @@ export function Login() {
     e.preventDefault();
     setMode(mode === 'login' ? 'cadastro' : 'login');
     setErro('');
-    setSucesso('');
   };
 
   return (
@@ -103,18 +102,31 @@ export function Login() {
 
             {/* Campo Nome só aparece no modo cadastro */}
             {mode === 'cadastro' && (
-              <div className='input-group'>
-                <label htmlFor="nome">Nome</label>
-                <input 
-                  id="nome"
-                  type="text"
-                  autoComplete="name"
-                  maxLength={120}
-                  value={nome}
-                  onChange={(e) => setNome(e.target.value)}
-                  required
-                />
-              </div>
+              <>
+                <div className='input-group'>
+                  <label htmlFor="nomeFamilia">Nome da família</label>
+                  <input
+                    id="nomeFamilia"
+                    type="text"
+                    maxLength={120}
+                    value={nomeFamilia}
+                    onChange={(e) => setNomeFamilia(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className='input-group'>
+                  <label htmlFor="nome">Nome do responsável</label>
+                  <input
+                    id="nome"
+                    type="text"
+                    autoComplete="name"
+                    maxLength={120}
+                    value={nome}
+                    onChange={(e) => setNome(e.target.value)}
+                    required
+                  />
+                </div>
+              </>
             )}
 
             <div className='input-group'>
@@ -147,7 +159,6 @@ export function Login() {
 
             {/* Mensagens de Erro / Sucesso */}
             {erro && <p className="text-danger mt-2 mb-0" style={{ fontSize: '14px' }}>{erro}</p>}
-            {sucesso && <p className="text-success mt-2 mb-0" style={{ fontSize: '14px' }}>{sucesso}</p>}
 
             <button className='btn-proximo mt-3' type="submit" disabled={enviando}>
               {enviando ? 'Aguarde...' : (mode === 'login' ? 'Entrar' : 'Criar conta')}

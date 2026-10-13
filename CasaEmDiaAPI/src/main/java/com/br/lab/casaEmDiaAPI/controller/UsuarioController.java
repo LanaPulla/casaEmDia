@@ -7,13 +7,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.br.lab.casaEmDiaAPI.dto.CadastroRequest;
 import com.br.lab.casaEmDiaAPI.dto.LoginRequest;
+import com.br.lab.casaEmDiaAPI.dto.TrocarSenhaRequest;
 import com.br.lab.casaEmDiaAPI.dto.UsuarioResponse;
+import com.br.lab.casaEmDiaAPI.entities.Usuario;
+import com.br.lab.casaEmDiaAPI.service.SessaoUsuarioService;
 import com.br.lab.casaEmDiaAPI.service.UsuarioService;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @RestController
@@ -21,28 +22,30 @@ import jakarta.validation.Valid;
 public class UsuarioController{
 
     private final UsuarioService usuarioService;
+    private final SessaoUsuarioService sessao;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService, SessaoUsuarioService sessao) {
         this.usuarioService = usuarioService;
-    }
-
-    @PostMapping("/cadastro")
-    @ResponseStatus(HttpStatus.CREATED)
-    public UsuarioResponse cadastrar(@Valid @RequestBody CadastroRequest request) {
-        return usuarioService.cadastrar(request);
+        this.sessao = sessao;
     }
 
     @PostMapping("/login")
-    public UsuarioResponse login(@Valid @RequestBody LoginRequest request) {
-        return usuarioService.login(request);
+    public UsuarioResponse login(@Valid @RequestBody LoginRequest request, HttpServletRequest http) {
+        UsuarioResponse usuario = usuarioService.login(request);
+        sessao.iniciar(http, usuario.id());
+        return usuario;    
     }
 
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(HttpServletRequest http) {
-        HttpSession sessao = http.getSession(false);
-        if (sessao != null) {
-            sessao.invalidate();
-        }
+        sessao.encerrar(http);
+    }
+    
+    @PostMapping("/trocar-senha")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void trocarSenha(@Valid @RequestBody TrocarSenhaRequest request, HttpServletRequest http) {
+        Usuario usuario = sessao.usuarioLogado(http);
+        usuarioService.trocarSenha(usuario.getId(), request);
     }
 }
