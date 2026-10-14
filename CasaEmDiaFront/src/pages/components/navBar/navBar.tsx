@@ -101,7 +101,7 @@ export function NavBar() {
                             <FactCheckIcon />
                             <p className='m-0'>Tarefas</p>
                         </div>
-                        <div className='gap-2 d-flex align-items-center menu-item' onClick={() => navigate('/painel-agenda')}>
+                        <div className='gap-2 d-flex align-items-center menu-item' onClick={() => navigate('/agenda')}>
                             <CalendarMonthIcon />
                             <p className='m-0'>Agenda</p>
                         </div>
