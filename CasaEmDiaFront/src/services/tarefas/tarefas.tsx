@@ -6,6 +6,16 @@ const PRIORIDADES: Prioridade[] = ["Baixa", "Média", "Alta"];
 const RECORRENCIAS: Recorrencia[] = ["Nenhuma", "Diária", "Semanal", "Mensal"];
 const STATUS: Status[] = ["Concluída", "Em Andamento", "Pendente"];
 
+export class ErroHttp extends Error {
+  readonly status: number;
+
+  constructor(status: number, message: string) {
+    super(message);
+    this.status = status;
+    this.name = "ErroHttp";
+  }
+}
+
 // Como cada enum do back espera receber o valor (todos confirmados pelo log).
 // Prioridade e Recorrência: rótulo com acento.
 // Status: MAIÚSCULO_COM_UNDERSCORE.
@@ -129,5 +139,7 @@ export async function atualizarTarefa(tarefa: TarefaProps): Promise<TarefaProps>
 
 export async function excluirTarefa(id: number): Promise<void> {
   const response = await fetch(`${API_URL}/tarefas/${id}`, { method: "DELETE" });
-  if (!response.ok) throw new Error("Erro ao excluir a tarefa.");
+  if (!response.ok) {
+    throw new ErroHttp(response.status, "Erro ao excluir a tarefa.");
+  }
 }

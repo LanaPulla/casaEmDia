@@ -54,6 +54,12 @@ export function Login() {
         }
         throw new Error(`A solicitação não foi aceita (HTTP ${response.status}). Confira os dados e tente novamente.`);
       }
+      const userData = await response.json(); 
+
+      // Salva o nome do usuário no localStorage do navegador para usar na tela do home como bem-vindo
+      localStorage.setItem('nomeUsuario', userData.nome);
+      // ------------------------
+
 
       navigate('/home');
     } catch (error) {
