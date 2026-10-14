@@ -11,6 +11,13 @@ type Membro = {
   email: string;
 };
 
+const PERFIS_FAMILIA = {
+  Membro: 'MEMBRO_CASA',
+  Administrador: 'ADMINISTRADOR_CASA',
+} as const;
+
+type PerfilFamilia = typeof PERFIS_FAMILIA[keyof typeof PERFIS_FAMILIA];
+
 type Familia = {
   id: number;
   nome: string;
@@ -30,6 +37,7 @@ export function Membros() {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senhaInicial, setSenhaInicial] = useState('');
+  const [perfil, setPerfil] = useState<PerfilFamilia>(PERFIS_FAMILIA.Membro);
   const [senhaAtual, setSenhaAtual] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
   const [erro, setErro] = useState('');
@@ -113,6 +121,7 @@ export function Membros() {
           nome,
           email,
           senhaInicial,
+          perfil,
         }),
       });
       if (!response.ok) {
@@ -126,6 +135,7 @@ export function Membros() {
       setNome('');
       setEmail('');
       setSenhaInicial('');
+      setPerfil(PERFIS_FAMILIA.Membro);
       setSucesso('Membro adicionado à família.');
     } catch (error) {
       setErro(error instanceof Error ? error.message : 'Não foi possível adicionar o membro.');
@@ -261,6 +271,17 @@ export function Membros() {
                 onChange={(event) => setEmail(event.target.value)}
                 required
               />
+            </label>
+            <label>
+              Perfil
+              <select
+                value={perfil}
+                onChange={(event) => setPerfil(event.target.value as PerfilFamilia)}
+                required
+              >
+                <option value={PERFIS_FAMILIA.Membro}>Membro da família</option>
+                <option value={PERFIS_FAMILIA.Administrador}>Administrador da família</option>
+              </select>
             </label>
             <label>
               Senha inicial

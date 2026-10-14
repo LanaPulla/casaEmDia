@@ -102,11 +102,11 @@ export default function ListaTarefas({
         setTarefaEditando(null);
       }
     } catch (error) {
-        if (error instanceof ErroHttp && error.status === 403) {
+      console.error(error);
+      if (error instanceof ErroHttp && error.status === 403) {
         setErro("Você não tem permissão para excluir a tarefa.");
         return;
       }
-
       setErro("Não foi possível excluir a tarefa.");
     }
   }

@@ -198,7 +198,8 @@
   font-weight: 650;
 }
 
-.membros-form input {
+.membros-form input,
+.membros-form select {
   width: 100%;
   min-height: 2.8rem;
   padding: 0.65rem 0.8rem;
@@ -210,7 +211,8 @@
   font-weight: 400;
 }
 
-.membros-form input:focus {
+.membros-form input:focus,
+.membros-form select:focus {
   border-color: var(--verde-escurinho);
   outline: 3px solid rgb(35 153 84 / 14%);
 }
