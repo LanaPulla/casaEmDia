@@ -39,6 +39,7 @@ public class TarefaController {
         return ResponseEntity.ok(tarefaService.atualizar(id, request));
     }
 
+    @PreAuthorize("hasAuthority('DELETAR_TAREFA')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         tarefaService.deletar(id);

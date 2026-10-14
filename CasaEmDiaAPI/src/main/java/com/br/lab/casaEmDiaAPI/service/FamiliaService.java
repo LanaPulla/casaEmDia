@@ -14,11 +14,13 @@ import com.br.lab.casaEmDiaAPI.dto.NovoMembroRequest;
 import com.br.lab.casaEmDiaAPI.dto.RedefinirSenhaRequest;
 import com.br.lab.casaEmDiaAPI.dto.UsuarioResponse;
 import com.br.lab.casaEmDiaAPI.entities.Familia;
+import com.br.lab.casaEmDiaAPI.entities.Perfil;
 import com.br.lab.casaEmDiaAPI.entities.Usuario;
 import com.br.lab.casaEmDiaAPI.exception.CustomException;
 import com.br.lab.casaEmDiaAPI.exception.EmailJaCadastradoException;
 import com.br.lab.casaEmDiaAPI.exception.RecursoNaoEncontradoException;
 import com.br.lab.casaEmDiaAPI.repository.FamiliaRepository;
+import com.br.lab.casaEmDiaAPI.repository.PerfilRepository;
 import com.br.lab.casaEmDiaAPI.repository.UsuarioRepository;
 
 import jakarta.transaction.Transactional;
@@ -26,13 +28,16 @@ import jakarta.transaction.Transactional;
 @Service
 public class FamiliaService {
     private final FamiliaRepository familiaRepository;
+    private final PerfilRepository perfilRepository;
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
 
     public FamiliaService(FamiliaRepository familiaRepository,
+                          PerfilRepository perfilRepository,
                           UsuarioRepository usuarioRepository,
                           PasswordEncoder passwordEncoder) {
         this.familiaRepository = familiaRepository;
+        this.perfilRepository = perfilRepository;
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -45,13 +50,15 @@ public class FamiliaService {
         garantirEmailLivre(emailAdmin, emailsVistos);
 
         Familia familia = familiaRepository.save(new Familia(req.nomeFamilia().trim()));
+        Perfil perfilAdministrador = buscarPerfil("ADMINISTRADOR_CASA");
 
         Usuario admin = usuarioRepository.save(new Usuario(
                 familia.getId(),
                 req.nomeResponsavel().trim(),
                 emailAdmin,
                 passwordEncoder.encode(req.senha()),
-                false));
+                false,
+                perfilAdministrador));
 
         if (req.membros() != null) {
             for (NovoMembroRequest membro : req.membros()) {
@@ -119,7 +126,14 @@ public class FamiliaService {
                 req.nome().trim(),
                 email,
                 passwordEncoder.encode(req.senhaInicial()),
-                true);
+                true,
+                buscarPerfil(req.perfil().name()));
+    }
+
+    private Perfil buscarPerfil(String nome) {
+        return perfilRepository.findByNome(nome)
+                .orElseThrow(() -> new RecursoNaoEncontradoException(
+                        "Perfil " + nome + " não encontrado"));
     }
 
     private Familia buscarFamilia(Long familiaId) {
