@@ -9,6 +9,11 @@ import com.br.lab.casaEmDiaAPI.repository.UsuarioRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 
 @Component
 public class SessaoUsuarioService {
@@ -24,6 +29,21 @@ public class SessaoUsuarioService {
         http.getSession(true);
         http.changeSessionId(); 
         http.getSession().setAttribute(ATRIBUTO, usuarioId);
+
+        Usuario usuario = repository.findById(usuarioId)
+                .filter(Usuario::isAtivo)
+                .orElseThrow(NaoAutenticadoException::new);
+
+        var authorities = usuario.getPerfil().getPermissoes().stream()
+                .map(permissao -> new SimpleGrantedAuthority(permissao.getNome()))
+                .toList();
+        var authentication = UsernamePasswordAuthenticationToken.authenticated(
+                usuario.getId(), null, authorities);
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
+        http.getSession().setAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
     }
 
     public void encerrar(HttpServletRequest http) {
@@ -31,6 +51,7 @@ public class SessaoUsuarioService {
         if (sessao != null) {
             sessao.invalidate();
         }
+        SecurityContextHolder.clearContext();
     }
 
     public Usuario usuarioLogado(HttpServletRequest http) {
@@ -55,7 +76,8 @@ public class SessaoUsuarioService {
 
     public Usuario exigirAdmin(HttpServletRequest http) {
         Usuario usuario = exigirLogin(http);
-        if (false) { //add validacao de perfil
+        if (usuario.getPerfil() == null
+                || !"ADMINISTRADOR_CASA".equals(usuario.getPerfil().getNome())) {
             throw new AcessoNegadoException("Apenas o administrador da família pode fazer isso");
         }
         return usuario;

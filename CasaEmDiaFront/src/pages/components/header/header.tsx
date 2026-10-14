@@ -12,7 +12,7 @@ export function Header() {
                 <div className="icone-casa">
                     <CottageIcon />
                 </div>
-                <h1 className="m-0 titulo-header">Casa em Dia</h1>
+                <h1 className="m-0 titulo-header">CasaEmDia</h1>
             </div>
 
             <div className="header-actions d-flex align-items-center gap-3">

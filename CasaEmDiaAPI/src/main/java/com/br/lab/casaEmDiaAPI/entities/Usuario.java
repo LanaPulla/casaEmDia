@@ -4,9 +4,12 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
@@ -27,6 +30,10 @@ public class Usuario {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "perfil_id", nullable = false)
+    private Perfil perfil;
+
     @Column(name = "senha_hash", nullable = false)
     private String senhaHash;
 
@@ -42,14 +49,15 @@ public class Usuario {
     protected Usuario() {
     }
 
-    public Usuario(Long familiaId, String nome, String email, String senhaHash, boolean senhaProvisoria) {
+    public Usuario(Long familiaId, String nome, String email, String senhaHash,
+                   boolean senhaProvisoria, Perfil perfil) {
         this.familiaId = familiaId;
         this.nome = nome;
         this.email = email;
         this.senhaHash = senhaHash;
         this.senhaProvisoria = senhaProvisoria;
+        this.perfil = perfil;
     }
-
 
     @PrePersist
     void aoCriar() {
@@ -73,6 +81,7 @@ public class Usuario {
     public Long getId() { return id; }
     public Long getFamiliaId() { return familiaId; }
     public String getNome() { return nome; }
+    public Perfil getPerfil() { return perfil; }
     public String getEmail() { return email; }
     public String getSenhaHash() { return senhaHash; }
     public boolean isAtivo() { return ativo; }

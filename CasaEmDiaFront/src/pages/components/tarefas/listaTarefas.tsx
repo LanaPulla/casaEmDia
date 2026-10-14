@@ -13,6 +13,7 @@ import {
   listarTarefas,
   atualizarTarefa,
   excluirTarefa,
+  ErroHttp,
 } from "../../../services/tarefas/tarefas";
 
 interface ListaTarefasProps {
@@ -102,6 +103,10 @@ export default function ListaTarefas({
       }
     } catch (error) {
       console.error(error);
+      if (error instanceof ErroHttp && error.status === 403) {
+        setErro("Você não tem permissão para excluir a tarefa.");
+        return;
+      }
       setErro("Não foi possível excluir a tarefa.");
     }
   }

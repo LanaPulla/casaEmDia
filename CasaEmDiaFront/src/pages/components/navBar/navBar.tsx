@@ -57,7 +57,7 @@ export function NavBar() {
                         <div onClick={() => navigate('/tarefas')} className='d-flex justify-content-center menu-item align-items-center'> 
                             <FactCheckIcon />
                         </div>
-                        <div onClick={() => navigate('/painel-agenda')} className='d-flex justify-content-center menu-item align-items-center'> 
+                        <div onClick={() => navigate('/agenda')} className='d-flex justify-content-center menu-item align-items-center'> 
                             <CalendarMonthIcon />
                         </div>
                     </div>
@@ -97,7 +97,7 @@ export function NavBar() {
                             <GroupAddIcon />
                             <p className='m-0'>Membros</p>
                         </div>
-                        <div className='gap-2 d-flex align-items-center menu-item' onClick={() => navigate('/painel-tarefas')}>
+                        <div className='gap-2 d-flex align-items-center menu-item' onClick={() => navigate('/tarefas')}>
                             <FactCheckIcon />
                             <p className='m-0'>Tarefas</p>
                         </div>

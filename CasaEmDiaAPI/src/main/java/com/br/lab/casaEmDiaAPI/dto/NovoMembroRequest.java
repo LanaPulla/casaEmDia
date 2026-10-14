@@ -2,7 +2,10 @@ package com.br.lab.casaEmDiaAPI.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
+import com.br.lab.casaEmDiaAPI.entities.enums.PerfilFamiliaEnum;
 
 public record NovoMembroRequest(
         @NotBlank(message = "O nome é obrigatório")
@@ -17,7 +20,8 @@ public record NovoMembroRequest(
         @Size(min = 8, max = 72, message = "A senha deve ter entre 8 e 72 caracteres")
         String senhaInicial,
 
-        //adicionar perfil de permissao
+        @NotNull(message = "O perfil é obrigatório")
+        PerfilFamiliaEnum perfil,
 
         @Size(max = 40, message = "O parentesco deve ter no máximo 40 caracteres")
         String parentesco
