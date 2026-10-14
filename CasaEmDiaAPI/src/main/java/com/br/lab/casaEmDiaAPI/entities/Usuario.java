@@ -50,7 +50,7 @@ public class Usuario {
     }
 
     public Usuario(Long familiaId, String nome, String email, String senhaHash,
-                   boolean senhaProvisoria, Perfil perfil) {
+            boolean senhaProvisoria, Perfil perfil) {
         this.familiaId = familiaId;
         this.nome = nome;
         this.email = email;
@@ -78,13 +78,47 @@ public class Usuario {
         this.senhaProvisoria = provisoria;
     }
 
-    public Long getId() { return id; }
-    public Long getFamiliaId() { return familiaId; }
-    public String getNome() { return nome; }
-    public Perfil getPerfil() { return perfil; }
-    public String getEmail() { return email; }
-    public String getSenhaHash() { return senhaHash; }
-    public boolean isAtivo() { return ativo; }
-    public boolean isSenhaProvisoria() { return senhaProvisoria; }
-    public LocalDateTime getCriadoEm() { return criadoEm; }
+    public Long getId() {
+        return id;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "familia_id", insertable = false, updatable = false)
+    private Familia familia;
+
+    public Familia getFamilia() {
+        return familia;
+    }
+
+    public Long getFamiliaId() {
+        return familiaId;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public Perfil getPerfil() {
+        return perfil;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getSenhaHash() {
+        return senhaHash;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public boolean isSenhaProvisoria() {
+        return senhaProvisoria;
+    }
+
+    public LocalDateTime getCriadoEm() {
+        return criadoEm;
+    }
 }

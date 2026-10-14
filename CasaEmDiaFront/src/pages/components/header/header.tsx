@@ -4,7 +4,9 @@ import './header.css';
 
 export function Header() {
     const navigate = useNavigate();
-    const location = useLocation(); 
+
+    const nomeFamilia = localStorage.getItem('nomeFamilia') || 'Família';
+
 
     return (
         <header className="header-container d-flex align-items-center justify-content-between px-4 py-3 bg-white">
@@ -17,7 +19,7 @@ export function Header() {
 
             <div className="header-actions d-flex align-items-center gap-3">
                 <div className="avatar-usuario">
-                    Família Tal
+                    {nomeFamilia}
                 </div>
             </div>
         </header>

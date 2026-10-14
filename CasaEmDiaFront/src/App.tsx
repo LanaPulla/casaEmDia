@@ -17,7 +17,7 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/tarefas" element={<Tarefas />} />
           <Route path="/membros" element={<Membros />} />
-          <Route path="/painel-agenda" element={<div>Página de Agenda</div>} />
+          <Route path="/agenda" element={<div>Página de Agenda</div>} />
         </Route>
 
       </Routes>
