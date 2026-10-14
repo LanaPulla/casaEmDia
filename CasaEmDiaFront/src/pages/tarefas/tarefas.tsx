@@ -1,16 +1,35 @@
 import "./tarefas.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CalendarioTarefa from "../components/tarefas/calendario";
 import CardResumo from "../components/tarefas/cardResumos";
 import NovaTarefaButton from "../components/tarefas/novaTarefaButton";
-import { USUARIOS_MOCK } from "../../data/usuariosMock";
 import ListaTarefas from "../components/tarefas/listaTarefas";
-import type { TarefaProps } from "../../types/tarefas";
+import { listarMembrosFamilia } from "../../services/familia/familia";
+import type { TarefaProps, UsuarioProps } from "../../types/tarefas";
 
 export default function Tarefas() {
     const [dataSelecionada, setDataSelecionada] = useState(new Date());
     const [tarefas, setTarefas] = useState<TarefaProps[]>([]);
+    const [usuarios, setUsuarios] = useState<UsuarioProps[]>([]);
+    const [carregandoUsuarios, setCarregandoUsuarios] = useState(true);
+    const [erroUsuarios, setErroUsuarios] = useState("");
     const [versao, setVersao] = useState(0);
+
+    useEffect(() => {
+        async function carregarMembros() {
+            try {
+                setErroUsuarios("");
+                setUsuarios(await listarMembrosFamilia());
+            } catch (error) {
+                console.error(error);
+                setErroUsuarios("Não foi possível carregar os membros da família.");
+            } finally {
+                setCarregandoUsuarios(false);
+            }
+        }
+
+        void carregarMembros();
+    }, []);
 
     function mudarDia(delta: number) {
         const novaData = new Date(dataSelecionada);
@@ -26,11 +45,21 @@ export default function Tarefas() {
                         <h1 className="tarefas-titulo">Tarefas</h1>
                         <h2 className="tarefas-subtitulo">Gerencie as tarefas da família!</h2>
                     </div>
-                    <NovaTarefaButton
-                        usuarios={USUARIOS_MOCK}
-                        onCriada={() => setVersao((v) => v + 1)}
-                    />
+                    {!carregandoUsuarios && usuarios.length > 0 && (
+                        <NovaTarefaButton
+                            usuarios={usuarios}
+                            onCriada={() => setVersao((v) => v + 1)}
+                        />
+                    )}
                 </div>
+
+                {carregandoUsuarios && <p>Carregando membros da família...</p>}
+                {erroUsuarios && (
+                    <p className="text-danger" role="alert">{erroUsuarios}</p>
+                )}
+                {!carregandoUsuarios && !erroUsuarios && usuarios.length === 0 && (
+                    <p>Cadastre ao menos um membro para criar tarefas.</p>
+                )}
 
                 <div className="tarefas-painel">
                     <CalendarioTarefa
@@ -76,7 +105,7 @@ export default function Tarefas() {
                     <ListaTarefas
                         key={versao}
                         dataSelecionada={dataSelecionada}
-                        usuarios={USUARIOS_MOCK}
+                        usuarios={usuarios}
                         tarefas={tarefas}
                         setTarefas={setTarefas}
                     />
