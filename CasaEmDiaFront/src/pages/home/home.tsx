@@ -1,94 +1,105 @@
+import { useState } from 'react';
 import './home.css';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import AddIcon from '@mui/icons-material/Add';
-import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
+
+// Importações dos seus componentes e tipos
+// IMPORTANTE: Ajuste os caminhos (../) dependendo da sua estrutura de pastas!
+import type { TarefaProps } from '../../types/tarefas'; 
+import CardResumo from '../components/tarefas/cardResumos';
 
 export function Home() {
+  const dataAtual = new Date();
+  
+  // Lógica para o cabeçalho de boas-vindas
+  const diaSemana = dataAtual.toLocaleDateString('pt-BR', { weekday: 'long' });
+  const dia = dataAtual.getDate();
+  const mes = dataAtual.toLocaleDateString('pt-BR', { month: 'long' });
+  const diaSemanaFormatado = diaSemana.charAt(0).toUpperCase() + diaSemana.slice(1);
+  const mesFormatado = mes.charAt(0).toUpperCase() + mes.slice(1);
+  const dataFormatada = `Hoje, ${diaSemanaFormatado}, ${dia} de ${mesFormatado}`;
+
+  const nomeUsuario = localStorage.getItem('nomeUsuario') || 'Família';
+
+  // --- LÓGICA DO MOCK ---
+  // Geramos a data de hoje no formato YYYY-MM-DD para bater com o filtro do CardResumo
+  const anoMock = dataAtual.getFullYear();
+  const mesMock = String(dataAtual.getMonth() + 1).padStart(2, "0");
+  const diaMock = String(dataAtual.getDate()).padStart(2, "0");
+  const dataFiltroMock = `${anoMock}-${mesMock}-${diaMock}`;
+
+  // Criamos os dados mockados baseados na sua interface TarefaProps
+  const tarefasMockadas: TarefaProps[] = [
+    {
+      id: 1,
+      titulo: "Lavar a louça do almoço",
+      responsavel: { id: 1, nome: "João", email: "joao@email.com", criado_em: "2026-01-01" },
+      prioridade: "Alta",
+      recorrencia: "Diária",
+      status: "Concluída",
+      observacao: "Usar detergente neutro",
+      data: dataFiltroMock, // Hoje
+    },
+    {
+      id: 2,
+      titulo: "Varrer a casa",
+      responsavel: { id: 2, nome: "Maria", email: "maria@email.com", criado_em: "2026-01-01" },
+      prioridade: "Média",
+      recorrencia: "Nenhuma",
+      status: "Em Andamento",
+      observacao: "",
+      data: dataFiltroMock, // Hoje
+    },
+    {
+      id: 3,
+      titulo: "Tirar o lixo",
+      responsavel: { id: 1, nome: "João", email: "joao@email.com", criado_em: "2026-01-01" },
+      prioridade: "Baixa",
+      recorrencia: "Diária",
+      status: "Pendente",
+      observacao: "Lixo reciclável",
+      data: dataFiltroMock, // Hoje
+    },
+    {
+      id: 4,
+      titulo: "Fazer o jantar",
+      responsavel: { id: 2, nome: "Maria", email: "maria@email.com", criado_em: "2026-01-01" },
+      prioridade: "Alta",
+      recorrencia: "Diária",
+      status: "Pendente",
+      observacao: "Descongelar o frango",
+      data: dataFiltroMock, // Hoje
+    }
+  ];
+
+  // Passamos o array mockado como valor inicial do estado
+  const [tarefas, setTarefas] = useState<TarefaProps[]>(tarefasMockadas);
+  // ------------------------
+
   return (
     <div className="home-container">
-      {/* CARD LATERAL DA FAMÍLIA */}
-      <aside className="familia-card">
-        <div className="familia-header">
-          <div>
-            <h3 className="familia-nome">Família Silva</h3>
-          </div>
-        </div>
-
-        <button className="btn-adicionar-tarefa">
-          <AddIcon fontSize="small" /> Adicionar Tarefa
-        </button>
-
-        <ul className="lista-resumo">
-          <li className="item-resumo ativo">
-            <CheckCircleIcon fontSize="small" /> Tarefas de Hoje (4)
-          </li>
-          <li className="item-resumo">
-            <CalendarMonthIcon fontSize="small" /> Compromissos (2)
-          </li>
-        </ul>
-      </aside>
-
-      {/* CONTEÚDO PRINCIPAL (PAINEL DADOS FAKES) */}
-      <section className="painel-conteudo">
-        {/* BANNER SUPERIOR */}
+      
+      {/* PAINEL PRINCIPAL */}
+      <div className="painel-conteudo">
         <div className="banner-agenda">
           <div className="banner-info">
             <span className="rotina-tag">
-              <ShieldOutlinedIcon fontSize="small" /> ROTINA TRANQUILA • SETEMBRO 2026
+              <CalendarMonthIcon fontSize="small" /> {dataFormatada}
             </span>
-            <h2>Agenda da Família 🗓️</h2>
-            <p>Todos os horários, caronas e compromissos do nosso lar em um só lugar.</p>
-          </div>
-          <button className="btn-novo-compromisso">
-            <CalendarMonthIcon fontSize="small" /> + Novo Compromisso
-          </button>
-        </div>
-
-        {/* FILTRO E CARDS DE CONTEÚDO */}
-        <div className="secao-filtros">
-          <h4>Filtrar por integrante da família:</h4>
-          <div className="integrantes-lista">
-            <span className="chip-integrante ativo">Todos</span>
-            <span className="chip-integrante">Mãe (Ana)</span>
-            <span className="chip-integrante">Pai (Carlos)</span>
-            <span className="chip-integrante">Filho (Lucas)</span>
+            <h2>Bem-Vindo {nomeUsuario}! 🌿</h2>
+            <p>
+              A harmonia da casa começa na cooperação de todos. Vamos deixar tudo em dia e com leveza hoje!
+            </p>
           </div>
         </div>
-
-        {/* LISTA DE DADOS DUMMY PARA TESTAR SCROLL */}
-        <div className="cards-grid">
-          <div className="card-item">
-            <span className="card-horario">08:00 - 09:00</span>
-            <h5>Levar o Lucas à Escola</h5>
-            <p>Responsável: Carlos (Pai)</p>
-          </div>
-
-          <div className="card-item">
-            <span className="card-horario">10:30 - 11:30</span>
-            <h5>Reunião do Condomínio</h5>
-            <p>Responsável: Ana (Mãe)</p>
-          </div>
-
-          <div className="card-item">
-            <span className="card-horario">14:00 - 15:00</span>
-            <h5>Consulta Dentista - Lucas</h5>
-            <p>Responsável: Ana (Mãe)</p>
-          </div>
-
-          <div className="card-item">
-            <span className="card-horario">18:00 - 19:00</span>
-            <h5>Supermercado (Feira da Semana)</h5>
-            <p>Responsável: Família</p>
-          </div>
-
-          <div className="card-item">
-            <span className="card-horario">20:00 - 21:00</span>
-            <h5>Jantar em Família</h5>
-            <p>Responsável: Todos</p>
-          </div>
+      </div>
+      
+        {/* CARD DE RESUMOS */}
+        <div className='w-100'>
+           <CardResumo telaInteira={true} dataSelecionada={dataAtual} tarefas={tarefas} />
         </div>
-      </section>
+
     </div>
   );
 }

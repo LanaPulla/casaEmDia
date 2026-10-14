@@ -7,11 +7,26 @@
   max-width: 100%;
 }
 
+.resumo-telaIntira{
+  background-color: var(--branco);
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;;
+  width: 100%;
+}
+
 .resumo-titulo {
   margin: 0 0 1rem;
   font-size: 1.15rem;
   font-weight: 700;
   color: var(--verde-escurinho);
+}
+
+.resumo-grade-telaIntira{
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
 }
 
 .resumo-grade {

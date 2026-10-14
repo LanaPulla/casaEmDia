@@ -6,6 +6,7 @@ import type { TarefaProps } from "../../../types/tarefas";
 interface CardResumoProps {
   dataSelecionada: Date;
   tarefas: TarefaProps[];
+  telaInteira?: boolean;
 }
 
 function formatarData(data: Date) {
@@ -16,7 +17,7 @@ function formatarData(data: Date) {
   return `${ano}-${mes}-${dia}`;
 }
 
-export default function CardResumo({ dataSelecionada, tarefas }: CardResumoProps) {
+export default function CardResumo({ dataSelecionada, tarefas, telaInteira }: CardResumoProps) {
   const dataFiltro = formatarData(dataSelecionada);
   const tarefasDoDia = tarefas.filter((t) => t.data === dataFiltro);
 
@@ -37,10 +38,10 @@ export default function CardResumo({ dataSelecionada, tarefas }: CardResumoProps
   ];
 
   return (
-    <div className="resumo">
+    <div className={telaInteira ? "resumo-telaIntira" : "resumo"}>
       <h3 className="resumo-titulo">Resumo do dia</h3>
 
-      <div className="resumo-grade">
+      <div className={telaInteira ? "resumo-grade-telaIntira" : "resumo-grade"}>
         {itens.map((item) => (
           <div key={item.rotulo} className="resumo-card">
             <span className="resumo-valor">{item.valor}</span>
