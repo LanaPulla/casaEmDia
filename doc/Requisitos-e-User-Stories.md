@@ -27,7 +27,7 @@ Legenda de prioridade: 🔴 **Indispensável** · 🟠 **Importante** · 🟡 **
 
 | Requisito | Prioridade | User Story |
 |---|---|---|
-| Lista de Compras | 🔴 Indispensável | Como administrador da família, quero criar uma lista de compras, para organizar os produtos que precisam ser adquiridos ou repostos. |
+| Lista de Compras | 🟡 Desejável | Como administrador da família, quero criar uma lista de compras, para organizar os produtos que precisam ser adquiridos ou repostos. |
 | Controle da Lista | 🟡 Desejável | Como membro da família, quero marcar os itens comprados, para controlar os itens já adquiridos ou repostos. |
 
 ## Agenda familiar
