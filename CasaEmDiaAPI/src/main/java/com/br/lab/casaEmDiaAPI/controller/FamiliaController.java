@@ -1,6 +1,7 @@
 package com.br.lab.casaEmDiaAPI.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +29,7 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/familia")
 public class FamiliaController {
-    
+
     private final FamiliaService service;
     private final SessaoUsuarioService sessao;
 
@@ -52,6 +53,7 @@ public class FamiliaController {
     }
 
     @PutMapping
+    @PreAuthorize("hasAuthority('GERENCIAR_FAMILIA')")
     public FamiliaResponse renomear(@Valid @RequestBody AtualizarFamiliaRequest request, HttpServletRequest http) {
         Usuario admin = sessao.exigirAdmin(http);
         return service.renomear(admin.getFamiliaId(), request);
@@ -59,19 +61,22 @@ public class FamiliaController {
 
     @PostMapping("/membros")
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('GERENCIAR_FAMILIA')")
     public UsuarioResponse adicionarMembro(@Valid @RequestBody NovoMembroRequest request, HttpServletRequest http) {
         return service.adicionarMembro(sessao.exigirAdmin(http), request);
     }
 
     @PutMapping("/membros/{id}")
+    @PreAuthorize("hasAuthority('GERENCIAR_FAMILIA')")
     public UsuarioResponse atualizarMembro(@PathVariable Long id,
-                                           @Valid @RequestBody AtualizarMembroRequest request,
-                                           HttpServletRequest http) {
+            @Valid @RequestBody AtualizarMembroRequest request,
+            HttpServletRequest http) {
         return service.atualizarMembro(sessao.exigirAdmin(http), id, request);
     }
 
     @DeleteMapping("/membros/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAuthority('GERENCIAR_FAMILIA')")
     public void desativarMembro(@PathVariable Long id, HttpServletRequest http) {
         service.desativarMembro(sessao.exigirAdmin(http), id);
     }
@@ -79,8 +84,8 @@ public class FamiliaController {
     @PostMapping("/membros/{id}/senha")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void redefinirSenha(@PathVariable Long id,
-                               @Valid @RequestBody RedefinirSenhaRequest request,
-                               HttpServletRequest http) {
+            @Valid @RequestBody RedefinirSenhaRequest request,
+            HttpServletRequest http) {
         service.redefinirSenha(sessao.exigirAdmin(http), id, request);
     }
 }
