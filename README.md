@@ -58,7 +58,7 @@ cd casaEmDia
  
 #### Back-end
  
-Na pasta `backend/`, crie um arquivo `application.properties` ou `application.yml` (se ainda não existir) com as seguintes variáveis:
+Na pasta `CasaEmDiaAPI/`, crie um arquivo `application.properties` ou `application.yml` (se ainda não existir) com as seguintes variáveis:
  
 ```properties
 # application.properties
@@ -75,7 +75,7 @@ spring.jpa.show-sql=true
  
 #### Front-end
  
-Na pasta `frontend/`, crie um arquivo `.env`:
+Na pasta `CasaEmDiaFront/`, crie um arquivo `.env`:
  
 ```env
 VITE_API_URL=http://localhost:8080
