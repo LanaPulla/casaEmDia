@@ -21,7 +21,7 @@ Legenda de prioridade: 🔴 **Indispensável** · 🟠 **Importante** · 🟡 **
 | Requisito | Prioridade | User Story |
 |---|---|---|
 | Gerenciamento de Tarefas | 🔴 Indispensável | Como administrador da família, quero gerenciar as tarefas familiares, para organizar as atividades domésticas e distribuir responsabilidades entre os membros. |
-| Atualização das Tarefas | 🟡 Desejável | Como membro da família, quero atualizar o status das tarefas, para informar o andamento das atividades. |
+| Atualização das Tarefas | 🔴 Indispensável | Como membro da família, quero atualizar o status das tarefas, para informar o andamento das atividades. |
 
 ## Lista de compras
 
