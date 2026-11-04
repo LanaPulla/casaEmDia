@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { LayoutNavHeader } from '../components/layoutNavHeader/layoutNavHeader';
-import type { EventoAgenda } from '../../types/agenda.ts';
-import { agendaMock } from '../../data/agendaMock.ts';
+import type { EventoAgenda } from '../../types/agenda';
+import { agendaMock } from '../../data/agendaMock';
 import './agendaFamilia.css';
 
 type ModoVisualizacao = 'semanal' | 'mensal';
@@ -9,7 +9,6 @@ type ModoVisualizacao = 'semanal' | 'mensal';
 export const AgendaFamiliaPage: React.FC = () => {
   const [eventos, setEventos] = useState<EventoAgenda[]>(agendaMock);
   const [modo, setModo] = useState<ModoVisualizacao>('mensal');
-  const [membroSelecionado, setMembroSelecionado] = useState<string>('TODOS');
   
   const [dataSelecionada, setDataSelecionada] = useState<Date>(new Date());
   const [diaFocado, setDiaFocado] = useState<string | null>(null);
@@ -26,7 +25,6 @@ export const AgendaFamiliaPage: React.FC = () => {
   const [formHorarioFim, setFormHorarioFim] = useState('');
   const [formLocal, setFormLocal] = useState('');
   const [formCategoria, setFormCategoria] = useState<EventoAgenda['categoria']>('FAMILIA');
-  const [formMembroId, setFormMembroId] = useState(1);
 
   const diasDaSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
@@ -83,14 +81,13 @@ export const AgendaFamiliaPage: React.FC = () => {
     return eventos.filter((ev) => ev.dataEvento === dataHojeIso).length;
   }, [eventos, dataHojeIso]);
 
+  // Filtragem ajustada: remove a verificação por membro
   const eventosFiltrados = useMemo(() => {
     return eventos.filter((evento) => {
       if (!evento.dataEvento) return false;
 
       if (diaFocado) {
-        const bateDia = evento.dataEvento === diaFocado;
-        const bateMembro = membroSelecionado === 'TODOS' || String(evento.membroId) === membroSelecionado;
-        return bateDia && bateMembro;
+        return evento.dataEvento === diaFocado;
       }
 
       const dataCompromisso = new Date(evento.dataEvento + 'T00:00:00');
@@ -108,10 +105,9 @@ export const AgendaFamiliaPage: React.FC = () => {
           dataCompromisso.getFullYear() === dataSelecionada.getFullYear();
       }
 
-      const bateMembro = membroSelecionado === 'TODOS' || String(evento.membroId) === membroSelecionado;
-      return dentroDoPeriodo && bateMembro;
+      return dentroDoPeriodo;
     });
-  }, [eventos, modo, dataSelecionada, diaFocado, membroSelecionado, diasParaExibir]);
+  }, [eventos, modo, dataSelecionada, diaFocado, diasParaExibir]);
 
   const tituloMesAno = dataSelecionada.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
 
@@ -125,7 +121,6 @@ export const AgendaFamiliaPage: React.FC = () => {
     setFormHorarioFim('10:00');
     setFormLocal('');
     setFormCategoria('FAMILIA');
-    setFormMembroId(1);
     setModalAberto(true);
   };
 
@@ -138,7 +133,6 @@ export const AgendaFamiliaPage: React.FC = () => {
     setFormHorarioFim(evento.horarioFim || '');
     setFormLocal(evento.local || '');
     setFormCategoria(evento.categoria || 'FAMILIA');
-    setFormMembroId(evento.membroId || 1);
     setModalAberto(true);
   };
 
@@ -159,7 +153,6 @@ export const AgendaFamiliaPage: React.FC = () => {
                 horarioFim: formHorarioFim,
                 local: formLocal,
                 categoria: formCategoria,
-                membroId: formMembroId,
               }
             : ev
         )
@@ -174,7 +167,6 @@ export const AgendaFamiliaPage: React.FC = () => {
         horarioFim: formHorarioFim,
         local: formLocal,
         categoria: formCategoria,
-        membroId: formMembroId,
       };
       setEventos((prev) => [...prev, novoEvento]);
     }
@@ -187,7 +179,7 @@ export const AgendaFamiliaPage: React.FC = () => {
     }
   };
 
-  return (
+return (
     <>
       <LayoutNavHeader />
       <div className="painel-tarefa agenda-painel">
@@ -212,15 +204,6 @@ export const AgendaFamiliaPage: React.FC = () => {
             </div>
 
             <div className="acoes-header-direita">
-              <div className="filtro-membro">
-                <label htmlFor="select-membro">Integrante: </label>
-                <select id="select-membro" value={membroSelecionado} onChange={(e) => setMembroSelecionado(e.target.value)}>
-                  <option value="TODOS">Todos</option>
-                  <option value="1">Membro 1</option>
-                  <option value="2">Membro 2</option>
-                </select>
-              </div>
-
               <button className="btn-novo-evento" onClick={abrirModalNovo}>
                 + Novo Evento
               </button>
@@ -371,18 +354,9 @@ export const AgendaFamiliaPage: React.FC = () => {
                   <input type="time" value={formHorarioFim} onChange={(e) => setFormHorarioFim(e.target.value)} />
                 </div>
               </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Local</label>
-                  <input type="text" value={formLocal} onChange={(e) => setFormLocal(e.target.value)} />
-                </div>
-                <div className="form-group">
-                  <label>Integrante</label>
-                  <select value={formMembroId} onChange={(e) => setFormMembroId(Number(e.target.value))}>
-                    <option value={1}>Membro 1</option>
-                    <option value={2}>Membro 2</option>
-                  </select>
-                </div>
+              <div className="form-group">
+                <label>Local</label>
+                <input type="text" value={formLocal} onChange={(e) => setFormLocal(e.target.value)} />
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn-cancelar" onClick={() => setModalAberto(false)}>Cancelar</button>

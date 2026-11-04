@@ -183,7 +183,12 @@
   border-radius: 50%;
 }
 
-/* Cards e Resumos Verde */
+/* Cards e Resumos */
+.resumo-info {
+    display: flex;
+    flex-direction: column;
+}
+
 .agenda-resumo-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -191,14 +196,14 @@
 }
 
 .card-resumo-item {
-  background-color: #ffffff;
-  border-radius: 12px;
-  padding: 14px 18px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border: 1px solid #e9ecef;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 2.5rem;
+    border-radius: 1rem;
+    background-color: var(--azul-clarissimo-nav-bar);
+    border-left: 4px solid var(--verde-escurinho);
+    transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
 .card-resumo-item.destaque-hoje { border-left: 5px solid #198754; }
@@ -235,8 +240,11 @@
 }
 
 .card-agenda-header { display: flex; justify-content: space-between; align-items: center; }
-.badge-categoria { background-color: #e8f5e9; color: #198754; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; }
-.btn-card-acao { background: none; border: none; cursor: pointer; padding: 2px 4px; }
+.card-agenda h4 { margin: 0; font-size: 18px; color: #0f5132; }
+.card-agenda p { margin: 0; font-size: 18px; color: #212529; }
+.badge-categoria { background-color: #e8f5e9; color: #198754; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; }
+.btn-card-acao { background: none; border: none; cursor: pointer; padding: 2px 4px; font-size: 0.8rem;
+  color: #495057;}
 
 .card-agenda-detalhes {
   margin-top: 8px;

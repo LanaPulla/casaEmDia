@@ -4,6 +4,7 @@ import Tarefas  from './pages/tarefas/tarefas';
 import { Home } from './pages/home/home';
 import { LayoutNavHeader } from './pages/components/layoutNavHeader/layoutNavHeader';
 import { Membros } from './pages/membros/membros';
+import { AgendaFamiliaPage } from './pages/agenda/agendaFamilia';
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/tarefas" element={<Tarefas />} />
           <Route path="/membros" element={<Membros />} />
-          <Route path="/agenda" element={<div>Página de Agenda</div>} />
+          <Route path="/agenda" element={<AgendaFamiliaPage />} />
         </Route>
 
       </Routes>
