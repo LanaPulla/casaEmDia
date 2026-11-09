@@ -59,7 +59,7 @@ export function Login() {
       // Salva o nome do usuário no localStorage do navegador para usar na tela do home como bem-vindo
       localStorage.setItem('nomeUsuario', userData.nome);
       localStorage.setItem('nomeFamilia', userData.familia);
-      // ------------------------
+      localStorage.setItem('perfilUsuario', userData.perfil.nome);
 
 
       navigate('/home');
