@@ -1,15 +1,14 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { LayoutNavHeader } from '../components/layoutNavHeader/layoutNavHeader';
-import type { EventoAgenda } from '../../types/agenda';
-import { agendaMock } from '../../data/agendaMock';
+import type { EventoAgenda } from '../../types/agenda.ts';
+import { agendaService } from '../../services/agenda/agendaService.ts';
 import './agendaFamilia.css';
 
 type ModoVisualizacao = 'semanal' | 'mensal';
 
 export const AgendaFamiliaPage: React.FC = () => {
-  const [eventos, setEventos] = useState<EventoAgenda[]>(agendaMock);
+  const [eventos, setEventos] = useState<EventoAgenda[]>([]);
   const [modo, setModo] = useState<ModoVisualizacao>('mensal');
-  
   const [dataSelecionada, setDataSelecionada] = useState<Date>(new Date());
   const [diaFocado, setDiaFocado] = useState<string | null>(null);
 
@@ -27,6 +26,19 @@ export const AgendaFamiliaPage: React.FC = () => {
   const [formCategoria, setFormCategoria] = useState<EventoAgenda['categoria']>('FAMILIA');
 
   const diasDaSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+  useEffect(() => {
+    carregarEventos();
+  }, []);
+
+  const carregarEventos = async () => {
+    try {
+      const dados = await agendaService.listarTodos();
+      setEventos(dados);
+    } catch (err) {
+      console.error('Falha ao carregar a agenda', err);
+    }
+  };
 
   const formatarDataIso = (d: Date): string => {
     const ano = d.getFullYear();
@@ -81,7 +93,6 @@ export const AgendaFamiliaPage: React.FC = () => {
     return eventos.filter((ev) => ev.dataEvento === dataHojeIso).length;
   }, [eventos, dataHojeIso]);
 
-  // Filtragem ajustada: remove a verificação por membro
   const eventosFiltrados = useMemo(() => {
     return eventos.filter((evento) => {
       if (!evento.dataEvento) return false;
@@ -111,7 +122,7 @@ export const AgendaFamiliaPage: React.FC = () => {
 
   const tituloMesAno = dataSelecionada.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
 
-  // Ações do Modal
+  // Ações do Modal com integração REST
   const abrirModalNovo = () => {
     setEventoEditando(null);
     setFormTitulo('');
@@ -136,52 +147,47 @@ export const AgendaFamiliaPage: React.FC = () => {
     setModalAberto(true);
   };
 
-  const salvarEvento = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formTitulo.trim() || !formDataEvento) return;
+  const salvarEvento = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!formTitulo.trim() || !formDataEvento) return;
 
+  const payload = {
+    titulo: formTitulo.trim(),
+    descricao: formDescricao.trim() || null,
+    dataEvento: formDataEvento,
+    horarioInicio: formHorarioInicio ? formHorarioInicio : null,
+    horarioFim: formHorarioFim ? formHorarioFim : null,
+    local: formLocal.trim() || null,
+    categoria: formCategoria,
+  };
+
+  try {
     if (eventoEditando) {
-      setEventos((prev) =>
-        prev.map((ev) =>
-          ev.id === eventoEditando.id
-            ? {
-                ...ev,
-                titulo: formTitulo,
-                descricao: formDescricao,
-                dataEvento: formDataEvento,
-                horarioInicio: formHorarioInicio,
-                horarioFim: formHorarioFim,
-                local: formLocal,
-                categoria: formCategoria,
-              }
-            : ev
-        )
-      );
+      await agendaService.atualizar(eventoEditando.id, payload);
     } else {
-      const novoEvento: EventoAgenda = {
-        id: Date.now(),
-        titulo: formTitulo,
-        descricao: formDescricao,
-        dataEvento: formDataEvento,
-        horarioInicio: formHorarioInicio,
-        horarioFim: formHorarioFim,
-        local: formLocal,
-        categoria: formCategoria,
-      };
-      setEventos((prev) => [...prev, novoEvento]);
+      await agendaService.criar(payload);
     }
+    await carregarEventos();
     setModalAberto(false);
-  };
+  } catch (err) {
+    console.error('Erro detalhado ao salvar no banco:', err);
+    alert('Erro ao salvar no banco de dados. Veja o console do navegador.');
+  }
+};
 
-  const deletarEvento = (id: number) => {
+  const deletarEvento = async (id: number) => {
     if (window.confirm('Deseja excluir este evento da agenda?')) {
-      setEventos((prev) => prev.filter((ev) => ev.id !== id));
+      try {
+        await agendaService.deletar(id);
+        await carregarEventos();
+      } catch (err) {
+        alert('Erro ao excluir evento no banco de dados');
+      }
     }
   };
 
-return (
+  return (
     <>
-      <LayoutNavHeader />
       <div className="painel-tarefa agenda-painel">
         <div className="tarefa-container">
 
