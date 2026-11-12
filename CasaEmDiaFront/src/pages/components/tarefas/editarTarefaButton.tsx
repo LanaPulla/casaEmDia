@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { exibirErro } from "../../../services/api/erroApi";
 
 import type {
   TarefaProps,
@@ -101,8 +102,7 @@ export default function EditarTarefaButton({
         observacao,
       });
     } catch (error) {
-      console.error("Erro ao atualizar tarefa:", error);
-      setErro("Não foi possível salvar as alterações. Tenta novamente.");
+      exibirErro(error, "Não foi possível salvar as alterações.");
     } finally {
       setEnviando(false);
     }

@@ -1,11 +1,10 @@
 package com.br.lab.casaEmDiaAPI.exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.FORBIDDEN)
-public class AcessoNegadoException extends RuntimeException {
+/** 403 - usuário logado, mas sem permissão para a ação. */
+public class AcessoNegadoException extends ApiException {
     public AcessoNegadoException(String mensagem) {
-        super(mensagem);
+        super(HttpStatus.FORBIDDEN, mensagem);
     }
 }

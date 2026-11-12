@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import "./login.css";
 import CottageIcon from '@mui/icons-material/Cottage';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { exibirErro, lancarSeErro } from '../../services/api/erroApi';
 
 type FormMode = 'login' | 'cadastro';
 
@@ -17,13 +18,11 @@ export function Login() {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [erro, setErro] = useState('');
   const [enviando, setEnviando] = useState(false);
 
   // Função de envio do segundo código
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setErro('');
     setEnviando(true);
 
     try {
@@ -39,21 +38,9 @@ export function Login() {
         body: JSON.stringify(body),
       });
 
-      if (response.status === 401) {
-        throw new Error('E-mail ou senha inválidos.');
-      }
-      if (response.status === 409) {
-        throw new Error('Este e-mail já está cadastrado.');
-      }
-      if (response.status === 400) {
-        throw new Error('Confira os dados. A senha deve ter entre 8 e 72 caracteres.');
-      }
-      if (!response.ok) {
-        if (response.status >= 500) {
-          throw new Error(`O servidor encontrou um erro (HTTP ${response.status}). Tente novamente mais tarde.`);
-        }
-        throw new Error(`A solicitação não foi aceita (HTTP ${response.status}). Confira os dados e tente novamente.`);
-      }
+      await lancarSeErro(response, mode === 'cadastro'
+        ? 'Não foi possível criar a conta.'
+        : 'Não foi possível entrar.');
       const userData = await response.json(); 
 
       // Salva o nome do usuário no localStorage do navegador para usar na tela do home como bem-vindo
@@ -64,9 +51,7 @@ export function Login() {
 
       navigate('/home');
     } catch (error) {
-      setErro(error instanceof TypeError
-        ? 'Não foi possível conectar à API. Verifique se o servidor está ativo e tente novamente.'
-        : error instanceof Error ? error.message : 'Ocorreu um erro inesperado.');
+      exibirErro(error, 'Ocorreu um erro inesperado. Tente novamente.');
     } finally {
       setEnviando(false);
     }
@@ -76,7 +61,6 @@ export function Login() {
   const toggleMode = (e: React.MouseEvent) => {
     e.preventDefault();
     setMode(mode === 'login' ? 'cadastro' : 'login');
-    setErro('');
   };
 
   return (
@@ -164,8 +148,6 @@ export function Login() {
               </div>
             </div>
 
-            {/* Mensagens de Erro / Sucesso */}
-            {erro && <p className="text-danger mt-2 mb-0" style={{ fontSize: '14px' }}>{erro}</p>}
 
             <button className='btn-proximo mt-3' type="submit" disabled={enviando}>
               {enviando ? 'Aguarde...' : (mode === 'login' ? 'Entrar' : 'Criar conta')}

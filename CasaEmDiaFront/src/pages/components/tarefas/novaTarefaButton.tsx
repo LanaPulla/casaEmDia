@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import type { UsuarioProps } from "../../../types/tarefas";
 import { criarTarefa } from "../../../services/tarefas/tarefas";
+import { exibirErro } from "../../../services/api/erroApi";
 
 const OPCOES_RECORRENCIA = ["Nenhuma", "Diária", "Semanal", "Mensal"] as const;
 const OPCOES_STATUS = ["Concluída", "Em Andamento", "Pendente"] as const;
@@ -27,7 +28,6 @@ export default function NovaTarefaButton({ usuarios, onCriada }: Props) {
   const [observacao, setObservacao] = useState("");
   const [data, setData] = useState(hoje());
   const [enviando, setEnviando] = useState(false);
-  const [erro, setErro] = useState("");
 
   function limpar() {
     setTitulo("");
@@ -37,13 +37,11 @@ export default function NovaTarefaButton({ usuarios, onCriada }: Props) {
     setStatus("Pendente");
     setObservacao("");
     setData(hoje());
-    setErro("");
   }
 
   async function cadastrarTarefa(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (responsavelId === "") return;
-    setErro("");
     setEnviando(true);
 
     try {
@@ -52,7 +50,7 @@ export default function NovaTarefaButton({ usuarios, onCriada }: Props) {
       setModal(false);
       onCriada?.();
     } catch (e) {
-      setErro(e instanceof Error ? e.message : "Ocorreu um erro inesperado.");
+      exibirErro(e, "Não foi possível criar a tarefa.");
     } finally {
       setEnviando(false);
     }
@@ -145,8 +143,6 @@ export default function NovaTarefaButton({ usuarios, onCriada }: Props) {
                 <textarea className="form-control" value={observacao} maxLength={500} rows={3}
                   onChange={(e) => setObservacao(e.target.value)} />
               </label>
-
-              {erro && <p className="text-danger mb-0" role="alert">{erro}</p>}
 
               <div className="d-flex justify-content-end gap-2">
                 <button className="btn btn-secondary" type="button" disabled={enviando}
