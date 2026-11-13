@@ -96,10 +96,20 @@ public class FamiliaService {
     @Transactional
     public UsuarioResponse atualizarMembro(Usuario admin, Long membroId, AtualizarMembroRequest req) {
         Usuario membro = buscarMembro(admin, membroId);
+        Perfil novoPerfil = buscarPerfil(req.perfil().name());
 
-        // Adicionar regra para ninguém altera o próprio perfil, sempre sobra ao menos um admin
+        if (membro.getId().equals(admin.getId())
+                && !membro.getPerfil().getNome().equals(novoPerfil.getNome())) {
+            throw new CustomException("Você não pode alterar o próprio perfil");
+        }
 
-        membro.atualizar(req.nome().trim());
+        if ("ADMINISTRADOR_CASA".equals(membro.getPerfil().getNome())
+                && !"ADMINISTRADOR_CASA".equals(novoPerfil.getNome())
+                && contarAdministradoresAtivos(admin.getFamiliaId()) <= 1) {
+            throw new CustomException("A família deve manter ao menos um administrador ativo");
+        }
+
+        membro.atualizar(req.nome().trim(), novoPerfil);
         return UsuarioResponse.response(membro);
     }
 
@@ -145,6 +155,13 @@ public class FamiliaService {
     private Usuario buscarMembro(Usuario admin, Long membroId) {
         return usuarioRepository.findByIdAndFamiliaId(membroId, admin.getFamiliaId())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Membro não encontrado"));
+    }
+
+    private long contarAdministradoresAtivos(Long familiaId) {
+        return usuarioRepository.findByFamiliaIdOrderByNomeAsc(familiaId).stream()
+                .filter(Usuario::isAtivo)
+                .filter(usuario -> "ADMINISTRADOR_CASA".equals(usuario.getPerfil().getNome()))
+                .count();
     }
 
     private void garantirEmailLivre(String email, Set<String> vistosNestaRequisicao) {

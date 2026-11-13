@@ -152,6 +152,29 @@
   white-space: nowrap;
 }
 
+.membro-acoes {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.membro-acoes select {
+  min-height: 2.5rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid #d6d8dd;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--preto);
+  font: inherit;
+}
+
+.membro-acoes .membros-submit {
+  min-height: 2.5rem;
+  padding: 0 0.8rem;
+  margin: 0;
+}
+
 .membros-empty {
   display: flex;
   min-height: 190px;
@@ -294,5 +317,14 @@
 
   .membros-card {
     padding: 1.15rem;
+  }
+
+  .membro-item {
+    flex-wrap: wrap;
+  }
+
+  .membro-acoes {
+    width: 100%;
+    margin-left: 3.7rem;
   }
 }

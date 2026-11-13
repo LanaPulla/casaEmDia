@@ -46,6 +46,7 @@ public class TarefaController {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasAuthority('CRIAR_TAREFA')")
     @PostMapping
     public ResponseEntity<List<TarefaResponse>> cadastrarTarefa(
             @Valid @RequestBody TarefaRequest request) {
