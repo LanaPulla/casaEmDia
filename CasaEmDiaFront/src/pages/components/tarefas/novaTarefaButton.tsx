@@ -29,6 +29,7 @@ export default function NovaTarefaButton({ usuarios, onCriada }: Props) {
   const [observacao, setObservacao] = useState("");
   const [data, setData] = useState(hoje());
   const [enviando, setEnviando] = useState(false);
+  const formularioValido = Boolean(titulo.trim() && responsavelId !== "");
 
   function limpar() {
     setTitulo("");
@@ -99,7 +100,7 @@ export default function NovaTarefaButton({ usuarios, onCriada }: Props) {
               </label>
 
               <label>
-                Data:
+                <RotuloObrigatorio>Data:</RotuloObrigatorio>
                 <input className="form-control" type="date" value={data}
                   onChange={(e) => setData(e.target.value)} />
               </label>
@@ -151,7 +152,7 @@ export default function NovaTarefaButton({ usuarios, onCriada }: Props) {
                   onClick={() => setModal(false)}>
                   Fechar
                 </button>
-                <button className="btn btn-success" type="submit" disabled={enviando}>
+                <button className="btn btn-success" type="submit" disabled={enviando || !formularioValido}>
                   {enviando ? "Criando..." : "Criar"}
                 </button>
               </div>

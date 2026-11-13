@@ -20,6 +20,9 @@ export function Login() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [enviando, setEnviando] = useState(false);
+  const formularioValido = mode === 'cadastro'
+    ? Boolean(nomeFamilia.trim() && nome.trim() && email.trim() && senha.trim())
+    : Boolean(email.trim() && senha.trim());
 
   // Função de envio do segundo código
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -151,7 +154,7 @@ export function Login() {
             </div>
 
 
-            <button className='btn-proximo mt-3' type="submit" disabled={enviando}>
+            <button className='btn-proximo mt-3' type="submit" disabled={enviando || !formularioValido}>
               {enviando ? 'Aguarde...' : (mode === 'login' ? 'Entrar' : 'Criar conta')}
               <ArrowForwardIosIcon fontSize='small' />
             </button>

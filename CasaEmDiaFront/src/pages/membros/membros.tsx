@@ -42,6 +42,8 @@ export function Membros() {
 
   // Estado para armazenar a string do perfil logado
   const [perfilUsuario, setPerfilUsuario] = useState<string | null>(null);
+  const trocaSenhaValida = Boolean(senhaAtual.trim() && novaSenha.trim());
+  const novoMembroValido = Boolean(nome.trim() && email.trim() && senhaInicial.trim() && perfil);
 
   const carregarFamilia = useCallback(async () => {
     setCarregando(true);
@@ -197,7 +199,7 @@ export function Membros() {
               <small>Use entre 8 e 72 caracteres, diferente da senha provisória.</small>
             </label>
             {sucesso && <p className="membros-alert membros-alert-success" role="status">{sucesso}</p>}
-            <button className="membros-submit" type="submit" disabled={enviando}>
+            <button className="membros-submit" type="submit" disabled={enviando || !trocaSenhaValida}>
               {enviando ? 'Atualizando...' : 'Trocar senha'}
             </button>
           </form>
@@ -319,7 +321,7 @@ export function Membros() {
                 <button
                   className="membros-submit"
                   type="submit"
-                  disabled={ehMembroSemPermissao || enviando || carregando || !familia}
+                  disabled={ehMembroSemPermissao || enviando || carregando || !familia || !novoMembroValido}
                 >
                   <PersonAddAlt1Icon fontSize="small" />
                   {enviando ? 'Adicionando...' : 'Adicionar membro'}

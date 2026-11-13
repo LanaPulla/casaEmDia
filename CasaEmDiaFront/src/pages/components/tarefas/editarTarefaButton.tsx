@@ -60,6 +60,7 @@ export default function EditarTarefaButton({
   );
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState("");
+  const formularioValido = Boolean(titulo.trim() && responsavelId !== "");
 
   // Atualiza os campos caso seja selecionada outra tarefa.
   useEffect(() => {
@@ -293,7 +294,7 @@ export default function EditarTarefaButton({
             <button
               className="btn btn-success"
               type="submit"
-              disabled={enviando}
+              disabled={enviando || !formularioValido}
             >
               {enviando ? "Salvando..." : "Salvar alterações"}
             </button>
