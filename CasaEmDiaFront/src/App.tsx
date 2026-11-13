@@ -5,6 +5,7 @@ import { Home } from './pages/home/home';
 import { LayoutNavHeader } from './pages/components/layoutNavHeader/layoutNavHeader';
 import { Membros } from './pages/membros/membros';
 import { AgendaFamiliaPage } from './pages/agenda/agendaFamilia';
+import { PrimeiroAcesso } from './pages/primeiroAcesso/primeiroAcesso';
 
 function App() {
   return (
@@ -13,8 +14,13 @@ function App() {
         {/* Rota Pública */}
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />        
+        <Route path="/primeiro-acesso" element={<PrimeiroAcesso />} />
         {/* Rotas Privadas (Com o Header/Layout) */}
-        <Route element={<LayoutNavHeader />}>
+        <Route
+          element={localStorage.getItem('senhaProvisoria') === 'true'
+            ? <Navigate to="/primeiro-acesso" replace />
+            : <LayoutNavHeader />}
+        >
           <Route path="/home" element={<Home />} />
           <Route path="/tarefas" element={<Tarefas />} />
           <Route path="/membros" element={<Membros />} />
