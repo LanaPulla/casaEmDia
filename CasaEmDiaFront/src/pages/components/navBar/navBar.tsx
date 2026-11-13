@@ -33,6 +33,7 @@ export function NavBar() {
             if (!response.ok) {
                 throw new Error(`Não foi possível encerrar a sessão (HTTP ${response.status}).`);
             }
+            localStorage.removeItem('senhaProvisoria');
             navigate('/login', { replace: true });
         } catch (error) {
             setErroLogout(error instanceof TypeError

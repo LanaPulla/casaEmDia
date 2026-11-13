@@ -38,11 +38,8 @@ export function Membros() {
   const [email, setEmail] = useState('');
   const [senhaInicial, setSenhaInicial] = useState('');
   const [perfil, setPerfil] = useState<PerfilFamilia>(PERFIS_FAMILIA.Membro);
-  const [senhaAtual, setSenhaAtual] = useState('');
-  const [novaSenha, setNovaSenha] = useState('');
   const [erro, setErro] = useState('');
   const [sucesso, setSucesso] = useState('');
-  const [trocaSenhaNecessaria, setTrocaSenhaNecessaria] = useState(false);
   const [carregando, setCarregando] = useState(true);
   const [enviando, setEnviando] = useState(false);
 
@@ -52,7 +49,6 @@ export function Membros() {
   const carregarFamilia = useCallback(async () => {
     setCarregando(true);
     setErro('');
-    setTrocaSenhaNecessaria(false);
 
     // Obtém o valor do localStorage
     let perfilSalvo = localStorage.getItem('perfilUsuario');
@@ -73,10 +69,6 @@ export function Membros() {
       const response = await fetch(`${API_URL}/api/familia`, {
         credentials: 'include',
       });
-      if (response.status === 403) {
-        setTrocaSenhaNecessaria(true);
-        return;
-      }
       if (!response.ok) {
         throw new Error(mensagemParaStatus(response.status));
       }
@@ -92,37 +84,6 @@ export function Membros() {
   useEffect(() => {
     void carregarFamilia();
   }, [carregarFamilia]);
-
-  async function trocarSenha(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setErro('');
-    setSucesso('');
-    setEnviando(true);
-
-    try {
-      const response = await fetch(`${API_URL}/api/usuario/trocar-senha`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ senhaAtual, novaSenha }),
-      });
-      if (!response.ok) {
-        if (response.status === 400) {
-          throw new Error('Confira a senha atual e escolha uma nova senha diferente, com 8 a 72 caracteres.');
-        }
-        throw new Error(mensagemParaStatus(response.status));
-      }
-
-      setSenhaAtual('');
-      setNovaSenha('');
-      setSucesso('Senha atualizada. Carregando os membros da família...');
-      await carregarFamilia();
-    } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Não foi possível trocar a senha.');
-    } finally {
-      setEnviando(false);
-    }
-  }
 
   async function adicionarMembro(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -178,53 +139,11 @@ export function Membros() {
         </div>
       </header>
 
-      {trocaSenhaNecessaria && !carregando && (
-        <section className="membros-card membros-password-card" aria-labelledby="trocar-senha-titulo">
-          <div className="membros-card-heading">
-            <div>
-              <h2 id="trocar-senha-titulo">Atualize sua senha para continuar</h2>
-              <p>Seu acesso foi criado com uma senha provisória. Troque-a para abrir a área da família.</p>
-            </div>
-          </div>
-          <form className="membros-form" onSubmit={trocarSenha}>
-            <label>
-              Senha provisória atual
-              <input
-                type="password"
-                autoComplete="current-password"
-                value={senhaAtual}
-                onChange={(event) => setSenhaAtual(event.target.value)}
-                required
-              />
-            </label>
-            <label>
-              Nova senha
-              <input
-                type="password"
-                autoComplete="new-password"
-                minLength={8}
-                maxLength={72}
-                value={novaSenha}
-                onChange={(event) => setNovaSenha(event.target.value)}
-                required
-              />
-              <small>Use entre 8 e 72 caracteres, diferente da senha provisória.</small>
-            </label>
-            {erro && <p className="membros-alert membros-alert-error" role="alert">{erro}</p>}
-            {sucesso && <p className="membros-alert membros-alert-success" role="status">{sucesso}</p>}
-            <button className="membros-submit" type="submit" disabled={enviando}>
-              {enviando ? 'Atualizando...' : 'Trocar senha'}
-            </button>
-          </form>
-        </section>
-      )}
-
-      {erro && !familia && !trocaSenhaNecessaria && !carregando && (
+      {erro && !familia && !carregando && (
         <p className="membros-alert membros-alert-error" role="alert">{erro}</p>
       )}
 
-      {!trocaSenhaNecessaria && (
-        <div className="membros-grid">
+      <div className="membros-grid">
           <section className="membros-card membros-list-card" aria-labelledby="lista-membros-titulo">
             <div className="membros-card-heading">
               <div>
@@ -344,8 +263,7 @@ export function Membros() {
               </fieldset>
             </form>
           </section>
-        </div>
-      )}
+      </div>
     </section>
   );
 }

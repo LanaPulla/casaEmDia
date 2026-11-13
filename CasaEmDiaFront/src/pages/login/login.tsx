@@ -54,15 +54,16 @@ export function Login() {
         }
         throw new Error(`A solicitação não foi aceita (HTTP ${response.status}). Confira os dados e tente novamente.`);
       }
-      const userData = await response.json(); 
+      const userData = await response.json();
 
       // Salva o nome do usuário no localStorage do navegador para usar na tela do home como bem-vindo
       localStorage.setItem('nomeUsuario', userData.nome);
       localStorage.setItem('nomeFamilia', userData.familia);
       localStorage.setItem('perfilUsuario', userData.perfil.nome);
+      const precisaTrocarSenha = mode === 'login' && userData.senhaProvisoria === true;
+      localStorage.setItem('senhaProvisoria', String(precisaTrocarSenha));
 
-
-      navigate('/home');
+      navigate(precisaTrocarSenha ? '/primeiro-acesso' : '/home', { replace: true });
     } catch (error) {
       setErro(error instanceof TypeError
         ? 'Não foi possível conectar à API. Verifique se o servidor está ativo e tente novamente.'
