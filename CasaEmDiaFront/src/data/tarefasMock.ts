@@ -1,11 +1,18 @@
 import type { TarefaProps } from "../types/tarefas";
 
+const usuario = (id: number, nome: string) => ({
+    id,
+    nome,
+    email: `${nome.toLowerCase()}@email.com`,
+    criado_em: "2026-01-01",
+});
+
 export const TAREFAS_MOCK: TarefaProps[] = [
     {
         id: 1,
-        titulo: "Lavar a louça", //text 
-        responsavel: "Ana", //
-        prioridade: "Baixa", 
+        titulo: "Lavar a louça",
+        responsavel: usuario(1, "Ana"),
+        prioridade: "Baixa",
         recorrencia: "Diária",
         status: "Pendente",
         observacao: "Não esquecer de secar os talheres",
@@ -14,7 +21,7 @@ export const TAREFAS_MOCK: TarefaProps[] = [
     {
         id: 2,
         titulo: "Limpar o banheiro",
-        responsavel: "Bruno",
+        responsavel: usuario(2, "Bruno"),
         prioridade: "Média",
         recorrencia: "Semanal",
         status: "Pendente",
@@ -24,7 +31,7 @@ export const TAREFAS_MOCK: TarefaProps[] = [
     {
         id: 3,
         titulo: "Passar roupa",
-        responsavel: "Carla",
+        responsavel: usuario(3, "Carla"),
         prioridade: "Baixa",
         recorrencia: "Semanal",
         status: "Concluída",
@@ -34,7 +41,7 @@ export const TAREFAS_MOCK: TarefaProps[] = [
     {
         id: 4,
         titulo: "Pagar as contas",
-        responsavel: "Ana",
+        responsavel: usuario(1, "Ana"),
         prioridade: "Alta",
         recorrencia: "Mensal",
         status: "Pendente",
@@ -44,7 +51,7 @@ export const TAREFAS_MOCK: TarefaProps[] = [
     {
         id: 5,
         titulo: "Trocar roupa de cama",
-        responsavel: "Bruno",
+        responsavel: usuario(2, "Bruno"),
         prioridade: "Baixa",
         recorrencia: "Semanal",
         status: "Pendente",
@@ -54,7 +61,7 @@ export const TAREFAS_MOCK: TarefaProps[] = [
     {
         id: 6,
         titulo: "Regar as plantas",
-        responsavel: "Carla",
+        responsavel: usuario(3, "Carla"),
         prioridade: "Média",
         recorrencia: "Diária",
         status: "Concluída",

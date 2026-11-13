@@ -3,7 +3,6 @@ package com.br.lab.casaEmDiaAPI.controller;
 import com.br.lab.casaEmDiaAPI.dto.EventoAgendaRequest;
 import com.br.lab.casaEmDiaAPI.dto.EventoAgendaResponse;
 import com.br.lab.casaEmDiaAPI.service.EventoAgendaService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,10 +10,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/agenda")
-@RequiredArgsConstructor
 public class EventoAgendaController {
 
     private final EventoAgendaService agendaService;
+
+    public EventoAgendaController(EventoAgendaService agendaService) {
+        this.agendaService = agendaService;
+    }
 
     @GetMapping
     public ResponseEntity<List<EventoAgendaResponse>> listarTodos() {
