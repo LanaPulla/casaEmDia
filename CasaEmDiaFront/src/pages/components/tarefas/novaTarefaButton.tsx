@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import type { UsuarioProps } from "../../../types/tarefas";
 import { criarTarefa } from "../../../services/tarefas/tarefas";
 import { exibirErro } from "../../../services/api/erroApi";
+import { LegendaObrigatorio, RotuloObrigatorio } from "../campoObrigatorio/campoObrigatorio";
 
 const OPCOES_RECORRENCIA = ["Nenhuma", "Diária", "Semanal", "Mensal"] as const;
 const OPCOES_STATUS = ["Concluída", "Em Andamento", "Pendente"] as const;
@@ -79,14 +80,15 @@ export default function NovaTarefaButton({ usuarios, onCriada }: Props) {
             <h1 className="titulo-modal fs-4 fw-bold mb-4">Nova Tarefa</h1>
 
             <form className="d-flex flex-column gap-3" onSubmit={cadastrarTarefa}>
+              <LegendaObrigatorio />
               <label>
-                Título:
+                <RotuloObrigatorio>Título:</RotuloObrigatorio>
                 <input className="form-control" type="text" value={titulo} maxLength={100}
                   onChange={(e) => setTitulo(e.target.value)} required />
               </label>
 
               <label>
-                Responsável:
+                <RotuloObrigatorio>Responsável:</RotuloObrigatorio>
                 <select className="form-select" value={responsavelId} required
                   onChange={(e) => setResponsavelId(e.target.value === "" ? "" : Number(e.target.value))}>
                   <option value="">Selecione um responsável</option>
@@ -98,7 +100,7 @@ export default function NovaTarefaButton({ usuarios, onCriada }: Props) {
 
               <label>
                 Data:
-                <input className="form-control" type="date" value={data} required
+                <input className="form-control" type="date" value={data}
                   onChange={(e) => setData(e.target.value)} />
               </label>
 

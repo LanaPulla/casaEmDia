@@ -1,0 +1,15 @@
+.asterisco-obrigatorio {
+  color: #d32f2f;
+  font-weight: bold;
+  margin-left: 0.2rem;
+}
+
+.legenda-obrigatorio {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text);
+}
+
+.legenda-obrigatorio .asterisco-obrigatorio {
+  margin-left: 0;
+}

@@ -3,6 +3,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import './membros.css';
 import { exibirErro, lancarSeErro } from '../../services/api/erroApi';
+import { LegendaObrigatorio, RotuloObrigatorio } from '../components/campoObrigatorio/campoObrigatorio';
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
 
@@ -171,8 +172,9 @@ export function Membros() {
             </div>
           </div>
           <form className="membros-form" onSubmit={trocarSenha}>
+            <LegendaObrigatorio />
             <label>
-              Senha provisória atual
+              <RotuloObrigatorio>Senha provisória atual</RotuloObrigatorio>
               <input
                 type="password"
                 autoComplete="current-password"
@@ -182,7 +184,7 @@ export function Membros() {
               />
             </label>
             <label>
-              Nova senha
+              <RotuloObrigatorio>Nova senha</RotuloObrigatorio>
               <input
                 type="password"
                 autoComplete="new-password"
@@ -264,8 +266,9 @@ export function Membros() {
             <form className="membros-form" onSubmit={adicionarMembro}>
               {/* O fieldset com disabled desabilita todos os inputs e selects de uma vez */}
               <fieldset disabled={ehMembroSemPermissao || enviando || carregando} style={{ border: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <LegendaObrigatorio />
                 <label>
-                  Nome
+                  <RotuloObrigatorio>Nome</RotuloObrigatorio>
                   <input
                     type="text"
                     autoComplete="name"
@@ -276,7 +279,7 @@ export function Membros() {
                   />
                 </label>
                 <label>
-                  E-mail
+                  <RotuloObrigatorio>E-mail</RotuloObrigatorio>
                   <input
                     type="email"
                     autoComplete="email"
@@ -286,7 +289,7 @@ export function Membros() {
                   />
                 </label>
                 <label>
-                  Perfil
+                  <RotuloObrigatorio>Perfil</RotuloObrigatorio>
                   <select
                     value={perfil}
                     onChange={(event) => setPerfil(event.target.value as PerfilFamilia)}
@@ -297,7 +300,7 @@ export function Membros() {
                   </select>
                 </label>
                 <label>
-                  Senha inicial
+                  <RotuloObrigatorio>Senha inicial</RotuloObrigatorio>
                   <input
                     type="password"
                     autoComplete="new-password"

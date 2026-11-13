@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { exibirErro } from "../../../services/api/erroApi";
+import { LegendaObrigatorio, RotuloObrigatorio } from "../campoObrigatorio/campoObrigatorio";
 
 import type {
   TarefaProps,
@@ -151,8 +152,9 @@ export default function EditarTarefaButton({
           className="d-flex flex-column gap-3"
           onSubmit={salvar}
         >
+          <LegendaObrigatorio />
           <label>
-            Título:
+            <RotuloObrigatorio>Título:</RotuloObrigatorio>
             <input
               className="form-control"
               type="text"
@@ -164,7 +166,7 @@ export default function EditarTarefaButton({
           </label>
 
           <label>
-            Responsável:
+            <RotuloObrigatorio>Responsável:</RotuloObrigatorio>
             <select
               className="form-select"
               value={responsavelId}

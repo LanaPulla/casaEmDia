@@ -4,6 +4,7 @@ import "./login.css";
 import CottageIcon from '@mui/icons-material/Cottage';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { exibirErro, lancarSeErro } from '../../services/api/erroApi';
+import { LegendaObrigatorio, RotuloObrigatorio } from '../components/campoObrigatorio/campoObrigatorio';
 
 type FormMode = 'login' | 'cadastro';
 
@@ -90,12 +91,13 @@ export function Login() {
           </p>
 
           <form className='d-flex flex-column gap-3 w-100 mt-4' onSubmit={handleSubmit}>
+            <LegendaObrigatorio />
 
             {/* Campo Nome só aparece no modo cadastro */}
             {mode === 'cadastro' && (
               <>
                 <div className='input-group'>
-                  <label htmlFor="nomeFamilia">Nome da família</label>
+                  <label htmlFor="nomeFamilia"><RotuloObrigatorio>Nome da família</RotuloObrigatorio></label>
                   <input
                     id="nomeFamilia"
                     type="text"
@@ -106,7 +108,7 @@ export function Login() {
                   />
                 </div>
                 <div className='input-group'>
-                  <label htmlFor="nome">Nome do responsável</label>
+                  <label htmlFor="nome"><RotuloObrigatorio>Nome do responsável</RotuloObrigatorio></label>
                   <input
                     id="nome"
                     type="text"
@@ -121,7 +123,7 @@ export function Login() {
             )}
 
             <div className='input-group'>
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email"><RotuloObrigatorio>Email</RotuloObrigatorio></label>
               <input 
                 id="email"
                 type="email" 
@@ -133,7 +135,7 @@ export function Login() {
             </div>
 
             <div className='input-group'>
-              <label htmlFor="senha">Senha</label>
+              <label htmlFor="senha"><RotuloObrigatorio>Senha</RotuloObrigatorio></label>
               <div className='input-with-icon'>
                 <input 
                   id="senha"

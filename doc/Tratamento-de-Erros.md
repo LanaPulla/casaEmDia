@@ -200,3 +200,30 @@ Mensagens que continuam na tela, além do alert:
   - `EventoAgendaServiceImpl` usa `req.membroId()` e `.membro(...)`, mas esses campos não
     existem em `EventoAgendaRequest` nem em `EventoAgenda`;
   - isso deve ser resolvido por quem está implementando a Agenda.
+
+---
+
+## 7. Indicação visual de campos obrigatórios
+
+Os formulários do front mostram com um **asterisco vermelho (*)** os campos que o backend
+exige. No topo de cada formulário aparece a legenda "* Campo obrigatório".
+
+Componente novo: `src/pages/components/campoObrigatorio/campoObrigatorio.tsx`
+- `<RotuloObrigatorio>Nome</RotuloObrigatorio>`: mostra o texto do rótulo seguido do `*`.
+- `<LegendaObrigatorio />`: mostra a legenda.
+
+| Formulário                  | Campos obrigatórios (*)                                 | Opcionais          |
+|-----------------------------|---------------------------------------------------------|--------------------|
+| Cadastro (login.tsx)        | Nome da família, Nome do responsável, Email, Senha      | —                  |
+| Login (login.tsx)           | Email, Senha                                            | —                  |
+| Trocar senha (membros.tsx)  | Senha provisória atual, Nova senha                      | —                  |
+| Adicionar membro (membros.tsx) | Nome, E-mail, Perfil, Senha inicial                  | —                  |
+| Nova tarefa                 | Título, Responsável                                     | Data, Observação   |
+| Editar tarefa               | Título, Responsável                                     | Observação         |
+
+Observações:
+- **Prioridade, Recorrência e Status** são obrigatórios no backend. Eles não levam `*`
+  porque o formulário já vem com um valor selecionado.
+- **Data da tarefa** é opcional. O atributo `required` foi removido do campo, e quando ela
+  fica vazia o front envia `null` e o backend usa a data de hoje.
+- O formulário da **Agenda** não foi alterado (módulo em implementação).

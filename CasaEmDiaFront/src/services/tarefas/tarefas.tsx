@@ -91,7 +91,7 @@ function paraApi(d: NovaTarefaDados) {
     recorrencia: RECORRENCIA_API[d.recorrencia],
     status: STATUS_API[d.status],
     observacao: d.observacao,
-    dataTarefa: d.data,
+    dataTarefa: d.data || null, // data é opcional: sem data, o backend usa hoje
   };
 }
 
