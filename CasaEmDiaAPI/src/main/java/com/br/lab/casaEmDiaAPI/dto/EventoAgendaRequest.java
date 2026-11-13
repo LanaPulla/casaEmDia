@@ -20,5 +20,6 @@ public record EventoAgendaRequest(
     LocalTime horarioFim,
     
     String local,
-    CategoriaAgendaEnum categoria
+    CategoriaAgendaEnum categoria,
+    Long membroId
 ) {}

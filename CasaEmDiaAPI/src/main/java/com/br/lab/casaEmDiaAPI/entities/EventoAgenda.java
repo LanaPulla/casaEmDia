@@ -39,4 +39,8 @@ public class EventoAgenda {
     @Enumerated(EnumType.STRING)
     @Column(name = "categoria")
     private CategoriaAgendaEnum categoria;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "membro_id")
+    private Usuario membro;
 }
