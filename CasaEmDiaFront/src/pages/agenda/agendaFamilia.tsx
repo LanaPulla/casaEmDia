@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { LayoutNavHeader } from '../components/layoutNavHeader/layoutNavHeader';
 import type { EventoAgenda } from '../../types/agenda.ts';
 import { agendaService } from '../../services/agenda/agendaService.ts';
 import './agendaFamilia.css';
@@ -34,9 +33,9 @@ export const AgendaFamiliaPage: React.FC = () => {
   const carregarEventos = async () => {
     try {
       const dados = await agendaService.listarTodos();
-      setEventos(dados);
+      setEventos(Array.isArray(dados) ? dados : []);
     } catch (err) {
-      console.error('Falha ao carregar a agenda', err);
+      console.error('Falha ao carregar a agenda:', err);
     }
   };
 
@@ -45,6 +44,11 @@ export const AgendaFamiliaPage: React.FC = () => {
     const mes = String(d.getMonth() + 1).padStart(2, '0');
     const dia = String(d.getDate()).padStart(2, '0');
     return `${ano}-${mes}-${dia}`;
+  };
+
+  const normalizarHora = (hora?: string | null): string => {
+    if (!hora) return '';
+    return hora.length >= 5 ? hora.slice(0, 5) : hora;
   };
 
   const dataHojeIso = formatarDataIso(new Date());
@@ -140,40 +144,40 @@ export const AgendaFamiliaPage: React.FC = () => {
     setFormTitulo(evento.titulo);
     setFormDescricao(evento.descricao || '');
     setFormDataEvento(evento.dataEvento);
-    setFormHorarioInicio(evento.horarioInicio || '');
-    setFormHorarioFim(evento.horarioFim || '');
+    setFormHorarioInicio(normalizarHora(evento.horarioInicio));
+    setFormHorarioFim(normalizarHora(evento.horarioFim));
     setFormLocal(evento.local || '');
     setFormCategoria(evento.categoria || 'FAMILIA');
     setModalAberto(true);
   };
 
   const salvarEvento = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!formTitulo.trim() || !formDataEvento) return;
+    e.preventDefault();
+    if (!formTitulo.trim() || !formDataEvento) return;
 
-  const payload = {
-    titulo: formTitulo.trim(),
-    descricao: formDescricao.trim() || null,
-    dataEvento: formDataEvento,
-    horarioInicio: formHorarioInicio ? formHorarioInicio : null,
-    horarioFim: formHorarioFim ? formHorarioFim : null,
-    local: formLocal.trim() || null,
-    categoria: formCategoria,
-  };
+    const payload: Omit<EventoAgenda, 'id'> = {
+      titulo: formTitulo.trim(),
+      descricao: formDescricao.trim() || null,
+      dataEvento: formDataEvento,
+      horarioInicio: formHorarioInicio ? normalizarHora(formHorarioInicio) : null,
+      horarioFim: formHorarioFim ? normalizarHora(formHorarioFim) : null,
+      local: formLocal.trim() || null,
+      categoria: formCategoria,
+    };
 
-  try {
-    if (eventoEditando) {
-      await agendaService.atualizar(eventoEditando.id, payload);
-    } else {
-      await agendaService.criar(payload);
+    try {
+      if (eventoEditando) {
+        await agendaService.atualizar(eventoEditando.id, payload);
+      } else {
+        await agendaService.criar(payload);
+      }
+      await carregarEventos();
+      setModalAberto(false);
+    } catch (err) {
+      console.error('Erro ao salvar evento:', err);
+      alert('Erro ao salvar no banco. Pressione F12 e veja a aba Network/Rede.');
     }
-    await carregarEventos();
-    setModalAberto(false);
-  } catch (err) {
-    console.error('Erro detalhado ao salvar no banco:', err);
-    alert('Erro ao salvar no banco de dados. Veja o console do navegador.');
-  }
-};
+  };
 
   const deletarEvento = async (id: number) => {
     if (window.confirm('Deseja excluir este evento da agenda?')) {
@@ -181,7 +185,8 @@ export const AgendaFamiliaPage: React.FC = () => {
         await agendaService.deletar(id);
         await carregarEventos();
       } catch (err) {
-        alert('Erro ao excluir evento no banco de dados');
+        console.error('Erro ao excluir evento:', err);
+        alert('Erro ao excluir evento no banco de dados.');
       }
     }
   };
@@ -218,7 +223,7 @@ export const AgendaFamiliaPage: React.FC = () => {
 
           {/* Conteúdo Principal Lado a Lado */}
           <div className="painel-conteudo agenda-lado-a-lado">
-            
+
             {/* Lado Esquerdo: Calendário */}
             <div className="agenda-coluna-calendario">
               <div className="calendario-wrapper">
@@ -302,7 +307,10 @@ export const AgendaFamiliaPage: React.FC = () => {
                       <div className="card-agenda-detalhes">
                         <span>Data: {evento.dataEvento}</span>
                         {evento.horarioInicio && (
-                          <span>Horário: {evento.horarioInicio} {evento.horarioFim ? `- ${evento.horarioFim}` : ''}</span>
+                          <span>
+                            Horário: {normalizarHora(evento.horarioInicio)}{' '}
+                            {evento.horarioFim ? `- ${normalizarHora(evento.horarioFim)}` : ''}
+                          </span>
                         )}
                         {evento.local && <span>Local: {evento.local}</span>}
                       </div>

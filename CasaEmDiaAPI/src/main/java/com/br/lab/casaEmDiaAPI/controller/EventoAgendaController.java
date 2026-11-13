@@ -3,7 +3,6 @@ package com.br.lab.casaEmDiaAPI.controller;
 import com.br.lab.casaEmDiaAPI.dto.EventoAgendaRequest;
 import com.br.lab.casaEmDiaAPI.dto.EventoAgendaResponse;
 import com.br.lab.casaEmDiaAPI.service.EventoAgendaService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +11,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/agenda")
-@RequiredArgsConstructor
 public class EventoAgendaController {
 
     private final EventoAgendaService agendaService;
+
+    public EventoAgendaController(EventoAgendaService agendaService) {
+        this.agendaService = agendaService;
+    }
 
     @PreAuthorize("hasAuthority('VER_AGENDA')")
     @GetMapping

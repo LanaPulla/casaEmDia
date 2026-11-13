@@ -3,20 +3,21 @@ package com.br.lab.casaEmDiaAPI.service;
 import com.br.lab.casaEmDiaAPI.dto.EventoAgendaRequest;
 import com.br.lab.casaEmDiaAPI.dto.EventoAgendaResponse;
 import com.br.lab.casaEmDiaAPI.entities.EventoAgenda;
-import com.br.lab.casaEmDiaAPI.entities.Usuario;
 import com.br.lab.casaEmDiaAPI.repository.EventoAgendaRepository;
-import com.br.lab.casaEmDiaAPI.repository.UsuarioRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class EventoAgendaServiceImpl implements EventoAgendaService {
 
     private final EventoAgendaRepository eventoRepository;
-    private final UsuarioRepository usuarioRepository;
+
+    public EventoAgendaServiceImpl(EventoAgendaRepository eventoRepository) {
+        this.eventoRepository = eventoRepository;
+    }
 
     @Override
     public List<EventoAgendaResponse> listarTodos() {
@@ -27,22 +28,14 @@ public class EventoAgendaServiceImpl implements EventoAgendaService {
 
     @Override
     public EventoAgendaResponse criar(EventoAgendaRequest req) {
-        Usuario membro = null;
-        if (req.membroId() != null) {
-            membro = usuarioRepository.findById(req.membroId())
-                    .orElseThrow(() -> new RuntimeException("Membro não encontrado"));
-        }
-
-        EventoAgenda evento = EventoAgenda.builder()
-                .titulo(req.titulo())
-                .descricao(req.descricao())
-                .dataEvento(req.dataEvento())
-                .horarioInicio(req.horarioInicio())
-                .horarioFim(req.horarioFim())
-                .local(req.local())
-                .categoria(req.categoria())
-                .membro(membro)
-                .build();
+        EventoAgenda evento = new EventoAgenda();
+        evento.setTitulo(req.titulo());
+        evento.setDescricao(req.descricao());
+        evento.setDataEvento(req.dataEvento());
+        evento.setHorarioInicio(req.horarioInicio());
+        evento.setHorarioFim(req.horarioFim());
+        evento.setLocal(req.local());
+        evento.setCategoria(req.categoria());
 
         return EventoAgendaResponse.fromEntity(eventoRepository.save(evento));
     }
@@ -50,13 +43,7 @@ public class EventoAgendaServiceImpl implements EventoAgendaService {
     @Override
     public EventoAgendaResponse atualizar(Long id, EventoAgendaRequest req) {
         EventoAgenda evento = eventoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
-
-        Usuario membro = null;
-        if (req.membroId() != null) {
-            membro = usuarioRepository.findById(req.membroId())
-                    .orElseThrow(() -> new RuntimeException("Membro não encontrado"));
-        }
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Evento não encontrado"));
 
         evento.setTitulo(req.titulo());
         evento.setDescricao(req.descricao());
@@ -65,13 +52,15 @@ public class EventoAgendaServiceImpl implements EventoAgendaService {
         evento.setHorarioFim(req.horarioFim());
         evento.setLocal(req.local());
         evento.setCategoria(req.categoria());
-        evento.setMembro(membro);
 
         return EventoAgendaResponse.fromEntity(eventoRepository.save(evento));
     }
 
     @Override
     public void deletar(Long id) {
+        if (!eventoRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Evento não encontrado");
+        }
         eventoRepository.deleteById(id);
     }
 }

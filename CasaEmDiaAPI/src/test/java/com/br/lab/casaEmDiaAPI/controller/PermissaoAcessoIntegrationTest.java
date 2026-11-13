@@ -87,7 +87,7 @@ class PermissaoAcessoIntegrationTest {
         when(tarefaService.criarTarefa(any())).thenReturn(List.of());
         when(eventoAgendaService.listarTodos()).thenReturn(List.of());
         when(eventoAgendaService.criar(any())).thenReturn(new EventoAgendaResponse(
-                1L, "Consulta", null, null, null, null, null, null, null));
+                1L, "Consulta", null, null, null, null, null, null));
     }
 
     @Test

@@ -1,5 +1,6 @@
 import type { EventoAgenda } from '../../types/agenda';
 
+// Deve estar exatamente desta forma:
 const API_URL = 'http://localhost:8080/api/agenda';
 
 export const agendaService = {
