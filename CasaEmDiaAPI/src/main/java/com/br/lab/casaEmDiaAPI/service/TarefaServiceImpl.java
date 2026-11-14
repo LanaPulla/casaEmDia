@@ -24,25 +24,25 @@ public class TarefaServiceImpl implements TarefaService {
     private final TarefaRepository tarefaRepository;
     private final UsuarioRepository usuarioRepository;
 
-        @Override
+    @Override
     @Transactional(readOnly = true)
-    public List<TarefaResponse> listarTodas() {
-        return tarefaRepository.findAll().stream()
+    public List<TarefaResponse> listarTodas(Long familiaId) {
+        return tarefaRepository.findByResponsavel_FamiliaId(familiaId).stream()
                 .map(TarefaResponse::de)
                 .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public TarefaResponse buscarPorId(Long id) {
-        return TarefaResponse.de(buscarEntidade(id));
+    public TarefaResponse buscarPorId(Long id, Long familiaId) {
+        return TarefaResponse.de(buscarEntidade(id, familiaId));
     }
 
     @Override
     @Transactional
-    public TarefaResponse atualizar(Long id, TarefaRequest req) {
-        Tarefa tarefa = buscarEntidade(id);
-        Usuario responsavel = buscarResponsavel(req.responsavelId());
+    public TarefaResponse atualizar(Long id, TarefaRequest req, Long familiaId) {
+        Tarefa tarefa = buscarEntidade(id, familiaId);
+        Usuario responsavel = buscarResponsavel(req.responsavelId(), familiaId);
 
         tarefa.setTitulo(req.titulo());
         tarefa.setResponsavel(responsavel);
@@ -63,17 +63,14 @@ public class TarefaServiceImpl implements TarefaService {
 
     @Override
     @Transactional
-    public void deletar(Long id) {
-        if (!tarefaRepository.existsById(id)) {
-            throw new RecursoNaoEncontradoException("Tarefa não encontrada");
-        }
-        tarefaRepository.deleteById(id);
+    public void deletar(Long id, Long familiaId) {
+        tarefaRepository.delete(buscarEntidade(id, familiaId));
     }
 
     @Override
     @Transactional
-    public List<TarefaResponse> criarTarefa(TarefaRequest req) {
-        Usuario responsavel = buscarResponsavel(req.responsavelId());
+    public List<TarefaResponse> criarTarefa(TarefaRequest req, Long familiaId) {
+        Usuario responsavel = buscarResponsavel(req.responsavelId(), familiaId);
 
         LocalDate inicio = req.dataTarefa() != null ? req.dataTarefa() : LocalDate.now();
         RecorrenciaEnum recorrencia = req.recorrencia() != null
@@ -95,15 +92,17 @@ public class TarefaServiceImpl implements TarefaService {
         return tarefaRepository.saveAll(ocorrencias).stream()
                 .map(TarefaResponse::de)
                 .toList();
-    }   
+    }
 
-    private Tarefa buscarEntidade(Long id) {
-        return tarefaRepository.findById(id)
+    /** Tarefa de outra família é tratada como inexistente (404), sem revelar que ela existe. */
+    private Tarefa buscarEntidade(Long id, Long familiaId) {
+        return tarefaRepository.findByIdAndResponsavel_FamiliaId(id, familiaId)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Tarefa não encontrada"));
     }
 
-    private Usuario buscarResponsavel(Long id) {
-        return usuarioRepository.findById(id)
-                .orElseThrow(() -> new CustomException("Responsável não encontrado"));
+    /** O responsável precisa ser membro da mesma família de quem está logado. */
+    private Usuario buscarResponsavel(Long id, Long familiaId) {
+        return usuarioRepository.findByIdAndFamiliaId(id, familiaId)
+                .orElseThrow(() -> new CustomException("Responsável não encontrado na sua família"));
     }
 }

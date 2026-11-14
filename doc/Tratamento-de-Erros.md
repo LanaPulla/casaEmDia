@@ -227,3 +227,34 @@ Observações:
 - **Data da tarefa** é opcional. O atributo `required` foi removido do campo, e quando ela
   fica vazia o front envia `null` e o backend usa a data de hoje.
 - O formulário da **Agenda** não foi alterado (módulo em implementação).
+
+---
+
+## 8. Tarefas filtradas por família
+
+**Antes:** `GET /tarefas` devolvia as tarefas de **todas** as famílias. Também dava para
+abrir, editar ou excluir a tarefa de outra família pelo `id`.
+
+**Agora:** todas as rotas de `/tarefas` exigem login e trabalham só com as tarefas da
+família do usuário logado. A família de uma tarefa é a do seu **responsável**
+(`Tarefa.responsavel.familiaId`).
+
+| Rota                   | Comportamento                                                                 |
+|------------------------|-------------------------------------------------------------------------------|
+| `GET /tarefas`         | Lista só as tarefas da família do usuário logado                              |
+| `GET /tarefas/{id}`    | 404 "Tarefa não encontrada" se a tarefa for de outra família                  |
+| `PUT /tarefas/{id}`    | 404 se a tarefa for de outra família; 400 se o responsável não for da família |
+| `DELETE /tarefas/{id}` | 404 se a tarefa for de outra família (continua exigindo `DELETAR_TAREFA`)     |
+| `POST /tarefas`        | 400 "Responsável não encontrado na sua família" se o responsável for de outra família |
+| Sem login              | 401 "Você precisa fazer login"                                                |
+
+Tarefa de outra família responde 404, e não 403, para não revelar que aquele `id` existe.
+
+Arquivos alterados:
+- **`TarefaRepository`:** novos métodos `findByResponsavel_FamiliaId` e `findByIdAndResponsavel_FamiliaId`.
+- **`TarefaService` / `TarefaServiceImpl`:** todos os métodos recebem o `familiaId`, e o
+  responsável é buscado com `usuarioRepository.findByIdAndFamiliaId`.
+- **`TarefaController`:** obtém a família do usuário com `SessaoUsuarioService.exigirLogin`.
+
+O front não precisou mudar: as chamadas de tarefas já enviam o cookie de sessão
+(`credentials: "include"`).
