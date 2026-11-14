@@ -7,13 +7,13 @@ import CalendarViewDayOutlinedIcon from '@mui/icons-material/CalendarViewDayOutl
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import LogoutIcon from '@mui/icons-material/Logout';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import { exibirErro, lancarSeErro } from '../../../services/api/erroApi';
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
 
 export function NavBar() {
     const [navBarEscondida, setNavBarEscondida] = useState(true);
     const [encerrandoSessao, setEncerrandoSessao] = useState(false);
-    const [erroLogout, setErroLogout] = useState('');
     const navigate = useNavigate();
 
     function abreFechaNavbar() {
@@ -23,7 +23,6 @@ export function NavBar() {
     async function sair() {
         if (encerrandoSessao) return;
 
-        setErroLogout('');
         setEncerrandoSessao(true);
         try {
             const response = await fetch(`${API_URL}/api/usuario/logout`, {
@@ -36,11 +35,12 @@ export function NavBar() {
             localStorage.removeItem('nomeUsuario');
             localStorage.removeItem('nomeFamilia');
             localStorage.removeItem('perfilUsuario');
+
+            await lancarSeErro(response, 'Não foi possível encerrar a sessão.');
+            
             navigate('/login', { replace: true });
         } catch (error) {
-            setErroLogout(error instanceof TypeError
-                ? 'Não foi possível conectar à API para encerrar a sessão.'
-                : error instanceof Error ? error.message : 'Não foi possível encerrar a sessão.');
+            exibirErro(error, 'Não foi possível encerrar a sessão.');
         } finally {
             setEncerrandoSessao(false);
         }
@@ -87,7 +87,6 @@ export function NavBar() {
                             <CalendarViewDayOutlinedIcon />
                         </div>
                     </div>
-                    {erroLogout && <p className='nav-logout-error' role='alert'>{erroLogout}</p>}
                 </div>
             ) : (
                 <div className='nav-bar-prof d-flex flex-column py-3 px-3'>
@@ -132,7 +131,6 @@ export function NavBar() {
                             <p className='m-0'>Fechar</p>
                         </div>
                     </div>
-                    {erroLogout && <p className='nav-logout-error' role='alert'>{erroLogout}</p>}
                 </div>
             )}
         </>

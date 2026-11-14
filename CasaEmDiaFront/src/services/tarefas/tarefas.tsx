@@ -1,20 +1,14 @@
 import type { TarefaProps, Prioridade, Recorrencia, Status } from "../../types/tarefas";
+import { lancarSeErro } from "../api/erroApi";
+
+// Mantido aqui para quem já importava ErroHttp deste módulo.
+export { ErroHttp } from "../api/erroApi";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8080";
 
 const PRIORIDADES: Prioridade[] = ["Baixa", "Média", "Alta"];
 const RECORRENCIAS: Recorrencia[] = ["Nenhuma", "Diária", "Semanal", "Mensal"];
 const STATUS: Status[] = ["Concluída", "Em Andamento", "Pendente"];
-
-export class ErroHttp extends Error {
-  readonly status: number;
-
-  constructor(status: number, message: string) {
-    super(message);
-    this.status = status;
-    this.name = "ErroHttp";
-  }
-}
 
 // Como cada enum do back espera receber o valor (todos confirmados pelo log).
 // Prioridade e Recorrência: rótulo com acento.
@@ -97,7 +91,7 @@ function paraApi(d: NovaTarefaDados) {
     recorrencia: RECORRENCIA_API[d.recorrencia],
     status: STATUS_API[d.status],
     observacao: d.observacao,
-    dataTarefa: d.data,
+    dataTarefa: d.data || null, // data é opcional: sem data, o backend usa hoje
   };
 }
 
@@ -105,7 +99,7 @@ export async function listarTarefas(): Promise<TarefaProps[]> {
   const response = await fetch(`${API_URL}/tarefas`, {
     credentials: "include",
   });
-  if (!response.ok) throw new Error("Erro ao carregar tarefas.");
+  await lancarSeErro(response, "Não foi possível carregar as tarefas.");
   const dados = await response.json();
   return dados.map(paraFront);
 }
@@ -117,7 +111,7 @@ export async function criarTarefa(dados: NovaTarefaDados): Promise<void> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(paraApi(dados)),
   });
-  if (!response.ok) throw new Error("Não foi possível criar a tarefa.");
+  await lancarSeErro(response, "Não foi possível criar a tarefa.");
 }
 
 export async function atualizarTarefa(tarefa: TarefaProps): Promise<TarefaProps> {
@@ -137,7 +131,7 @@ export async function atualizarTarefa(tarefa: TarefaProps): Promise<TarefaProps>
       })
     ),
   });
-  if (!response.ok) throw new Error("Erro ao atualizar a tarefa.");
+  await lancarSeErro(response, "Não foi possível atualizar a tarefa.");
   return paraFront(await response.json());
 }
 
@@ -146,7 +140,5 @@ export async function excluirTarefa(id: number): Promise<void> {
     method: "DELETE",
     credentials: "include",
   });
-  if (!response.ok) {
-    throw new ErroHttp(response.status, "Erro ao excluir a tarefa.");
-  }
+  await lancarSeErro(response, "Não foi possível excluir a tarefa.");
 }

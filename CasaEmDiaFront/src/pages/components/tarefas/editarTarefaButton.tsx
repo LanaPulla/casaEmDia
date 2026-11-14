@@ -1,4 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { exibirErro } from "../../../services/api/erroApi";
+import { LegendaObrigatorio, RotuloObrigatorio } from "../campoObrigatorio/campoObrigatorio";
 
 import type {
   TarefaProps,
@@ -58,6 +60,7 @@ export default function EditarTarefaButton({
   );
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState("");
+  const formularioValido = Boolean(titulo.trim() && responsavelId !== "");
 
   // Atualiza os campos caso seja selecionada outra tarefa.
   useEffect(() => {
@@ -101,8 +104,7 @@ export default function EditarTarefaButton({
         observacao,
       });
     } catch (error) {
-      console.error("Erro ao atualizar tarefa:", error);
-      setErro("Não foi possível salvar as alterações. Tenta novamente.");
+      exibirErro(error, "Não foi possível salvar as alterações.");
     } finally {
       setEnviando(false);
     }
@@ -151,8 +153,9 @@ export default function EditarTarefaButton({
           className="d-flex flex-column gap-3"
           onSubmit={salvar}
         >
+          <LegendaObrigatorio />
           <label>
-            Título:
+            <RotuloObrigatorio>Título:</RotuloObrigatorio>
             <input
               className="form-control"
               type="text"
@@ -164,7 +167,7 @@ export default function EditarTarefaButton({
           </label>
 
           <label>
-            Responsável:
+            <RotuloObrigatorio>Responsável:</RotuloObrigatorio>
             <select
               className="form-select"
               value={responsavelId}
@@ -291,7 +294,7 @@ export default function EditarTarefaButton({
             <button
               className="btn btn-success"
               type="submit"
-              disabled={enviando}
+              disabled={enviando || !formularioValido}
             >
               {enviando ? "Salvando..." : "Salvar alterações"}
             </button>
