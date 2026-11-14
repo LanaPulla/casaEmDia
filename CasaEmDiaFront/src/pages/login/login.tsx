@@ -3,10 +3,24 @@ import { useNavigate } from 'react-router-dom';
 import "./login.css";
 import CottageIcon from '@mui/icons-material/Cottage';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ErrorIcon from '@mui/icons-material/Error';
 
 type FormMode = 'login' | 'cadastro';
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
+
+type UsuarioResponse = {
+  nome: string;
+  familia: string | null;
+  perfil?: {
+    nome: string;
+  };
+};
+
+type FamiliaResponse = {
+  nome: string;
+};
 
 export function Login() {
   const navigate = useNavigate();
@@ -19,6 +33,10 @@ export function Login() {
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
   const [enviando, setEnviando] = useState(false);
+  const camposObrigatoriosPreenchidos = mode === 'cadastro'
+    ? Boolean(nomeFamilia.trim() && nome.trim() && email.trim() && senha.trim())
+    : Boolean(email.trim() && senha.trim());
+  const senhaValida = senha.length >= 8 && senha.length <= 72;
 
   // Função de envio do segundo código
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -54,13 +72,17 @@ export function Login() {
         }
         throw new Error(`A solicitação não foi aceita (HTTP ${response.status}). Confira os dados e tente novamente.`);
       }
-      const userData = await response.json(); 
-
-      // Salva o nome do usuário no localStorage do navegador para usar na tela do home como bem-vindo
-      localStorage.setItem('nomeUsuario', userData.nome);
-      localStorage.setItem('nomeFamilia', userData.familia);
-      localStorage.setItem('perfilUsuario', userData.perfil.nome);
-
+      if (mode === 'cadastro') {
+        const familia: FamiliaResponse = await response.json();
+        localStorage.setItem('nomeUsuario', nome);
+        localStorage.setItem('nomeFamilia', familia.nome);
+        localStorage.setItem('perfilUsuario', 'ADMINISTRADOR_CASA');
+      } else {
+        const usuario: UsuarioResponse = await response.json();
+        localStorage.setItem('nomeUsuario', usuario.nome);
+        localStorage.setItem('nomeFamilia', usuario.familia ?? '');
+        localStorage.setItem('perfilUsuario', usuario.perfil?.nome ?? '');
+      }
 
       navigate('/home');
     } catch (error) {
@@ -161,14 +183,26 @@ export function Login() {
                   onChange={(e) => setSenha(e.target.value)} 
                   required
                 />
+                {senha.length > 0 && (
+                  senhaValida
+                    ? <CheckCircleIcon className="password-strength-icon password-strength-valid" aria-label="Senha válida" />
+                    : <ErrorIcon className="password-strength-icon password-strength-invalid" aria-label="Senha inválida" />
+                )}
               </div>
+              {senha.length > 0 && !senhaValida && (
+                <small className="password-strength-message">Use entre 8 e 72 caracteres.</small>
+              )}
             </div>
 
             {/* Mensagens de Erro / Sucesso */}
             {erro && <p className="text-danger mt-2 mb-0" style={{ fontSize: '14px' }}>{erro}</p>}
 
-            <button className='btn-proximo mt-3' type="submit" disabled={enviando}>
-              {enviando ? 'Aguarde...' : (mode === 'login' ? 'Entrar' : 'Criar conta')}
+            <button
+              className='btn-proximo mt-3'
+              type="submit"
+              disabled={enviando || !camposObrigatoriosPreenchidos || (mode === 'cadastro' && !senhaValida)}
+            >
+              {enviando ? 'Aguarde...' : (mode === 'login' ? 'Entrar' : 'Cadastrar')}
               <ArrowForwardIosIcon fontSize='small' />
             </button>
             
