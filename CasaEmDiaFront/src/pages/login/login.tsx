@@ -6,7 +6,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
-import { exibirErro, lancarSeErro } from '../../services/api/erroApi';
+import { exibirErro } from '../../services/api/erroApi';
 import { LegendaObrigatorio, RotuloObrigatorio } from '../components/campoObrigatorio/campoObrigatorio';
 
 type FormMode = 'login' | 'cadastro';
@@ -83,6 +83,7 @@ export function Login() {
         }
         throw new Error(`A solicitação não foi aceita (HTTP ${response.status}). Confira os dados e tente novamente.`);
       }
+
       if (mode === 'cadastro') {
         const familia: FamiliaResponse = await response.json();
         localStorage.setItem('nomeUsuario', nome);
@@ -94,17 +95,6 @@ export function Login() {
         localStorage.setItem('nomeFamilia', usuario.familia ?? '');
         localStorage.setItem('perfilUsuario', usuario.perfil?.nome ?? '');
       }
-
-      await lancarSeErro(response, mode === 'cadastro'
-        ? 'Não foi possível criar a conta.'
-        : 'Não foi possível entrar.');
-      const userData = await response.json(); 
-
-      // Salva o nome do usuário no localStorage do navegador para usar na tela do home como bem-vindo
-      localStorage.setItem('nomeUsuario', userData.nome);
-      localStorage.setItem('nomeFamilia', userData.familia);
-      localStorage.setItem('perfilUsuario', userData.perfil.nome);
-
 
       navigate('/home');
     } catch (error) {
