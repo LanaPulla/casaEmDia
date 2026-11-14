@@ -136,13 +136,32 @@
 }
 
 .input-with-icon input {
-  padding-left: 2.5rem;
+  padding-right: 2.5rem;
 }
 
 .input-with-icon .icon {
   position: absolute;
-  left: 0.8rem;
+  right: 0.8rem;
   color: var(--cinza);
+}
+
+.password-strength-icon {
+  position: absolute;
+  right: 0.8rem;
+  font-size: 1.25rem !important;
+}
+
+.password-strength-valid {
+  color: #198754;
+}
+
+.password-strength-invalid {
+  color: #dc3545;
+}
+
+.password-strength-message {
+  color: #dc3545;
+  font-size: 0.78rem;
 }
 
 .btn-proximo {

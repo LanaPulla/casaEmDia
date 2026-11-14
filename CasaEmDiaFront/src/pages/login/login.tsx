@@ -3,12 +3,27 @@ import { useNavigate } from 'react-router-dom';
 import "./login.css";
 import CottageIcon from '@mui/icons-material/Cottage';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ErrorIcon from '@mui/icons-material/Error';
 import { exibirErro, lancarSeErro } from '../../services/api/erroApi';
 import { LegendaObrigatorio, RotuloObrigatorio } from '../components/campoObrigatorio/campoObrigatorio';
 
 type FormMode = 'login' | 'cadastro';
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
+
+type UsuarioResponse = {
+  nome: string;
+  familia: string | null;
+  perfil?: {
+    nome: string;
+  };
+};
+
+type FamiliaResponse = {
+  nome: string;
+};
 
 export function Login() {
   const navigate = useNavigate();
@@ -20,9 +35,20 @@ export function Login() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [enviando, setEnviando] = useState(false);
-  const formularioValido = mode === 'cadastro'
+
+  const camposObrigatoriosPreenchidos = mode === 'cadastro'
     ? Boolean(nomeFamilia.trim() && nome.trim() && email.trim() && senha.trim())
     : Boolean(email.trim() && senha.trim());
+  const senhaValida = senha.length >= 8 && senha.length <= 72;
+
+  const formularioValido = mode === 'cadastro'
+  ? Boolean(
+      nomeFamilia.trim() &&
+      nome.trim() &&
+      email.trim() &&
+      senhaValida
+    )
+  : Boolean(email.trim() && senha.trim());
 
   // Função de envio do segundo código
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -41,6 +67,33 @@ export function Login() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
+
+      if (response.status === 401) {
+        throw new Error('E-mail ou senha inválidos.');
+      }
+      if (response.status === 409) {
+        throw new Error('Este e-mail já está cadastrado.');
+      }
+      if (response.status === 400) {
+        throw new Error('Confira os dados. A senha deve ter entre 8 e 72 caracteres.');
+      }
+      if (!response.ok) {
+        if (response.status >= 500) {
+          throw new Error(`O servidor encontrou um erro (HTTP ${response.status}). Tente novamente mais tarde.`);
+        }
+        throw new Error(`A solicitação não foi aceita (HTTP ${response.status}). Confira os dados e tente novamente.`);
+      }
+      if (mode === 'cadastro') {
+        const familia: FamiliaResponse = await response.json();
+        localStorage.setItem('nomeUsuario', nome);
+        localStorage.setItem('nomeFamilia', familia.nome);
+        localStorage.setItem('perfilUsuario', 'ADMINISTRADOR_CASA');
+      } else {
+        const usuario: UsuarioResponse = await response.json();
+        localStorage.setItem('nomeUsuario', usuario.nome);
+        localStorage.setItem('nomeFamilia', usuario.familia ?? '');
+        localStorage.setItem('perfilUsuario', usuario.perfil?.nome ?? '');
+      }
 
       await lancarSeErro(response, mode === 'cadastro'
         ? 'Não foi possível criar a conta.'
@@ -150,14 +203,26 @@ export function Login() {
                   onChange={(e) => setSenha(e.target.value)} 
                   required
                 />
+                {senha.length > 0 && (
+                  senhaValida
+                    ? <CheckCircleIcon className="password-strength-icon password-strength-valid" aria-label="Senha válida" />
+                    : <ErrorIcon className="password-strength-icon password-strength-invalid" aria-label="Senha inválida" />
+                )}
               </div>
+              {senha.length > 0 && !senhaValida && (
+                <small className="password-strength-message">Use entre 8 e 72 caracteres.</small>
+              )}
             </div>
 
 
-            <button className='btn-proximo mt-3' type="submit" disabled={enviando || !formularioValido}>
-              {enviando ? 'Aguarde...' : (mode === 'login' ? 'Entrar' : 'Criar conta')}
-              <ArrowForwardIosIcon fontSize='small' />
-            </button>
+            <button
+                className="btn-proximo mt-3"
+                type="submit"
+                disabled={enviando || !formularioValido}
+              >
+                {enviando ? 'Aguarde...' : (mode === 'login' ? 'Entrar' : 'Criar conta')}
+                <ArrowForwardIosIcon fontSize="small" />
+              </button>
             
             <div className='text-center mt-3'>
               <a href="#" className='link-entrar' onClick={toggleMode}>

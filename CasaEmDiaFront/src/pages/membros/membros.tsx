@@ -149,8 +149,7 @@ export function Membros() {
     }
   }
 
-  // Regra de verificação de permissão: true se o usuário for membro da casa
-  const ehMembroSemPermissao = perfilUsuario === PERFIS_FAMILIA.Membro;
+  const ehAdministrador = perfilUsuario === PERFIS_FAMILIA.Administrador;
 
   return (
     <section className="membros-page">
@@ -249,26 +248,18 @@ export function Membros() {
             )}
           </section>
 
-          <section className="membros-card membros-form-card" aria-labelledby="novo-membro-titulo">
-            <div className="membros-card-heading">
-              <div>
-                <h2 id="novo-membro-titulo">Adicionar pessoa</h2>
-                <p>Crie o acesso para um novo integrante.</p>
+          {ehAdministrador && (
+            <section className="membros-card membros-form-card" aria-labelledby="novo-membro-titulo">
+              <div className="membros-card-heading">
+                <div>
+                  <h2 id="novo-membro-titulo">Adicionar pessoa</h2>
+                  <p>Crie o acesso para um novo integrante.</p>
+                </div>
+                <PersonAddAlt1Icon className="membros-form-icon" aria-hidden="true" />
               </div>
-              <PersonAddAlt1Icon className="membros-form-icon" aria-hidden="true" />
-            </div>
 
-            {/* Aviso opcional informando o motivo de estar bloqueado */}
-            {ehMembroSemPermissao && (
-              <p className="membros-alert membros-alert-error">
-                Apenas administradores podem cadastrar novos membros.
-              </p>
-            )}
-
-            <form className="membros-form" onSubmit={adicionarMembro}>
-              {/* O fieldset com disabled desabilita todos os inputs e selects de uma vez */}
-              <fieldset disabled={ehMembroSemPermissao || enviando || carregando} style={{ border: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <LegendaObrigatorio />
+              <form className="membros-form" onSubmit={adicionarMembro}>
+                <fieldset disabled={enviando || carregando} style={{ border: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <label>
                   <RotuloObrigatorio>Nome</RotuloObrigatorio>
                   <input
@@ -318,17 +309,18 @@ export function Membros() {
                   <p className="membros-alert membros-alert-success" role="status">{sucesso}</p>
                 )}
 
-                <button
-                  className="membros-submit"
-                  type="submit"
-                  disabled={ehMembroSemPermissao || enviando || carregando || !familia || !novoMembroValido}
-                >
-                  <PersonAddAlt1Icon fontSize="small" />
-                  {enviando ? 'Adicionando...' : 'Adicionar membro'}
-                </button>
-              </fieldset>
-            </form>
-          </section>
+                  <button
+                    className="membros-submit"
+                    type="submit"
+                    disabled={enviando || carregando || !familia}
+                  >
+                    <PersonAddAlt1Icon fontSize="small" />
+                    {enviando ? 'Adicionando...' : 'Adicionar membro'}
+                  </button>
+                </fieldset>
+              </form>
+            </section>
+          )}
         </div>
       )}
     </section>

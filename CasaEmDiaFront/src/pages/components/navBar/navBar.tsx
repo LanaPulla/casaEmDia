@@ -29,7 +29,15 @@ export function NavBar() {
                 method: 'POST',
                 credentials: 'include',
             });
+            if (!response.ok) {
+                throw new Error(`Não foi possível encerrar a sessão (HTTP ${response.status}).`);
+            }
+            localStorage.removeItem('nomeUsuario');
+            localStorage.removeItem('nomeFamilia');
+            localStorage.removeItem('perfilUsuario');
+
             await lancarSeErro(response, 'Não foi possível encerrar a sessão.');
+            
             navigate('/login', { replace: true });
         } catch (error) {
             exibirErro(error, 'Não foi possível encerrar a sessão.');
