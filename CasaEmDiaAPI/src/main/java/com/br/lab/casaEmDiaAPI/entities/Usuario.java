@@ -64,9 +64,9 @@ public class Usuario {
         this.criadoEm = LocalDateTime.now();
     }
 
-    public void atualizar(String nome) {
+    public void atualizar(String nome, Perfil perfil) {
         this.nome = nome;
-        // adicionar perfil
+        this.perfil = perfil;
     }
 
     public void desativar() {

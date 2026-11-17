@@ -14,6 +14,7 @@ type FormMode = 'login' | 'cadastro';
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
 
 type UsuarioResponse = {
+  id: number;
   nome: string;
   familia: string | null;
   perfil?: {
@@ -22,7 +23,12 @@ type UsuarioResponse = {
 };
 
 type FamiliaResponse = {
+  id: number;
   nome: string;
+  membros: Array<{
+    id: number;
+    email: string;
+  }>;
 };
 
 export function Login() {
@@ -83,14 +89,18 @@ export function Login() {
         }
         throw new Error(`A solicitação não foi aceita (HTTP ${response.status}). Confira os dados e tente novamente.`);
       }
-
       if (mode === 'cadastro') {
         const familia: FamiliaResponse = await response.json();
+        const responsavel = familia.membros.find((membro) => membro.email === email);
+        if (responsavel) {
+          localStorage.setItem('usuarioId', String(responsavel.id));
+        }
         localStorage.setItem('nomeUsuario', nome);
         localStorage.setItem('nomeFamilia', familia.nome);
         localStorage.setItem('perfilUsuario', 'ADMINISTRADOR_CASA');
       } else {
         const usuario: UsuarioResponse = await response.json();
+        localStorage.setItem('usuarioId', String(usuario.id));
         localStorage.setItem('nomeUsuario', usuario.nome);
         localStorage.setItem('nomeFamilia', usuario.familia ?? '');
         localStorage.setItem('perfilUsuario', usuario.perfil?.nome ?? '');

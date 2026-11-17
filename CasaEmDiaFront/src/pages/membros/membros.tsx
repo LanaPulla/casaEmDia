@@ -11,6 +11,7 @@ type Membro = {
   id: number;
   nome: string;
   email: string;
+  perfil: { nome: PerfilFamilia };
 };
 
 const PERFIS_FAMILIA = {
@@ -26,8 +27,17 @@ type Familia = {
   membros: Membro[];
 };
 
+function mensagemParaStatus(status: number) {
+  if (status === 400) return 'Confira os dados, o perfil escolhido e as regras para alteração.';
+  if (status === 401) return 'Sua sessão expirou. Entre novamente para gerenciar sua família.';
+  if (status === 403) return 'Você não tem permissão para gerenciar os membros desta família.';
+  if (status === 409) return 'Este e-mail já está cadastrado.';
+  return 'Não foi possível concluir a solicitação. Tente novamente.';
+}
+
 export function Membros() {
   const [familia, setFamilia] = useState<Familia | null>(null);
+  const [perfisEditados, setPerfisEditados] = useState<Record<number, PerfilFamilia>>({});
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senhaInicial, setSenhaInicial] = useState('');
@@ -76,6 +86,9 @@ export function Membros() {
       await lancarSeErro(response, 'Não foi possível carregar os membros.');
       const dados: Familia = await response.json();
       setFamilia(dados);
+      setPerfisEditados(Object.fromEntries(
+        dados.membros.map((membro) => [membro.id, membro.perfil.nome])
+      ));
     } catch (error) {
       setErro(exibirErro(error, 'Não foi possível carregar os membros.'));
     } finally {
@@ -137,6 +150,7 @@ export function Membros() {
       setFamilia((atual) =>
         atual ? { ...atual, membros: [...atual.membros, novoMembro] } : atual
       );
+      setPerfisEditados((atual) => ({ ...atual, [novoMembro.id]: novoMembro.perfil.nome }));
       setNome('');
       setEmail('');
       setSenhaInicial('');
@@ -149,7 +163,51 @@ export function Membros() {
     }
   }
 
-  const ehAdministrador = perfilUsuario === PERFIS_FAMILIA.Administrador;
+  async function atualizarPerfil(membro: Membro) {
+    setErro('');
+    setSucesso('');
+    setEnviando(true);
+
+    try {
+      const response = await fetch(`${API_URL}/api/familia/membros/${membro.id}`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nome: membro.nome,
+          perfil: perfisEditados[membro.id] ?? membro.perfil.nome,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error(mensagemParaStatus(response.status));
+      }
+
+      const membroAtualizado: Membro = await response.json();
+      setFamilia((atual) => atual
+        ? {
+            ...atual,
+            membros: atual.membros.map((item) =>
+              item.id === membroAtualizado.id ? membroAtualizado : item
+            ),
+          }
+        : atual);
+      setPerfisEditados((atual) => ({
+        ...atual,
+        [membroAtualizado.id]: membroAtualizado.perfil.nome,
+      }));
+      setSucesso(`Perfil de ${membroAtualizado.nome} atualizado. As permissões entram em vigor no próximo login.`);
+    } catch (error) {
+      setErro(error instanceof Error ? error.message : 'Não foi possível atualizar o perfil.');
+    } finally {
+      setEnviando(false);
+    }
+  }
+
+  // Regra de verificação de permissão: true se o usuário for membro da casa
+  const ehMembroSemPermissao = perfilUsuario === PERFIS_FAMILIA.Membro;
+  const podeGerenciarMembros = perfilUsuario === PERFIS_FAMILIA.Administrador;
+  const usuarioId = Number(localStorage.getItem('usuarioId'));
+  const ehAdministrador = podeGerenciarMembros;
 
   return (
     <section className="membros-page">
@@ -242,9 +300,40 @@ export function Membros() {
                       <strong>{membro.nome}</strong>
                       <span>{membro.email}</span>
                     </span>
+                    {podeGerenciarMembros && membro.id !== usuarioId && (
+                      <span className="membro-acoes">
+                        <select
+                          aria-label={`Perfil de ${membro.nome}`}
+                          value={perfisEditados[membro.id] ?? membro.perfil.nome}
+                          onChange={(event) => setPerfisEditados((atual) => ({
+                            ...atual,
+                            [membro.id]: event.target.value as PerfilFamilia,
+                          }))}
+                          disabled={enviando || carregando}
+                        >
+                          <option value={PERFIS_FAMILIA.Membro}>Membro</option>
+                          <option value={PERFIS_FAMILIA.Administrador}>Administrador</option>
+                        </select>
+                        <button
+                          className="membros-submit"
+                          type="button"
+                          onClick={() => void atualizarPerfil(membro)}
+                          disabled={enviando || carregando
+                            || (perfisEditados[membro.id] ?? membro.perfil.nome) === membro.perfil.nome}
+                        >
+                          Salvar
+                        </button>
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>
+            )}
+            {erro && familia && (
+              <p className="membros-alert membros-alert-error" role="alert">{erro}</p>
+            )}
+            {sucesso && familia && (
+              <p className="membros-alert membros-alert-success" role="status">{sucesso}</p>
             )}
           </section>
 
@@ -258,8 +347,16 @@ export function Membros() {
                 <PersonAddAlt1Icon className="membros-form-icon" aria-hidden="true" />
               </div>
 
-              <form className="membros-form" onSubmit={adicionarMembro}>
-                <fieldset disabled={enviando || carregando} style={{ border: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {/* Aviso opcional informando o motivo de estar bloqueado */}
+            {ehMembroSemPermissao && (
+              <p className="membros-alert membros-alert-error">
+                Apenas administradores podem cadastrar novos membros.
+              </p>
+            )}
+
+            <form className="membros-form" onSubmit={adicionarMembro}>
+              {/* O fieldset com disabled desabilita todos os inputs e selects de uma vez */}
+              <fieldset disabled={!podeGerenciarMembros || enviando || carregando} style={{ border: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <label>
                   <RotuloObrigatorio>Nome</RotuloObrigatorio>
                   <input
@@ -305,21 +402,17 @@ export function Membros() {
                   />
                   <small>Use entre 8 e 72 caracteres.</small>
                 </label>
-                {sucesso && (
-                  <p className="membros-alert membros-alert-success" role="status">{sucesso}</p>
-                )}
-
-                  <button
-                    className="membros-submit"
-                    type="submit"
-                    disabled={enviando || carregando || !familia}
-                  >
-                    <PersonAddAlt1Icon fontSize="small" />
-                    {enviando ? 'Adicionando...' : 'Adicionar membro'}
-                  </button>
-                </fieldset>
-              </form>
-            </section>
+                <button
+                  className="membros-submit"
+                  type="submit"
+                  disabled={!podeGerenciarMembros || enviando || carregando || !familia}
+                >
+                  <PersonAddAlt1Icon fontSize="small" />
+                  {enviando ? 'Adicionando...' : 'Adicionar membro'}
+                </button>
+              </fieldset>
+            </form>
+          </section>
           )}
         </div>
       )}
