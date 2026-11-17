@@ -6,14 +6,14 @@ import com.br.lab.casaEmDiaAPI.entities.Tarefa;
 import com.br.lab.casaEmDiaAPI.entities.Usuario;
 import com.br.lab.casaEmDiaAPI.entities.enums.RecorrenciaEnum;
 import com.br.lab.casaEmDiaAPI.entities.enums.StatusEnum;
+import com.br.lab.casaEmDiaAPI.exception.CustomException;
+import com.br.lab.casaEmDiaAPI.exception.RecursoNaoEncontradoException;
 import com.br.lab.casaEmDiaAPI.repository.TarefaRepository;
 import com.br.lab.casaEmDiaAPI.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -65,7 +65,7 @@ public class TarefaServiceImpl implements TarefaService {
     @Transactional
     public void deletar(Long id) {
         if (!tarefaRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarefa não encontrada");
+            throw new RecursoNaoEncontradoException("Tarefa não encontrada");
         }
         tarefaRepository.deleteById(id);
     }
@@ -73,9 +73,7 @@ public class TarefaServiceImpl implements TarefaService {
     @Override
     @Transactional
     public List<TarefaResponse> criarTarefa(TarefaRequest req) {
-        Usuario responsavel = usuarioRepository.findById(req.responsavelId())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST, "Responsável não encontrado"));
+        Usuario responsavel = buscarResponsavel(req.responsavelId());
 
         LocalDate inicio = req.dataTarefa() != null ? req.dataTarefa() : LocalDate.now();
         RecorrenciaEnum recorrencia = req.recorrencia() != null
@@ -101,13 +99,11 @@ public class TarefaServiceImpl implements TarefaService {
 
     private Tarefa buscarEntidade(Long id) {
         return tarefaRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Tarefa não encontrada"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Tarefa não encontrada"));
     }
 
     private Usuario buscarResponsavel(Long id) {
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST, "Responsável não encontrado"));
+                .orElseThrow(() -> new CustomException("Responsável não encontrado"));
     }
 }

@@ -24,6 +24,5 @@ public record CadastroFamiliaRequest(
         @Size(min = 8, max = 72, message = "A senha deve ter entre 8 e 72 caracteres")
         String senha,
 
-        @Valid
-        List<NovoMembroRequest> membros
+        List<@Valid NovoMembroRequest> membros
 ) {}

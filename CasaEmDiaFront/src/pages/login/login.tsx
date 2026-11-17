@@ -4,9 +4,32 @@ import "./login.css";
 import CottageIcon from '@mui/icons-material/Cottage';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ErrorIcon from '@mui/icons-material/Error';
+import { exibirErro } from '../../services/api/erroApi';
+import { LegendaObrigatorio, RotuloObrigatorio } from '../components/campoObrigatorio/campoObrigatorio';
+
 type FormMode = 'login' | 'cadastro';
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
+
+type UsuarioResponse = {
+  id: number;
+  nome: string;
+  familia: string | null;
+  perfil?: {
+    nome: string;
+  };
+};
+
+type FamiliaResponse = {
+  id: number;
+  nome: string;
+  membros: Array<{
+    id: number;
+    email: string;
+  }>;
+};
 
 export function Login() {
   const navigate = useNavigate();
@@ -17,13 +40,25 @@ export function Login() {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [erro, setErro] = useState('');
   const [enviando, setEnviando] = useState(false);
+
+  const camposObrigatoriosPreenchidos = mode === 'cadastro'
+    ? Boolean(nomeFamilia.trim() && nome.trim() && email.trim() && senha.trim())
+    : Boolean(email.trim() && senha.trim());
+  const senhaValida = senha.length >= 8 && senha.length <= 72;
+
+  const formularioValido = mode === 'cadastro'
+  ? Boolean(
+      nomeFamilia.trim() &&
+      nome.trim() &&
+      email.trim() &&
+      senhaValida
+    )
+  : Boolean(email.trim() && senha.trim());
 
   // Função de envio do segundo código
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setErro('');
     setEnviando(true);
 
     try {
@@ -54,20 +89,26 @@ export function Login() {
         }
         throw new Error(`A solicitação não foi aceita (HTTP ${response.status}). Confira os dados e tente novamente.`);
       }
-      const userData = await response.json(); 
-
-      // Salva o nome do usuário no localStorage do navegador para usar na tela do home como bem-vindo
-      localStorage.setItem('usuarioId', String(userData.id));
-      localStorage.setItem('nomeUsuario', userData.nome);
-      localStorage.setItem('nomeFamilia', userData.familia);
-      localStorage.setItem('perfilUsuario', userData.perfil.nome);
-
+      if (mode === 'cadastro') {
+        const familia: FamiliaResponse = await response.json();
+        const responsavel = familia.membros.find((membro) => membro.email === email);
+        if (responsavel) {
+          localStorage.setItem('usuarioId', String(responsavel.id));
+        }
+        localStorage.setItem('nomeUsuario', nome);
+        localStorage.setItem('nomeFamilia', familia.nome);
+        localStorage.setItem('perfilUsuario', 'ADMINISTRADOR_CASA');
+      } else {
+        const usuario: UsuarioResponse = await response.json();
+        localStorage.setItem('usuarioId', String(usuario.id));
+        localStorage.setItem('nomeUsuario', usuario.nome);
+        localStorage.setItem('nomeFamilia', usuario.familia ?? '');
+        localStorage.setItem('perfilUsuario', usuario.perfil?.nome ?? '');
+      }
 
       navigate('/home');
     } catch (error) {
-      setErro(error instanceof TypeError
-        ? 'Não foi possível conectar à API. Verifique se o servidor está ativo e tente novamente.'
-        : error instanceof Error ? error.message : 'Ocorreu um erro inesperado.');
+      exibirErro(error, 'Ocorreu um erro inesperado. Tente novamente.');
     } finally {
       setEnviando(false);
     }
@@ -77,7 +118,6 @@ export function Login() {
   const toggleMode = (e: React.MouseEvent) => {
     e.preventDefault();
     setMode(mode === 'login' ? 'cadastro' : 'login');
-    setErro('');
   };
 
   return (
@@ -107,12 +147,13 @@ export function Login() {
           </p>
 
           <form className='d-flex flex-column gap-3 w-100 mt-4' onSubmit={handleSubmit}>
+            <LegendaObrigatorio />
 
             {/* Campo Nome só aparece no modo cadastro */}
             {mode === 'cadastro' && (
               <>
                 <div className='input-group'>
-                  <label htmlFor="nomeFamilia">Nome da família</label>
+                  <label htmlFor="nomeFamilia"><RotuloObrigatorio>Nome da família</RotuloObrigatorio></label>
                   <input
                     id="nomeFamilia"
                     type="text"
@@ -123,7 +164,7 @@ export function Login() {
                   />
                 </div>
                 <div className='input-group'>
-                  <label htmlFor="nome">Nome do responsável</label>
+                  <label htmlFor="nome"><RotuloObrigatorio>Nome do responsável</RotuloObrigatorio></label>
                   <input
                     id="nome"
                     type="text"
@@ -138,7 +179,7 @@ export function Login() {
             )}
 
             <div className='input-group'>
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email"><RotuloObrigatorio>Email</RotuloObrigatorio></label>
               <input 
                 id="email"
                 type="email" 
@@ -150,7 +191,7 @@ export function Login() {
             </div>
 
             <div className='input-group'>
-              <label htmlFor="senha">Senha</label>
+              <label htmlFor="senha"><RotuloObrigatorio>Senha</RotuloObrigatorio></label>
               <div className='input-with-icon'>
                 <input 
                   id="senha"
@@ -162,16 +203,26 @@ export function Login() {
                   onChange={(e) => setSenha(e.target.value)} 
                   required
                 />
+                {senha.length > 0 && (
+                  senhaValida
+                    ? <CheckCircleIcon className="password-strength-icon password-strength-valid" aria-label="Senha válida" />
+                    : <ErrorIcon className="password-strength-icon password-strength-invalid" aria-label="Senha inválida" />
+                )}
               </div>
+              {senha.length > 0 && !senhaValida && (
+                <small className="password-strength-message">Use entre 8 e 72 caracteres.</small>
+              )}
             </div>
 
-            {/* Mensagens de Erro / Sucesso */}
-            {erro && <p className="text-danger mt-2 mb-0" style={{ fontSize: '14px' }}>{erro}</p>}
 
-            <button className='btn-proximo mt-3' type="submit" disabled={enviando}>
-              {enviando ? 'Aguarde...' : (mode === 'login' ? 'Entrar' : 'Criar conta')}
-              <ArrowForwardIosIcon fontSize='small' />
-            </button>
+            <button
+                className="btn-proximo mt-3"
+                type="submit"
+                disabled={enviando || !formularioValido}
+              >
+                {enviando ? 'Aguarde...' : (mode === 'login' ? 'Entrar' : 'Criar conta')}
+                <ArrowForwardIosIcon fontSize="small" />
+              </button>
             
             <div className='text-center mt-3'>
               <a href="#" className='link-entrar' onClick={toggleMode}>

@@ -5,6 +5,7 @@ import CardResumo from "../components/tarefas/cardResumos";
 import NovaTarefaButton from "../components/tarefas/novaTarefaButton";
 import ListaTarefas from "../components/tarefas/listaTarefas";
 import { listarMembrosFamilia } from "../../services/familia/familia";
+import { exibirErro } from "../../services/api/erroApi";
 import type { TarefaProps, UsuarioProps } from "../../types/tarefas";
 
 export default function Tarefas() {
@@ -21,8 +22,7 @@ export default function Tarefas() {
                 setErroUsuarios("");
                 setUsuarios(await listarMembrosFamilia());
             } catch (error) {
-                console.error(error);
-                setErroUsuarios("Não foi possível carregar os membros da família.");
+                setErroUsuarios(exibirErro(error, "Não foi possível carregar os membros da família."));
             } finally {
                 setCarregandoUsuarios(false);
             }

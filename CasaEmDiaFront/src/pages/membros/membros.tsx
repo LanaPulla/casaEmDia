@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import GroupIcon from '@mui/icons-material/Group';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import './membros.css';
+import { exibirErro, lancarSeErro } from '../../services/api/erroApi';
+import { LegendaObrigatorio, RotuloObrigatorio } from '../components/campoObrigatorio/campoObrigatorio';
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
 
@@ -50,6 +52,8 @@ export function Membros() {
 
   // Estado para armazenar a string do perfil logado
   const [perfilUsuario, setPerfilUsuario] = useState<string | null>(null);
+  const trocaSenhaValida = Boolean(senhaAtual.trim() && novaSenha.trim());
+  const novoMembroValido = Boolean(nome.trim() && email.trim() && senhaInicial.trim() && perfil);
 
   const carregarFamilia = useCallback(async () => {
     setCarregando(true);
@@ -79,16 +83,14 @@ export function Membros() {
         setTrocaSenhaNecessaria(true);
         return;
       }
-      if (!response.ok) {
-        throw new Error(mensagemParaStatus(response.status));
-      }
+      await lancarSeErro(response, 'Não foi possível carregar os membros.');
       const dados: Familia = await response.json();
       setFamilia(dados);
       setPerfisEditados(Object.fromEntries(
         dados.membros.map((membro) => [membro.id, membro.perfil.nome])
       ));
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Não foi possível carregar os membros.');
+      setErro(exibirErro(error, 'Não foi possível carregar os membros.'));
     } finally {
       setCarregando(false);
     }
@@ -111,19 +113,14 @@ export function Membros() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ senhaAtual, novaSenha }),
       });
-      if (!response.ok) {
-        if (response.status === 400) {
-          throw new Error('Confira a senha atual e escolha uma nova senha diferente, com 8 a 72 caracteres.');
-        }
-        throw new Error(mensagemParaStatus(response.status));
-      }
+      await lancarSeErro(response, 'Não foi possível trocar a senha.');
 
       setSenhaAtual('');
       setNovaSenha('');
       setSucesso('Senha atualizada. Carregando os membros da família...');
       await carregarFamilia();
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Não foi possível trocar a senha.');
+      exibirErro(error, 'Não foi possível trocar a senha.');
     } finally {
       setEnviando(false);
     }
@@ -147,9 +144,7 @@ export function Membros() {
           perfil,
         }),
       });
-      if (!response.ok) {
-        throw new Error(mensagemParaStatus(response.status));
-      }
+      await lancarSeErro(response, 'Não foi possível adicionar o membro.');
 
       const novoMembro: Membro = await response.json();
       setFamilia((atual) =>
@@ -162,7 +157,7 @@ export function Membros() {
       setPerfil(PERFIS_FAMILIA.Membro);
       setSucesso('Membro adicionado à família.');
     } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Não foi possível adicionar o membro.');
+      exibirErro(error, 'Não foi possível adicionar o membro.');
     } finally {
       setEnviando(false);
     }
@@ -212,6 +207,7 @@ export function Membros() {
   const ehMembroSemPermissao = perfilUsuario === PERFIS_FAMILIA.Membro;
   const podeGerenciarMembros = perfilUsuario === PERFIS_FAMILIA.Administrador;
   const usuarioId = Number(localStorage.getItem('usuarioId'));
+  const ehAdministrador = podeGerenciarMembros;
 
   return (
     <section className="membros-page">
@@ -235,8 +231,9 @@ export function Membros() {
             </div>
           </div>
           <form className="membros-form" onSubmit={trocarSenha}>
+            <LegendaObrigatorio />
             <label>
-              Senha provisória atual
+              <RotuloObrigatorio>Senha provisória atual</RotuloObrigatorio>
               <input
                 type="password"
                 autoComplete="current-password"
@@ -246,7 +243,7 @@ export function Membros() {
               />
             </label>
             <label>
-              Nova senha
+              <RotuloObrigatorio>Nova senha</RotuloObrigatorio>
               <input
                 type="password"
                 autoComplete="new-password"
@@ -258,9 +255,8 @@ export function Membros() {
               />
               <small>Use entre 8 e 72 caracteres, diferente da senha provisória.</small>
             </label>
-            {erro && <p className="membros-alert membros-alert-error" role="alert">{erro}</p>}
             {sucesso && <p className="membros-alert membros-alert-success" role="status">{sucesso}</p>}
-            <button className="membros-submit" type="submit" disabled={enviando}>
+            <button className="membros-submit" type="submit" disabled={enviando || !trocaSenhaValida}>
               {enviando ? 'Atualizando...' : 'Trocar senha'}
             </button>
           </form>
@@ -341,14 +337,15 @@ export function Membros() {
             )}
           </section>
 
-          <section className="membros-card membros-form-card" aria-labelledby="novo-membro-titulo">
-            <div className="membros-card-heading">
-              <div>
-                <h2 id="novo-membro-titulo">Adicionar pessoa</h2>
-                <p>Crie o acesso para um novo integrante.</p>
+          {ehAdministrador && (
+            <section className="membros-card membros-form-card" aria-labelledby="novo-membro-titulo">
+              <div className="membros-card-heading">
+                <div>
+                  <h2 id="novo-membro-titulo">Adicionar pessoa</h2>
+                  <p>Crie o acesso para um novo integrante.</p>
+                </div>
+                <PersonAddAlt1Icon className="membros-form-icon" aria-hidden="true" />
               </div>
-              <PersonAddAlt1Icon className="membros-form-icon" aria-hidden="true" />
-            </div>
 
             {/* Aviso opcional informando o motivo de estar bloqueado */}
             {ehMembroSemPermissao && (
@@ -361,7 +358,7 @@ export function Membros() {
               {/* O fieldset com disabled desabilita todos os inputs e selects de uma vez */}
               <fieldset disabled={!podeGerenciarMembros || enviando || carregando} style={{ border: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <label>
-                  Nome
+                  <RotuloObrigatorio>Nome</RotuloObrigatorio>
                   <input
                     type="text"
                     autoComplete="name"
@@ -372,7 +369,7 @@ export function Membros() {
                   />
                 </label>
                 <label>
-                  E-mail
+                  <RotuloObrigatorio>E-mail</RotuloObrigatorio>
                   <input
                     type="email"
                     autoComplete="email"
@@ -382,7 +379,7 @@ export function Membros() {
                   />
                 </label>
                 <label>
-                  Perfil
+                  <RotuloObrigatorio>Perfil</RotuloObrigatorio>
                   <select
                     value={perfil}
                     onChange={(event) => setPerfil(event.target.value as PerfilFamilia)}
@@ -393,7 +390,7 @@ export function Membros() {
                   </select>
                 </label>
                 <label>
-                  Senha inicial
+                  <RotuloObrigatorio>Senha inicial</RotuloObrigatorio>
                   <input
                     type="password"
                     autoComplete="new-password"
@@ -416,6 +413,7 @@ export function Membros() {
               </fieldset>
             </form>
           </section>
+          )}
         </div>
       )}
     </section>

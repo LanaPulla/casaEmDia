@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,6 +20,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(Customizer.withDefaults())
                 .formLogin(formLogin -> formLogin.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .exceptionHandling(exceptions -> exceptions
@@ -31,6 +33,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/tarefas/*").hasAuthority("DELETAR_TAREFA")
                         .requestMatchers(HttpMethod.GET, "/api/agenda").hasAuthority("VER_AGENDA")
                         .requestMatchers(HttpMethod.POST, "/api/agenda").hasAuthority("CRIAR_COMPROMISSO")
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/usuario/login",
+                                "/api/usuario/logout",
+                                "/api/familia").permitAll()
                         .anyRequest().permitAll());
 
         return http.build();
