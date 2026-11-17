@@ -1,11 +1,10 @@
 package com.br.lab.casaEmDiaAPI.exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.UNAUTHORIZED)
-public class NaoAutenticadoException extends RuntimeException {
+/** 401 - não há sessão ativa. */
+public class NaoAutenticadoException extends ApiException {
     public NaoAutenticadoException() {
-        super("Você precisa fazer login");
+        super(HttpStatus.UNAUTHORIZED, "Você precisa fazer login");
     }
 }

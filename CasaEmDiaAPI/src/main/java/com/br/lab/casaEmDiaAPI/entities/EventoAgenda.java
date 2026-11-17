@@ -2,6 +2,7 @@ package com.br.lab.casaEmDiaAPI.entities;
 
 import com.br.lab.casaEmDiaAPI.entities.enums.CategoriaAgendaEnum;
 import jakarta.persistence.*;
+import lombok.Builder;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -34,12 +35,23 @@ public class EventoAgenda {
     @Column(name = "categoria")
     private CategoriaAgendaEnum categoria;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "membro_id")
+    private Usuario membro;
+
     public EventoAgenda() {
     }
 
     public EventoAgenda(Long id, String titulo, String descricao, LocalDate dataEvento,
                         LocalTime horarioInicio, LocalTime horarioFim, String local,
                         CategoriaAgendaEnum categoria) {
+        this(id, titulo, descricao, dataEvento, horarioInicio, horarioFim, local, categoria, null);
+    }
+
+    @Builder
+    public EventoAgenda(Long id, String titulo, String descricao, LocalDate dataEvento,
+                        LocalTime horarioInicio, LocalTime horarioFim, String local,
+                        CategoriaAgendaEnum categoria, Usuario membro) {
         this.id = id;
         this.titulo = titulo;
         this.descricao = descricao;
@@ -48,6 +60,7 @@ public class EventoAgenda {
         this.horarioFim = horarioFim;
         this.local = local;
         this.categoria = categoria;
+        this.membro = membro;
     }
 
     public Long getId() { return id; }
@@ -73,4 +86,7 @@ public class EventoAgenda {
 
     public CategoriaAgendaEnum getCategoria() { return categoria; }
     public void setCategoria(CategoriaAgendaEnum categoria) { this.categoria = categoria; }
+
+    public Usuario getMembro() { return membro; }
+    public void setMembro(Usuario membro) { this.membro = membro; }
 }

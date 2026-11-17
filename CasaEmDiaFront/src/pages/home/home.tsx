@@ -1,13 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './home.css';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import AddIcon from '@mui/icons-material/Add';
 
-// Importações dos seus componentes e tipos
-// IMPORTANTE: Ajuste os caminhos (../) dependendo da sua estrutura de pastas!
-import type { TarefaProps } from '../../types/tarefas'; 
+import type { TarefaProps } from '../../types/tarefas';
 import CardResumo from '../components/tarefas/cardResumos';
+import { listarTarefas } from '../../services/tarefas/tarefas';
 
 export function Home() {
   const dataAtual = new Date();
@@ -21,61 +18,25 @@ export function Home() {
   const dataFormatada = `Hoje, ${diaSemanaFormatado}, ${dia} de ${mesFormatado}`;
 
   const nomeUsuario = localStorage.getItem('nomeUsuario') || 'Família';
+  const [tarefas, setTarefas] = useState<TarefaProps[]>([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState('');
 
-  // --- LÓGICA DO MOCK ---
-  // Geramos a data de hoje no formato YYYY-MM-DD para bater com o filtro do CardResumo
-  const anoMock = dataAtual.getFullYear();
-  const mesMock = String(dataAtual.getMonth() + 1).padStart(2, "0");
-  const diaMock = String(dataAtual.getDate()).padStart(2, "0");
-  const dataFiltroMock = `${anoMock}-${mesMock}-${diaMock}`;
-
-  // Criamos os dados mockados baseados na sua interface TarefaProps
-  const tarefasMockadas: TarefaProps[] = [
-    {
-      id: 1,
-      titulo: "Lavar a louça do almoço",
-      responsavel: { id: 1, nome: "João", email: "joao@email.com", criado_em: "2026-01-01" },
-      prioridade: "Alta",
-      recorrencia: "Diária",
-      status: "Concluída",
-      observacao: "Usar detergente neutro",
-      data: dataFiltroMock, // Hoje
-    },
-    {
-      id: 2,
-      titulo: "Varrer a casa",
-      responsavel: { id: 2, nome: "Maria", email: "maria@email.com", criado_em: "2026-01-01" },
-      prioridade: "Média",
-      recorrencia: "Nenhuma",
-      status: "Em Andamento",
-      observacao: "",
-      data: dataFiltroMock, // Hoje
-    },
-    {
-      id: 3,
-      titulo: "Tirar o lixo",
-      responsavel: { id: 1, nome: "João", email: "joao@email.com", criado_em: "2026-01-01" },
-      prioridade: "Baixa",
-      recorrencia: "Diária",
-      status: "Pendente",
-      observacao: "Lixo reciclável",
-      data: dataFiltroMock, // Hoje
-    },
-    {
-      id: 4,
-      titulo: "Fazer o jantar",
-      responsavel: { id: 2, nome: "Maria", email: "maria@email.com", criado_em: "2026-01-01" },
-      prioridade: "Alta",
-      recorrencia: "Diária",
-      status: "Pendente",
-      observacao: "Descongelar o frango",
-      data: dataFiltroMock, // Hoje
+  useEffect(() => {
+    async function carregarTarefas() {
+      try {
+        setErro('');
+        setTarefas(await listarTarefas());
+      } catch (error) {
+        console.error(error);
+        setErro('Não foi possível carregar as tarefas.');
+      } finally {
+        setCarregando(false);
+      }
     }
-  ];
 
-  // Passamos o array mockado como valor inicial do estado
-  const [tarefas, setTarefas] = useState<TarefaProps[]>(tarefasMockadas);
-  // ------------------------
+    void carregarTarefas();
+  }, []);
 
   return (
     <div className="home-container">
@@ -97,7 +58,11 @@ export function Home() {
       
         {/* CARD DE RESUMOS */}
         <div className='w-100'>
-           <CardResumo telaInteira={true} dataSelecionada={dataAtual} tarefas={tarefas} />
+           {carregando && <p>Carregando tarefas...</p>}
+           {erro && <p className="text-danger" role="alert">{erro}</p>}
+           {!carregando && !erro && (
+             <CardResumo telaInteira={true} dataSelecionada={dataAtual} tarefas={tarefas} />
+           )}
         </div>
 
     </div>

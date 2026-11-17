@@ -23,6 +23,7 @@ export const AgendaFamiliaPage: React.FC = () => {
   const [formHorarioFim, setFormHorarioFim] = useState('');
   const [formLocal, setFormLocal] = useState('');
   const [formCategoria, setFormCategoria] = useState<EventoAgenda['categoria']>('FAMILIA');
+  const formularioEventoValido = Boolean(formTitulo.trim() && formDataEvento);
 
   const diasDaSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
@@ -374,7 +375,7 @@ export const AgendaFamiliaPage: React.FC = () => {
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn-cancelar" onClick={() => setModalAberto(false)}>Cancelar</button>
-                <button type="submit" className="btn-salvar">Salvar</button>
+                <button type="submit" className="btn-salvar" disabled={!formularioEventoValido}>Salvar</button>
               </div>
             </form>
           </div>

@@ -47,6 +47,7 @@ public class FamiliaController {
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public FamiliaResponse detalhar(HttpServletRequest http) {
         Usuario usuario = sessao.exigirLogin(http);
         return service.detalhar(usuario.getFamiliaId());

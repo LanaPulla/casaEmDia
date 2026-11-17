@@ -13,8 +13,8 @@ import {
   listarTarefas,
   atualizarTarefa,
   excluirTarefa,
-  ErroHttp,
 } from "../../../services/tarefas/tarefas";
+import { exibirErro } from "../../../services/api/erroApi";
 
 interface ListaTarefasProps {
   dataSelecionada: Date;
@@ -32,18 +32,15 @@ export default function ListaTarefas({
   const [tarefaEditando, setTarefaEditando] =
     useState<TarefaProps | null>(null);
   const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState("");
 
   const carregarTarefas = useCallback(async () => {
     setCarregando(true);
-    setErro("");
 
     try {
       const dados = await listarTarefas();
       setTarefas(dados);
     } catch (error) {
-      console.error(error);
-      setErro("Não foi possível carregar as tarefas.");
+      exibirErro(error, "Não foi possível carregar as tarefas.");
     } finally {
       setCarregando(false);
     }
@@ -61,12 +58,9 @@ export default function ListaTarefas({
     );
 
     setTarefaEditando(null);
-    setErro("");
   }
 
   async function alternarConclusao(tarefa: TarefaProps) {
-    setErro("");
-
     try {
       const salva = await atualizarTarefa({
         ...tarefa,
@@ -77,8 +71,7 @@ export default function ListaTarefas({
         lista.map((item) => (item.id === salva.id ? salva : item))
       );
     } catch (error) {
-      console.error(error);
-      setErro("Não foi possível atualizar o status.");
+      exibirErro(error, "Não foi possível atualizar o status.");
     }
   }
 
@@ -88,8 +81,6 @@ export default function ListaTarefas({
     );
 
     if (!confirmou) return;
-
-    setErro("");
 
     try {
       await excluirTarefa(tarefa.id);
@@ -102,12 +93,7 @@ export default function ListaTarefas({
         setTarefaEditando(null);
       }
     } catch (error) {
-      console.error(error);
-      if (error instanceof ErroHttp && error.status === 403) {
-        setErro("Você não tem permissão para excluir a tarefa.");
-        return;
-      }
-      setErro("Não foi possível excluir a tarefa.");
+      exibirErro(error, "Não foi possível excluir a tarefa.");
     }
   }
 
@@ -117,12 +103,6 @@ export default function ListaTarefas({
 
   return (
     <>
-      {erro && (
-        <p className="text-danger" role="alert">
-          {erro}
-        </p>
-      )}
-
       <CardTarefa
         dataSelecionada={dataSelecionada}
         tarefas={tarefas}

@@ -1,4 +1,5 @@
 import type { UsuarioProps } from "../../types/tarefas";
+import { lancarSeErro } from "../api/erroApi";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8080";
 
@@ -17,9 +18,7 @@ export async function listarMembrosFamilia(): Promise<UsuarioProps[]> {
     credentials: "include",
   });
 
-  if (!response.ok) {
-    throw new Error("Não foi possível carregar os membros da família.");
-  }
+  await lancarSeErro(response, "Não foi possível carregar os membros da família.");
 
   const familia: FamiliaResponse = await response.json();
 

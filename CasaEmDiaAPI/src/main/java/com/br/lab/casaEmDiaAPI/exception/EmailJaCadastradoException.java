@@ -1,11 +1,10 @@
 package com.br.lab.casaEmDiaAPI.exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.CONFLICT)
-public class EmailJaCadastradoException extends RuntimeException {
+/** 409 - e-mail já usado por outro usuário. */
+public class EmailJaCadastradoException extends ApiException {
     public EmailJaCadastradoException(String email) {
-        super("E-mail já cadastrado: " + email);
+        super(HttpStatus.CONFLICT, "E-mail já cadastrado: " + email);
     }
 }
