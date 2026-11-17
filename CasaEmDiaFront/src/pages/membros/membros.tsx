@@ -53,7 +53,6 @@ export function Membros() {
   // Estado para armazenar a string do perfil logado
   const [perfilUsuario, setPerfilUsuario] = useState<string | null>(null);
   const trocaSenhaValida = Boolean(senhaAtual.trim() && novaSenha.trim());
-  const novoMembroValido = Boolean(nome.trim() && email.trim() && senhaInicial.trim() && perfil);
 
   const carregarFamilia = useCallback(async () => {
     setCarregando(true);
@@ -262,13 +261,12 @@ export function Membros() {
           </form>
         </section>
       )}
-
       {erro && !familia && !trocaSenhaNecessaria && !carregando && (
         <p className="membros-alert membros-alert-error" role="alert">{erro}</p>
       )}
 
       {!trocaSenhaNecessaria && (
-        <div className="membros-grid">
+      <div className="membros-grid">
           <section className="membros-card membros-list-card" aria-labelledby="lista-membros-titulo">
             <div className="membros-card-heading">
               <div>

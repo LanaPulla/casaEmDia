@@ -35,6 +35,7 @@ export function NavBar() {
             localStorage.removeItem('nomeUsuario');
             localStorage.removeItem('nomeFamilia');
             localStorage.removeItem('perfilUsuario');
+            localStorage.removeItem('senhaProvisoria');
 
             await lancarSeErro(response, 'Não foi possível encerrar a sessão.');
             

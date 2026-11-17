@@ -1,0 +1,109 @@
+@import "../../variables.css";
+
+.primeiro-acesso-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 1.5rem;
+  background: var(--backgroundSistema);
+  font-family: var(--sans);
+}
+
+.primeiro-acesso-card {
+  width: min(100%, 480px);
+  padding: clamp(1.5rem, 5vw, 3rem);
+  border-radius: 16px;
+  background: var(--branco);
+  box-shadow: var(--shadow);
+}
+
+.primeiro-acesso-icon {
+  display: grid;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin-bottom: 1.5rem;
+  place-items: center;
+  border-radius: 1rem;
+  background: var(--azul-clarissimo);
+  color: var(--verde-escurinho);
+}
+
+.primeiro-acesso-icon svg {
+  font-size: 2rem;
+}
+
+.primeiro-acesso-eyebrow {
+  color: var(--verde-escurinho);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+}
+
+.primeiro-acesso-card h1 {
+  margin: 0.45rem 0 0.6rem;
+  color: var(--preto);
+  font-size: clamp(1.6rem, 5vw, 2rem);
+  font-weight: 800;
+}
+
+.primeiro-acesso-intro {
+  margin: 0 0 1.5rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.primeiro-acesso-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.primeiro-acesso-form label {
+  margin-top: 0.4rem;
+  color: var(--preto);
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.primeiro-acesso-form input {
+  width: 100%;
+  min-height: 2.9rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--cinza-claro);
+  border-radius: 8px;
+  background: var(--azul-clarissimo-nav-bar);
+  font: inherit;
+}
+
+.primeiro-acesso-form input:focus {
+  border-color: var(--verde-escurinho);
+  outline: 3px solid rgb(35 153 84 / 14%);
+}
+
+.primeiro-acesso-form small {
+  color: var(--text);
+  font-size: 0.8rem;
+}
+
+.primeiro-acesso-error {
+  margin: 0.25rem 0 0;
+  color: #b42318;
+  font-size: 0.9rem;
+}
+
+.primeiro-acesso-form button {
+  min-height: 3rem;
+  margin-top: 0.75rem;
+  border: 0;
+  border-radius: 9px;
+  background: var(--verde-escurinho);
+  color: var(--branco);
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.primeiro-acesso-form button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}

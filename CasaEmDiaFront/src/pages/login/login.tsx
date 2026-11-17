@@ -17,6 +17,7 @@ type UsuarioResponse = {
   id: number;
   nome: string;
   familia: string | null;
+  senhaProvisoria?: boolean;
   perfil?: {
     nome: string;
   };
@@ -42,9 +43,6 @@ export function Login() {
   const [senha, setSenha] = useState('');
   const [enviando, setEnviando] = useState(false);
 
-  const camposObrigatoriosPreenchidos = mode === 'cadastro'
-    ? Boolean(nomeFamilia.trim() && nome.trim() && email.trim() && senha.trim())
-    : Boolean(email.trim() && senha.trim());
   const senhaValida = senha.length >= 8 && senha.length <= 72;
 
   const formularioValido = mode === 'cadastro'
@@ -98,15 +96,19 @@ export function Login() {
         localStorage.setItem('nomeUsuario', nome);
         localStorage.setItem('nomeFamilia', familia.nome);
         localStorage.setItem('perfilUsuario', 'ADMINISTRADOR_CASA');
+        localStorage.removeItem('senhaProvisoria');
       } else {
         const usuario: UsuarioResponse = await response.json();
         localStorage.setItem('usuarioId', String(usuario.id));
         localStorage.setItem('nomeUsuario', usuario.nome);
         localStorage.setItem('nomeFamilia', usuario.familia ?? '');
         localStorage.setItem('perfilUsuario', usuario.perfil?.nome ?? '');
+        const precisaTrocarSenha = usuario.senhaProvisoria === true;
+        localStorage.setItem('senhaProvisoria', String(precisaTrocarSenha));
       }
 
-      navigate('/home');
+      const precisaTrocarSenha = localStorage.getItem('senhaProvisoria') === 'true';
+      navigate(precisaTrocarSenha ? '/primeiro-acesso' : '/home', { replace: true });
     } catch (error) {
       exibirErro(error, 'Ocorreu um erro inesperado. Tente novamente.');
     } finally {
