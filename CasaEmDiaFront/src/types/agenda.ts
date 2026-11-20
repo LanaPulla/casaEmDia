@@ -7,4 +7,6 @@ export interface EventoAgenda {
   horarioFim?: string | null;
   local?: string | null;
   categoria?: 'FAMILIA' | 'CONSULTA' | 'ESCOLA' | 'LAZER' | 'OUTROS';
+  familiaId?: number;
+  usuarioId?: number;
 }

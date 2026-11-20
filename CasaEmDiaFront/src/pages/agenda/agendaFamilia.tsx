@@ -23,7 +23,6 @@ export const AgendaFamiliaPage: React.FC = () => {
   const [formHorarioFim, setFormHorarioFim] = useState('');
   const [formLocal, setFormLocal] = useState('');
   const [formCategoria, setFormCategoria] = useState<EventoAgenda['categoria']>('FAMILIA');
-  const formularioEventoValido = Boolean(formTitulo.trim() && formDataEvento);
 
   const diasDaSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
@@ -127,7 +126,6 @@ export const AgendaFamiliaPage: React.FC = () => {
 
   const tituloMesAno = dataSelecionada.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
 
-  // Ações do Modal com integração REST
   const abrirModalNovo = () => {
     setEventoEditando(null);
     setFormTitulo('');
@@ -174,9 +172,9 @@ export const AgendaFamiliaPage: React.FC = () => {
       }
       await carregarEventos();
       setModalAberto(false);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Erro ao salvar evento:', err);
-      alert('Erro ao salvar no banco. Pressione F12 e veja a aba Network/Rede.');
+      alert(`Erro ao salvar no banco: ${err?.message || 'verifique o terminal da API.'}`);
     }
   };
 
@@ -185,9 +183,9 @@ export const AgendaFamiliaPage: React.FC = () => {
       try {
         await agendaService.deletar(id);
         await carregarEventos();
-      } catch (err) {
+      } catch (err: any) {
         console.error('Erro ao excluir evento:', err);
-        alert('Erro ao excluir evento no banco de dados.');
+        alert(`Erro ao excluir evento: ${err?.message || 'verifique o terminal da API.'}`);
       }
     }
   };
@@ -375,7 +373,7 @@ export const AgendaFamiliaPage: React.FC = () => {
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn-cancelar" onClick={() => setModalAberto(false)}>Cancelar</button>
-                <button type="submit" className="btn-salvar" disabled={!formularioEventoValido}>Salvar</button>
+                <button type="submit" className="btn-salvar">Salvar</button>
               </div>
             </form>
           </div>

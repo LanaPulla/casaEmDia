@@ -21,5 +21,5 @@ public record EventoAgendaRequest(
 
     String local,
     CategoriaAgendaEnum categoria,
-    Long membroId
+    Long usuarioId
 ) {}
