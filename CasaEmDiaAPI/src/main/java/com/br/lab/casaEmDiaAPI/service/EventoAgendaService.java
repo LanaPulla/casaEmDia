@@ -6,7 +6,7 @@ import com.br.lab.casaEmDiaAPI.dto.EventoAgendaResponse;
 import java.util.List;
 
 public interface EventoAgendaService {
-    List<EventoAgendaResponse> listarTodos();
+    List<EventoAgendaResponse> listarPorUsuario(Long usuarioId);
     EventoAgendaResponse criar(EventoAgendaRequest request);
     EventoAgendaResponse atualizar(Long id, EventoAgendaRequest request);
     void deletar(Long id);

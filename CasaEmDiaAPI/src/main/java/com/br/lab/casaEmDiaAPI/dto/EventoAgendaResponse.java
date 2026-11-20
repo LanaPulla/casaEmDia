@@ -22,7 +22,8 @@ public record EventoAgendaResponse(
     LocalTime horarioFim,
 
     String local,
-    CategoriaAgendaEnum categoria
+    CategoriaAgendaEnum categoria,
+    Long familiaId
 ) {
     public static EventoAgendaResponse fromEntity(EventoAgenda e) {
         return new EventoAgendaResponse(
@@ -33,7 +34,8 @@ public record EventoAgendaResponse(
             e.getHorarioInicio(),
             e.getHorarioFim(),
             e.getLocal(),
-            e.getCategoria()
+            e.getCategoria(),
+            e.getFamiliaId()
         );
     }
 }

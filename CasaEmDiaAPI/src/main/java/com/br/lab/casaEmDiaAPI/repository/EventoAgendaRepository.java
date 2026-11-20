@@ -9,7 +9,6 @@ import java.util.List;
 
 @Repository
 public interface EventoAgendaRepository extends JpaRepository<EventoAgenda, Long> {
-    List<EventoAgenda> findByMembroId(Long membroId);
-
-    List<EventoAgenda> findByDataEventoBetween(LocalDate inicio, LocalDate fim);
+    List<EventoAgenda> findByFamiliaId(Long familiaId);
+    List<EventoAgenda> findByFamiliaIdAndDataEventoBetween(Long familiaId, LocalDate inicio, LocalDate fim);
 }

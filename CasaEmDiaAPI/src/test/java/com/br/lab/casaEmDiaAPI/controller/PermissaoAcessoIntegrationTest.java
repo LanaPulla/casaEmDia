@@ -85,9 +85,9 @@ class PermissaoAcessoIntegrationTest {
         when(familiaService.detalhar(1L)).thenReturn(new FamiliaResponse(1L, "Família", List.of()));
         when(familiaService.renomear(anyLong(), any())).thenReturn(new FamiliaResponse(1L, "Nova família", List.of()));
         when(tarefaService.criarTarefa(any())).thenReturn(List.of());
-        when(eventoAgendaService.listarTodos()).thenReturn(List.of());
+        when(eventoAgendaService.listarPorUsuario(anyLong())).thenReturn(List.of());
         when(eventoAgendaService.criar(any())).thenReturn(new EventoAgendaResponse(
-                1L, "Consulta", null, null, null, null, null, null));
+        1L, "Consulta", null, null, null, null, null, null, null));
     }
 
     @Test
