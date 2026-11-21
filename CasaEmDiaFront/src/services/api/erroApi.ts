@@ -78,7 +78,11 @@ export function mensagemDeErro(
   if (ehFalhaDeConexao(error)) {
     return "Não foi possível conectar ao servidor. Verifique se a API está em execução e tente novamente.";
   }
-  // Erros de código (bugs) não são mostrados crus ao usuário; ficam no console.
+  // Mensagens lançadas pelo próprio app com `new Error("...")` são exibidas.
+  // Erros de código (TypeError, ReferenceError...) não são mostrados crus; ficam no console.
+  if (error instanceof Error && error.constructor === Error && error.message) {
+    return error.message;
+  }
   return padrao;
 }
 
