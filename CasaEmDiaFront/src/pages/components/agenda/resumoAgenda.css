@@ -1,0 +1,15 @@
+/* Na home o resumo já fica dentro do card branco (.resumo-telaIntira),
+   então removemos o fundo/sombra extra do painel interno. */
+.painel-conteudo.agenda-lado-a-lado.resumo-agenda-conteudo {
+  padding: 0;
+  box-shadow: none;
+  background-color: transparent;
+}
+
+.resumo-agenda-conteudo .dia-celula {
+  cursor: default;
+}
+
+.resumo-agenda-conteudo .dia-celula:not(.fora-do-mes) {
+  cursor: pointer;
+}

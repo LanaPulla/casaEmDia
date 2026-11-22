@@ -33,6 +33,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/tarefas/*").hasAuthority("DELETAR_TAREFA")
                         .requestMatchers(HttpMethod.GET, "/api/agenda").hasAuthority("VER_AGENDA")
                         .requestMatchers(HttpMethod.POST, "/api/agenda").hasAuthority("CRIAR_COMPROMISSO")
+                        .requestMatchers(HttpMethod.DELETE, "/api/agenda/*").hasAuthority("DELETAR_EVENTO")
                         .requestMatchers(HttpMethod.POST,
                                 "/api/usuario/login",
                                 "/api/usuario/logout",

@@ -15,6 +15,7 @@ import {
   excluirTarefa,
 } from "../../../services/tarefas/tarefas";
 import { exibirErro } from "../../../services/api/erroApi";
+import { podeExcluir } from "../../../util/permissoes";
 
 interface ListaTarefasProps {
   dataSelecionada: Date;
@@ -107,7 +108,7 @@ export default function ListaTarefas({
         dataSelecionada={dataSelecionada}
         tarefas={tarefas}
         onDetalhes={(tarefa) => setTarefaEditando(tarefa)}
-        onExcluir={removerTarefa}
+        onExcluir={podeExcluir() ? removerTarefa : undefined}
         onAlternarConclusao={alternarConclusao}
       />
 

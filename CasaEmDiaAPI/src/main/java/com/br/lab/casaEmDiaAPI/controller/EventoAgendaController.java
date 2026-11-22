@@ -3,7 +3,10 @@ package com.br.lab.casaEmDiaAPI.controller;
 import com.br.lab.casaEmDiaAPI.dto.EventoAgendaRequest;
 import com.br.lab.casaEmDiaAPI.dto.EventoAgendaResponse;
 import com.br.lab.casaEmDiaAPI.service.EventoAgendaService;
+import com.br.lab.casaEmDiaAPI.service.SessaoUsuarioService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,9 +16,11 @@ import java.util.List;
 public class EventoAgendaController {
 
     private final EventoAgendaService agendaService;
+    private final SessaoUsuarioService sessao;
 
-    public EventoAgendaController(EventoAgendaService agendaService) {
+    public EventoAgendaController(EventoAgendaService agendaService, SessaoUsuarioService sessao) {
         this.agendaService = agendaService;
+        this.sessao = sessao;
     }
 
     @GetMapping
@@ -33,9 +38,10 @@ public class EventoAgendaController {
         return ResponseEntity.ok(agendaService.atualizar(id, request));
     }
 
+    @PreAuthorize("hasAuthority('DELETAR_EVENTO')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        agendaService.deletar(id);
+    public ResponseEntity<Void> deletar(@PathVariable Long id, HttpServletRequest http) {
+        agendaService.deletar(id, sessao.exigirLogin(http).getFamiliaId());
         return ResponseEntity.noContent().build();
     }
 }

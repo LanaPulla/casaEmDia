@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import type { EventoAgenda } from '../../types/agenda.ts';
 import { agendaService } from '../../services/agenda/agendaService.ts';
 import './agendaFamilia.css';
+import { podeExcluir } from '../../util/permissoes';
 
 type ModoVisualizacao = 'semanal' | 'mensal';
 
@@ -10,6 +11,7 @@ export const AgendaFamiliaPage: React.FC = () => {
   const [modo, setModo] = useState<ModoVisualizacao>('mensal');
   const [dataSelecionada, setDataSelecionada] = useState<Date>(new Date());
   const [diaFocado, setDiaFocado] = useState<string | null>(null);
+  const podeExcluirEvento = podeExcluir();
 
   // Modal (Criar / Editar)
   const [modalAberto, setModalAberto] = useState<boolean>(false);
@@ -298,7 +300,9 @@ export const AgendaFamiliaPage: React.FC = () => {
                         <span className="badge-categoria">{evento.categoria || 'EVENTO'}</span>
                         <div className="acoes-card-evento">
                           <button className="btn-card-acao" onClick={() => abrirModalEdicao(evento)}>Editar</button>
-                          <button className="btn-card-acao" onClick={() => deletarEvento(evento.id)}>Excluir</button>
+                          {podeExcluirEvento && (
+                            <button className="btn-card-acao" onClick={() => deletarEvento(evento.id)}>Excluir</button>
+                          )}
                         </div>
                       </div>
                       <h4>{evento.titulo}</h4>

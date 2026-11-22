@@ -5,7 +5,8 @@ INSERT INTO permissoes (nome, descricao) VALUES
 ('ATUALIZAR_STATUS_TAREFA', 'Permite atualizar o andamento das atividades'),
 ('DELETAR_TAREFA', 'Permite remover tarefas domesticas'),
 ('CRIAR_COMPROMISSO', 'Permite cadastrar compromissos na agenda familiar'),
-('VER_AGENDA', 'Permite visualizar a agenda e compromissos')
+('VER_AGENDA', 'Permite visualizar a agenda e compromissos'),
+('DELETAR_EVENTO', 'Permite remover eventos da agenda familiar')
 ON CONFLICT (nome) DO NOTHING;
 
 -- 2. Inserir os perfis (roles).
@@ -35,18 +36,21 @@ JOIN permissoes permissao ON permissao.nome IN (
     'ATUALIZAR_STATUS_TAREFA',
     'DELETAR_TAREFA',
     'CRIAR_COMPROMISSO',
-    'VER_AGENDA'
+    'VER_AGENDA',
+    'DELETAR_EVENTO'
 )
 WHERE perfil.nome = 'ADMINISTRADOR_CASA'
 ON CONFLICT DO NOTHING;
 
--- MEMBRO_CASA pode criar tarefas e atualizar o andamento delas.
+-- MEMBRO_CASA pode criar tarefas, atualizar o andamento delas, ver a agenda e cadastrar compromissos.
 INSERT INTO perfil_permissoes (perfil_id, permissao_id)
 SELECT perfil.id, permissao.id
 FROM perfis perfil
 JOIN permissoes permissao ON permissao.nome IN (
     'ATUALIZAR_STATUS_TAREFA',
-    'CRIAR_TAREFA'
+    'CRIAR_TAREFA',
+    'CRIAR_COMPROMISSO',
+    'VER_AGENDA'
 )
 WHERE perfil.nome = 'MEMBRO_CASA'
 ON CONFLICT DO NOTHING;

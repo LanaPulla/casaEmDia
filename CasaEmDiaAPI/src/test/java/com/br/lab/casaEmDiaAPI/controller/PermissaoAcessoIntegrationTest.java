@@ -92,7 +92,7 @@ class PermissaoAcessoIntegrationTest {
 
     @Test
     void membroPodeCriarTarefaEConsultarFamiliaMasNaoAcessaFuncoesAdministrativas() throws Exception {
-        MockHttpSession sessao = sessaoCom("CRIAR_TAREFA", "ATUALIZAR_STATUS_TAREFA");
+        MockHttpSession sessao = sessaoCom("CRIAR_TAREFA", "ATUALIZAR_STATUS_TAREFA", "CRIAR_COMPROMISSO", "VER_AGENDA");
 
         mockMvc.perform(post("/tarefas").session(sessao)
                         .contentType(MediaType.APPLICATION_JSON).content(TAREFA))
@@ -105,10 +105,12 @@ class PermissaoAcessoIntegrationTest {
                 .andExpect(status().isForbidden());
         mockMvc.perform(delete("/tarefas/1").session(sessao))
                 .andExpect(status().isForbidden());
-        mockMvc.perform(get("/api/agenda").session(sessao))
-                .andExpect(status().isForbidden());
+        mockMvc.perform(get("/api/agenda").param("usuarioId", "1").session(sessao))
+                .andExpect(status().isOk());
         mockMvc.perform(post("/api/agenda").session(sessao)
                         .contentType(MediaType.APPLICATION_JSON).content("{}"))
+                .andExpect(status().isOk());
+        mockMvc.perform(delete("/api/agenda/1").session(sessao))
                 .andExpect(status().isForbidden());
     }
 
@@ -119,12 +121,13 @@ class PermissaoAcessoIntegrationTest {
                 "CRIAR_TAREFA",
                 "DELETAR_TAREFA",
                 "CRIAR_COMPROMISSO",
-                "VER_AGENDA");
+                "VER_AGENDA",
+                "DELETAR_EVENTO");
 
         mockMvc.perform(post("/tarefas").session(sessao)
                         .contentType(MediaType.APPLICATION_JSON).content(TAREFA))
                 .andExpect(status().isCreated());
-        mockMvc.perform(get("/api/agenda").session(sessao))
+        mockMvc.perform(get("/api/agenda").param("usuarioId", "1").session(sessao))
                 .andExpect(status().isOk());
         mockMvc.perform(post("/api/agenda").session(sessao)
                         .contentType(MediaType.APPLICATION_JSON).content("{}"))
@@ -135,6 +138,8 @@ class PermissaoAcessoIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON).content("{\"nomeFamilia\":\"Nova\"}"))
                 .andExpect(status().isOk());
         mockMvc.perform(delete("/tarefas/1").session(sessao))
+                .andExpect(status().isNoContent());
+        mockMvc.perform(delete("/api/agenda/1").session(sessao))
                 .andExpect(status().isNoContent());
     }
 
@@ -152,6 +157,7 @@ class PermissaoAcessoIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON).content("{\"nomeFamilia\":\"Nova\"}"))
                 .andExpect(status().isUnauthorized());
         mockMvc.perform(delete("/tarefas/1")).andExpect(status().isUnauthorized());
+        mockMvc.perform(delete("/api/agenda/1")).andExpect(status().isUnauthorized());
     }
 
     private MockHttpSession sessaoCom(String... permissoes) {

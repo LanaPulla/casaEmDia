@@ -111,15 +111,17 @@ export default function CardTarefa({
                   <EditOutlinedIcon fontSize="small" />
                 </button>
 
-                <button
-                  type="button"
-                  className="tarefa-botao tarefa-botao-excluir"
-                  onClick={() => onExcluir?.(tarefa)}
-                  aria-label={`Excluir "${tarefa.titulo}"`}
-                  title="Excluir"
-                >
-                  <DeleteOutlined fontSize="small" />
-                </button>
+                {onExcluir && (
+                  <button
+                    type="button"
+                    className="tarefa-botao tarefa-botao-excluir"
+                    onClick={() => onExcluir(tarefa)}
+                    aria-label={`Excluir "${tarefa.titulo}"`}
+                    title="Excluir"
+                  >
+                    <DeleteOutlined fontSize="small" />
+                  </button>
+                )}
               </div>
             </article>
           </li>

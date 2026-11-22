@@ -9,5 +9,5 @@ public interface EventoAgendaService {
     List<EventoAgendaResponse> listarPorUsuario(Long usuarioId);
     EventoAgendaResponse criar(EventoAgendaRequest request);
     EventoAgendaResponse atualizar(Long id, EventoAgendaRequest request);
-    void deletar(Long id);
+    void deletar(Long id, Long familiaId);
 }

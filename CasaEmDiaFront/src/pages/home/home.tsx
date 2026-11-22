@@ -5,6 +5,9 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import type { TarefaProps } from '../../types/tarefas';
 import CardResumo from '../components/tarefas/cardResumos';
 import { listarTarefas } from '../../services/tarefas/tarefas';
+import type { EventoAgenda } from '../../types/agenda';
+import { agendaService } from '../../services/agenda/agendaService';
+import ResumoAgenda from '../components/agenda/resumoAgenda';
 
 export function Home() {
   const dataAtual = new Date();
@@ -21,6 +24,9 @@ export function Home() {
   const [tarefas, setTarefas] = useState<TarefaProps[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
+  const [eventos, setEventos] = useState<EventoAgenda[]>([]);
+  const [carregandoAgenda, setCarregandoAgenda] = useState(true);
+  const [erroAgenda, setErroAgenda] = useState('');
 
   useEffect(() => {
     async function carregarTarefas() {
@@ -35,7 +41,21 @@ export function Home() {
       }
     }
 
+    async function carregarEventos() {
+      try {
+        setErroAgenda('');
+        const dados = await agendaService.listarTodos();
+        setEventos(Array.isArray(dados) ? dados : []);
+      } catch (error) {
+        console.error(error);
+        setErroAgenda('Não foi possível carregar a agenda.');
+      } finally {
+        setCarregandoAgenda(false);
+      }
+    }
+
     void carregarTarefas();
+    void carregarEventos();
   }, []);
 
   return (
@@ -63,6 +83,13 @@ export function Home() {
            {!carregando && !erro && (
              <CardResumo telaInteira={true} dataSelecionada={dataAtual} tarefas={tarefas} />
            )}
+        </div>
+
+        {/* RESUMO DA AGENDA (somente visualização) */}
+        <div className='w-100'>
+           {carregandoAgenda && <p>Carregando agenda...</p>}
+           {erroAgenda && <p className="text-danger" role="alert">{erroAgenda}</p>}
+           {!carregandoAgenda && !erroAgenda && <ResumoAgenda eventos={eventos} />}
         </div>
 
     </div>

@@ -72,11 +72,14 @@ public class EventoAgendaServiceImpl implements EventoAgendaService {
     }
 
     @Override
-    public void deletar(Long id) {
-        if (!eventoRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Evento não encontrado");
+    public void deletar(Long id, Long familiaId) {
+        EventoAgenda evento = eventoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Evento não encontrado"));
+
+        if (!evento.getFamiliaId().equals(familiaId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você não tem permissão para excluir eventos de outra família");
         }
-        eventoRepository.deleteById(id);
+        eventoRepository.delete(evento);
     }
 
     private Long obterFamiliaIdDoUsuario(Long usuarioId) {
