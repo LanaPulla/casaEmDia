@@ -1,0 +1,173 @@
+@startuml DiagramaDeClasses
+top to bottom direction
+skinparam packageStyle frame
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 50
+skinparam classAttributeIconSize 0
+
+package "controller" {
+  class UsuarioController <<RestController>> {
+    + cadastrar(req: CadastroRequest): ResponseEntity<UsuarioResponse>
+    + login(req: LoginRequest): ResponseEntity<UsuarioResponse>
+    + me(): ResponseEntity<UsuarioResponse>
+  }
+
+  class TarefaController <<RestController>> {
+    + criar(req: TarefaRequest): ResponseEntity<TarefaResponse>
+    + listarPorUsuario(usuarioId: Long): ResponseEntity<List<TarefaResponse>>
+    + buscarPorId(id: Long): ResponseEntity<TarefaResponse>
+    + atualizar(id: Long, req: TarefaRequest): ResponseEntity<TarefaResponse>
+    + deletar(id: Long): ResponseEntity<Void>
+  }
+
+  class EventoAgendaController <<RestController>> {
+    + listarPorFamilia(usuarioId: Long): ResponseEntity<List<EventoAgendaResponse>>
+    + criar(req: EventoAgendaRequest): ResponseEntity<EventoAgendaResponse>
+    + atualizar(id: Long, req: EventoAgendaRequest): ResponseEntity<EventoAgendaResponse>
+    + deletar(id: Long): ResponseEntity<Void>
+  }
+}
+
+package "service" {
+  interface UsuarioService <<Service>> {
+    + cadastrar(req: CadastroRequest): UsuarioResponse
+    + login(req: LoginRequest): UsuarioResponse
+  }
+
+  class UsuarioServiceImpl <<Service>> {
+    + cadastrar(req: CadastroRequest): UsuarioResponse
+    + login(req: LoginRequest): UsuarioResponse
+  }
+
+  interface TarefaService <<Service>> {
+    + criar(req: TarefaRequest): TarefaResponse
+    + listarPorUsuario(usuarioId: Long): List<TarefaResponse>
+    + buscarPorId(id: Long): TarefaResponse
+    + atualizar(id: Long, req: TarefaRequest): TarefaResponse
+    + deletar(id: Long): void
+  }
+
+  class TarefaServiceImpl <<Service>> {
+    + criar(req: TarefaRequest): TarefaResponse
+    + listarPorUsuario(usuarioId: Long): List<TarefaResponse>
+    + buscarPorId(id: Long): TarefaResponse
+    + atualizar(id: Long, req: TarefaRequest): TarefaResponse
+    + deletar(id: Long): void
+  }
+
+  interface EventoAgendaService <<Service>> {
+    + listarPorUsuario(usuarioId: Long): List<EventoAgendaResponse>
+    + criar(req: EventoAgendaRequest): EventoAgendaResponse
+    + atualizar(id: Long, req: EventoAgendaRequest): EventoAgendaResponse
+    + deletar(id: Long): void
+  }
+
+  class EventoAgendaServiceImpl <<Service>> {
+    + listarPorUsuario(usuarioId: Long): List<EventoAgendaResponse>
+    + criar(req: EventoAgendaRequest): EventoAgendaResponse
+    + atualizar(id: Long, req: EventoAgendaRequest): EventoAgendaResponse
+    + deletar(id: Long): void
+  }
+}
+
+package "entities" {
+  class Perfil <<Entity>> {
+    - id: Long
+    - nome: String
+    - permissoes: Set<String>
+  }
+
+  class Usuario <<Entity>> {
+    - id: Long
+    - nome: String
+    - email: String
+    - senha: String
+    - familiaId: Long
+  }
+
+  class Tarefa <<Entity>> {
+    - id: Long
+    - titulo: String
+    - observacao: String
+    - dataTarefa: LocalDate
+    - status: StatusEnum
+    - prioridade: PrioridadeEnum
+    - recorrencia: RecorrenciaEnum
+  }
+
+  class EventoAgenda <<Entity>> {
+    - id: Long
+    - titulo: String
+    - descricao: String
+    - dataEvento: LocalDate
+    - horarioInicio: LocalTime
+    - horarioFim: LocalTime
+    - local: String
+    - categoria: CategoriaAgendaEnum
+    - familiaId: Long
+  }
+
+  enum StatusEnum {
+    PENDENTE
+    EM_ANDAMENTO
+    CONCLUIDA
+  }
+
+  enum PrioridadeEnum {
+    BAIXA
+    MEDIA
+    ALTA
+  }
+
+  enum RecorrenciaEnum {
+    NENHUMA
+    DIARIA
+    SEMANAL
+    MENSAL
+  }
+
+  enum CategoriaAgendaEnum {
+    FAMILIA
+    CONSULTA
+    ESCOLA
+    LAZER
+    OUTROS
+  }
+}
+
+package "exception" {
+  class CredenciaisInvalidasException
+  class EmailJaCadastradoException
+}
+
+' Fluxo Controller -> Service
+UsuarioController --> UsuarioService
+TarefaController --> TarefaService
+EventoAgendaController --> EventoAgendaService
+
+' Implementações
+UsuarioServiceImpl .up.|> UsuarioService
+TarefaServiceImpl .up.|> TarefaService
+EventoAgendaServiceImpl .up.|> EventoAgendaService
+
+' Fluxo Service -> Repository
+UsuarioServiceImpl --> UsuarioRepository
+TarefaServiceImpl --> TarefaRepository
+TarefaServiceImpl --> UsuarioRepository
+EventoAgendaServiceImpl --> EventoAgendaRepository
+EventoAgendaServiceImpl --> UsuarioRepository
+
+' Relacionamentos de Domínio (Entities)
+Usuario "0..*" --> "0..1" Perfil : perfil >
+Tarefa "0..*" --> "1" Usuario : responsavel >
+Tarefa "1" *-- "1" StatusEnum
+Tarefa "1" *-- "1" PrioridadeEnum
+Tarefa "1" *-- "1" RecorrenciaEnum
+EventoAgenda "1" *-- "1" CategoriaAgendaEnum
+
+' Exceções
+UsuarioServiceImpl ..> CredenciaisInvalidasException : lança >
+UsuarioServiceImpl ..> EmailJaCadastradoException : lança >
+
+@enduml

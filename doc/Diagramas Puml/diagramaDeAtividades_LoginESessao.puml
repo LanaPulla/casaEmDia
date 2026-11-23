@@ -1,0 +1,54 @@
+@startuml DiagramaDeAtividades_LoginESessao
+skinparam ConditionEndStyle hline
+
+|Front-end |
+start
+:Usuário acessa "/login" e informa e-mail e senha;
+:Clica no botão "Entrar";
+if (Campos vazios?) then (sim)
+  :Exibe alerta de campos obrigatórios;
+  stop
+else (não)
+  :Envia POST /api/usuarios/login via loginService;
+endif
+
+|Back-end |
+:UsuarioController recebe LoginRequest;
+:UsuarioServiceImpl executa usuarioRepository.findByEmail(email);
+
+|Supabase |
+:Executa SELECT * FROM tb_usuario WHERE email = ?;
+:Retorna registro do usuário (ou vazio);
+
+|Back-end |
+if (Usuário existe e senha confere?) then (não)
+  :Lança CredenciaisInvalidasException;
+  :Retorna erro HTTP ao cliente;
+  |Front-end |
+  :Exibe mensagem "E-mail ou senha inválidos";
+  stop
+else (sim)
+  |Back-end |
+  :Estabelece sessão autenticada;
+  :Mapeia UsuarioResponse e retorna HTTP 200 OK;
+endif
+
+|Front-end |
+:Redireciona para rota protegida (/tarefas ou /agenda);
+:ProtectedRoute / Service consulta GET /api/usuario/me;
+
+|Back-end |
+if (Sessão ativa válida?) then (não)
+  :Retorna HTTP 401/403;
+  |Front-end |
+  :Bloqueia acesso e redireciona para "/login";
+  stop
+else (sim)
+  |Back-end |
+  :Retorna UsuarioResponse (id, nome, email, familiaId);
+  |Front-end |
+  :Libera renderização da tela com dados da família;
+  stop
+endif
+
+@enduml

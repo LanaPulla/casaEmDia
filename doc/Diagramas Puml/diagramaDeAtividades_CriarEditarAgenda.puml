@@ -1,0 +1,55 @@
+@startuml DiagramaDeAtividades_CriarEditarAgenda
+skinparam ConditionEndStyle hline
+
+|Front-end |
+start
+:Usuário clica em "+ Novo Evento" ou "Editar" em um card;
+if (Modo Edição?) then (sim)
+  :Normaliza horarioInicio e horarioFim para 'HH:mm';
+  :Preenche formulário do Modal com dados do evento;
+else (não)
+  :Abre Modal limpo com data selecionada;
+endif
+
+:Usuário preenche título, data, horários, local e categoria;
+:Clica em "Salvar";
+
+if (Título ou dataEvento vazios?) then (sim)
+  :Exibe alerta de validação no formulário;
+  stop
+else (não)
+  :Normaliza campos opcionais vazios ("") para null;
+  :Consulta GET /api/usuario/me para obter usuarioId;
+  :Envia POST /api/agenda ou PUT /api/agenda/{id};
+endif
+
+|Back-end |
+:EventoAgendaController recebe EventoAgendaRequest;
+:EventoAgendaServiceImpl valida formato (@JsonFormat yyyy-MM-dd / HH:mm);
+:Busca Usuario via usuarioRepository.findById(usuarioId);
+
+if (Usuário e familiaId válidos?) then (não)
+  :Lança exceção de integridade (HTTP 400/404);
+  |Front-end |
+  :Exibe alerta detalhado do erro retornado pela API;
+  stop
+else (sim)
+  |Back-end |
+  :Vincula familiaId do usuário na entidade EventoAgenda;
+  :Executa eventoAgendaRepository.save(evento);
+
+  |Supabase |
+  :Executa INSERT ou UPDATE na tabela evento_agenda;
+  :Confirma transação;
+
+  |Back-end |
+  :Converte para EventoAgendaResponse e retorna HTTP 200 OK;
+endif
+
+|Front-end |
+:Executa carregarEventos() (GET /api/agenda?usuarioId=...);
+:Atualiza calendário verde, lista e cards de Resumo do Dia;
+:Fecha o Modal;
+stop
+
+@enduml
