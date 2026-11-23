@@ -1,0 +1,62 @@
+@startuml DiagramaDeSequencia_ListarAgendaFamilia
+autonumber
+actor "Usuário Autenticado" as User
+participant "agendaFamilia.tsx" as Page <<Page>>
+participant "agendaService.ts" as ServiceAPI <<ServiceAPI>>
+participant "UsuarioController" as UserCtrl <<RestController>>
+participant "EventoAgendaController" as AgendaCtrl <<RestController>>
+participant "EventoAgendaServiceImpl" as Service <<Service>>
+participant "UsuarioRepository" as UserRepo <<Repository>>
+participant "EventoAgendaRepository" as AgendaRepo <<Repository>>
+database "Supabase\n(PostgreSQL)" as DB <<Table>>
+
+User -> Page : Acessa "/agenda" e alterna filtro (Semanal / Mensal)
+activate Page
+
+Page -> ServiceAPI : listarTodos() [async]
+activate ServiceAPI
+
+ServiceAPI -> UserCtrl : GET /api/usuario/me
+activate UserCtrl
+UserCtrl --> ServiceAPI : HTTP 200 OK { id: XX, familiaId: X, ... }
+deactivate UserCtrl
+
+ServiceAPI -> AgendaCtrl : GET /api/agenda?usuarioId=XX
+activate AgendaCtrl
+
+AgendaCtrl -> Service : listarPorUsuario(XX)
+activate Service
+
+Service -> UserRepo : findById(XX)
+activate UserRepo
+UserRepo -> DB : SELECT * FROM tb_usuario WHERE id = XX
+activate DB
+DB --> UserRepo : Usuario (familiaId = X)
+deactivate DB
+UserRepo --> Service : Optional<Usuario>
+deactivate UserRepo
+
+Service -> AgendaRepo : findByFamiliaId(X)
+activate AgendaRepo
+AgendaRepo -> DB : SELECT * FROM evento_agenda WHERE familia_id = X
+activate DB
+DB --> AgendaRepo : List<EventoAgenda>
+deactivate DB
+AgendaRepo --> Service : List<EventoAgenda>
+deactivate AgendaRepo
+
+Service -> Service : Converte lista via EventoAgendaResponse.fromEntity()
+Service --> AgendaCtrl : List<EventoAgendaResponse>
+deactivate Service
+
+AgendaCtrl --> ServiceAPI : HTTP 200 OK
+deactivate AgendaCtrl
+
+ServiceAPI --> Page : Retorna eventos da família
+deactivate ServiceAPI
+
+Page -> Page : Filtra período (semana/mês) e atualiza Resumo do Dia
+Page --> User : Renderiza calendário verde e compromissos da família
+deactivate Page
+
+@enduml

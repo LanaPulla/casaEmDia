@@ -1,0 +1,65 @@
+@startuml DiagramaDeSequencia_EditarEventoAgenda
+autonumber
+actor "Usuário" as User
+participant "agendaFamilia.tsx" as Page <<Page>>
+participant "agendaService.ts" as ServiceAPI <<ServiceAPI>>
+participant "EventoAgendaController" as Controller <<RestController>>
+participant "EventoAgendaServiceImpl" as Service <<Service>>
+participant "EventoAgendaRepository" as Repo <<Repository>>
+database "Supabase\n(PostgreSQL)" as DB <<Table>>
+
+User -> Page : Clica em Editar no card do evento (id: 14)
+activate Page
+Page -> Page : abrirModalEdicao(): normaliza horários para "HH:mm"
+Page --> User : Exibe modal preenchido
+
+User -> Page : Altera dados e clica em "Salvar"
+Page -> Page : salvarEvento(): converte campos vazios em null
+
+Page -> ServiceAPI : atualizar(14, payload) [async]
+activate ServiceAPI
+
+ServiceAPI -> Controller : PUT /api/agenda/14\n[Body: EventoAgendaRequest]
+activate Controller
+
+Controller -> Service : atualizar(14, request)
+activate Service
+
+Service -> Repo : findById(14)
+activate Repo
+Repo -> DB : SELECT * FROM evento_agenda WHERE id = 14
+activate DB
+DB --> Repo : EventoAgenda
+deactivate DB
+Repo --> Service : Optional<EventoAgenda>
+deactivate Repo
+
+alt Evento não encontrado ou formato inválido
+    Service --> Controller : throws RuntimeException / MethodArgumentNotValidException
+    Controller --> ServiceAPI : HTTP 400 / 404
+    ServiceAPI --> Page : throw new Error(mensagemErro)
+    Page --> User : Exibe alerta com erro detalhado
+else Dados válidos
+    Service -> Service : Atualiza titulo, descricao, dataEvento, horarios, local, categoria
+    Service -> Repo : save(eventoAtualizado)
+    activate Repo
+    Repo -> DB : UPDATE evento_agenda SET ... WHERE id = 14
+    activate DB
+    DB --> Repo : Registro atualizado
+    deactivate DB
+    Repo --> Service : EventoAgenda
+    deactivate Repo
+
+    Service --> Controller : EventoAgendaResponse
+    deactivate Service
+    Controller --> ServiceAPI : HTTP 200 OK (EventoAgendaResponse)
+    deactivate Controller
+    ServiceAPI --> Page : Sucesso
+    deactivate ServiceAPI
+
+    Page -> Page : carregarEventos() + fecha modal
+    Page --> User : Atualiza card na tela e métricas
+end
+deactivate Page
+
+@enduml

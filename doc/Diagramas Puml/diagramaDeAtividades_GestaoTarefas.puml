@@ -1,0 +1,50 @@
+@startuml DiagramaDeAtividades_GestaoTarefas
+skinparam ConditionEndStyle hline
+
+|Front-end |
+start
+:Usuário acessa "/tarefas" e clica em "+ Nova Tarefa";
+:Preenche título, observação, dataTarefa, status, prioridade e recorrência;
+:Clica no botão "Salvar";
+
+if (Título ou campos obrigatórios vazios?) then (sim)
+  :Exibe alerta de validação no formulário;
+  stop
+else (não)
+  :Envia POST /api/tarefas via tarefasService;
+endif
+
+|Back-end |
+:TarefaController recebe TarefaRequest;
+:TarefaServiceImpl busca responsável via usuarioRepository.findById(usuarioId);
+
+|Supabase |
+:Executa SELECT * FROM tb_usuario WHERE id = ?;
+:Retorna registro do usuário (ou vazio);
+
+|Back-end |
+if (Usuário responsável encontrado?) then (não)
+  :Lança RuntimeException("Usuário não encontrado");
+  :Retorna erro HTTP ao cliente;
+  |Front-end |
+  :Exibe alerta "Erro ao associar usuário à tarefa";
+  stop
+else (sim)
+  |Back-end |
+  :Instancia Tarefa e vincula Usuario responsável;
+  :Executa tarefaRepository.save(tarefa);
+
+  |Supabase |
+  :Executa INSERT INTO tb_tarefa (...);
+  :Gera ID e confirma transação;
+
+  |Back-end |
+  :Converte para TarefaResponse e retorna HTTP 200 OK;
+endif
+
+|Front-end |
+:Atualiza lista de tarefas e cards de Resumo do Dia;
+:Fecha o modal e exibe a nova tarefa;
+stop
+
+@enduml
