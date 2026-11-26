@@ -1,0 +1,128 @@
+@startuml DiagramaDePacotes
+skinparam componentStyle uml2
+skinparam ranksep 10
+
+package "Client-Side" as FrontEnd {
+  package "pages" <<Page>> {
+    [LoginPage]
+    [HomePage]
+    [TarefasPage]
+    [AgendaFamiliaPage]
+  }
+
+  package "components" <<Component>> {
+    [LayoutNavHeader]
+    [NavBar]
+    [Header]
+    [ListaTarefas]
+    [CardTarefas]
+    [CardResumosTarefas]
+    [Calendario]
+    [NovaTarefaButton]
+    [EditarTarefaButton]
+    [CardAgenda]
+    [CardResumosAgenda]
+    [CalendarioAgenda]
+    [NovoEventoButton]
+    [EditarEventoButton]
+  }
+
+  package "services" <<ServiceAPI>> {
+    [loginService]
+    [tarefasService]
+    [agendaService]
+  }
+
+  pages ..> components
+  pages ..> services
+  components ..> services
+}
+
+package "Server-Side" as BackEnd {
+
+  package "controller" <<RestController>> {
+    [UsuarioController]
+    [TarefaController]
+    [EventoAgendaController]
+  }
+
+  package "service" <<Service>> {
+    [UsuarioService]
+    [UsuarioServiceImpl]
+    [TarefaService]
+    [TarefaServiceImpl]
+    [EventoAgendaService]
+    [EventoAgendaServiceImpl]
+  }
+
+  package "repository" <<Repository>> {
+    [UsuarioRepository]
+    [TarefaRepository]
+    [EventoAgendaRepository]
+  }
+
+  package "entities" <<Entity>> {
+    [Usuario]
+    [Perfil]
+    [Tarefa]
+    [EventoAgenda]
+    package "enums" {
+      [StatusEnum]
+      [PrioridadeEnum]
+      [RecorrenciaEnum]
+      [CategoriaAgendaEnum]
+    }
+  }
+
+  package "dto" <<DTO>> {
+    [CadastroRequest]
+    [LoginRequest]
+    [UsuarioResponse]
+    [TarefaRequest]
+    [TarefaResponse]
+    [EventoAgendaRequest]
+    [EventoAgendaResponse]
+  }
+
+  package "exception" {
+    [CredenciaisInvalidasException]
+    [EmailJaCadastradoException]
+  }
+
+  [UsuarioController] ..> [UsuarioService]
+  [TarefaController] ..> [TarefaService]
+  [EventoAgendaController] ..> [EventoAgendaService]
+
+  [UsuarioServiceImpl] .up.|> [UsuarioService]
+  [TarefaServiceImpl] .up.|> [TarefaService]
+  [EventoAgendaServiceImpl] .up.|> [EventoAgendaService]
+
+  [UsuarioServiceImpl] ..> [UsuarioRepository]
+  [UsuarioServiceImpl] ..> [CredenciaisInvalidasException]
+  [UsuarioServiceImpl] ..> [EmailJaCadastradoException]
+  [TarefaServiceImpl] ..> [TarefaRepository]
+  [TarefaServiceImpl] ..> [UsuarioRepository]
+  [EventoAgendaServiceImpl] ..> [EventoAgendaRepository]
+  [EventoAgendaServiceImpl] ..> [UsuarioRepository]
+
+  [UsuarioRepository] ..> [Usuario]
+  [TarefaRepository] ..> [Tarefa]
+  [EventoAgendaRepository] ..> [EventoAgenda]
+}
+
+database "Supabase" as Database {
+  package "public" {
+    [tb_usuario] <<Table>>
+    [tb_perfil] <<Table>>
+    [tb_tarefa] <<Table>>
+    [evento_agenda] <<Table>>
+  }
+}
+
+services ..> controller : HTTP REST (CORS :5173)
+
+[UsuarioRepository] ..> [tb_usuario] : Spring Data JPA
+[TarefaRepository] ..> [tb_tarefa] : Spring Data JPA
+[EventoAgendaRepository] ..> [evento_agenda] : Spring Data JPA
+
+@enduml

@@ -1,0 +1,49 @@
+@startuml DiagramaDeSequencia_AutenticacaoCadastro
+autonumber
+actor "Usuário" as User
+participant "LoginPage / CadastroPage" as Page <<Page>>
+participant "loginService.tsx" as ServiceAPI <<ServiceAPI>>
+participant "UsuarioController" as Controller <<RestController>>
+participant "UsuarioServiceImpl" as Service <<Service>>
+participant "UsuarioRepository" as Repo <<Repository>>
+database "Supabase\n(PostgreSQL)" as DB <<Table>>
+
+User -> Page : Submete formulário de Login
+activate Page
+
+Page -> ServiceAPI : loginUsuario({ email, senha }) [async]
+activate ServiceAPI
+
+ServiceAPI -> Controller : POST /api/usuarios/login\n[Body: LoginRequest]
+activate Controller
+
+Controller -> Service : login(LoginRequest)
+activate Service
+
+Service -> Repo : findByEmail(email)
+activate Repo
+Repo -> DB : SELECT * FROM tb_usuario WHERE email = ?
+activate DB
+DB --> Repo : Optional<Usuario>
+deactivate DB
+Repo --> Service : Optional<Usuario>
+deactivate Repo
+
+alt E-mail inexistente ou senha divergente
+    Service --> Controller : throws CredenciaisInvalidasException
+    Controller --> ServiceAPI : HTTP 401 / 500
+    ServiceAPI --> Page : catch(error)
+    Page --> User : Exibe mensagem "E-mail ou senha inválidos"
+else Credenciais válidas
+    Service --> Controller : UsuarioResponse (id, nome, email, familiaId)
+    deactivate Service
+    Controller --> ServiceAPI : HTTP 200 OK (UsuarioResponse)
+    deactivate Controller
+    ServiceAPI --> Page : Retorna dados do usuário
+    deactivate ServiceAPI
+    Page -> Page : Salva sessão e redireciona para "/home"
+    Page --> User : Acessa painel principal da família
+end
+deactivate Page
+
+@enduml
